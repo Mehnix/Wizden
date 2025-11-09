@@ -49,7 +49,7 @@
       fix1:
         shape:
           !type:PhysShapeAabb
-          bounds: "-0.25,-0.48,0.25,0.48"
+          bounds: "-0.25,-0.45,0.25,0.45"
         density: 75
         mask:
         - MachineMask
@@ -269,7 +269,7 @@
       fix1:
         shape:
           !type:PhysShapeAabb
-          bounds: "-0.25,-0.48,0.25,0.48"
+          bounds: "-0.25,-0.45,0.25,0.45"
         density: 350
         mask:
         - MachineMask

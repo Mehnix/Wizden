@@ -18,6 +18,8 @@ using Robust.Shared.Prototypes;
 using Robust.Shared.Serialization;
 using Robust.Shared.Utility;
 using SharedToolSystem = Content.Shared.Tools.Systems.SharedToolSystem;
+using Robust.Shared.Physics.Systems;
+using Robust.Shared.Physics;
 
 namespace Content.Shared.Construction.EntitySystems;
 
@@ -32,8 +34,11 @@ public sealed partial class AnchorableSystem : EntitySystem
     [Dependency] private readonly SharedTransformSystem _transformSystem = default!;
     [Dependency] private readonly TagSystem _tagSystem = default!;
     [Dependency] private readonly SharedAppearanceSystem _appearance = default!;
+    [Dependency] private readonly SharedPhysicsSystem _physics = default!; // VDS
+    [Dependency] private readonly EntityLookupSystem _lookup = default!; // VDS
 
     private EntityQuery<PhysicsComponent> _physicsQuery;
+    private EntityQuery<FixturesComponent> _fixturesQuery; // VDS
 
     public readonly ProtoId<TagPrototype> Unstackable = "Unstackable";
 
@@ -42,6 +47,7 @@ public sealed partial class AnchorableSystem : EntitySystem
         base.Initialize();
 
         _physicsQuery = GetEntityQuery<PhysicsComponent>();
+        _fixturesQuery = GetEntityQuery<FixturesComponent>();
 
         SubscribeLocalEvent<AnchorableComponent, InteractUsingEvent>(OnInteractUsing,
             before: new[] { typeof(ItemSlotsSystem) }, after: new[] { typeof(SharedConstructionSystem) });
@@ -140,7 +146,7 @@ public sealed partial class AnchorableSystem : EntitySystem
 
         var xform = Transform(uid);
         if (TryComp<PhysicsComponent>(uid, out var anchorBody) &&
-            !TileFree(xform.Coordinates, anchorBody))
+                !TileBoundsFree(xform.Coordinates, anchorBody, (uid, component), true))
         {
             _popup.PopupClient(Loc.GetString("anchorable-occupied"), uid, args.User);
             return;
@@ -235,7 +241,7 @@ public sealed partial class AnchorableSystem : EntitySystem
         _adminLogger.Add(LogType.Anchor, LogImpact.Low, $"{ToPrettyString(userUid):user} is trying to anchor {ToPrettyString(uid):entity} to {transform.Coordinates:targetlocation}");
 
         if (TryComp<PhysicsComponent>(uid, out var anchorBody) &&
-            !TileFree(transform.Coordinates, anchorBody))
+            !TileBoundsFree(transform.Coordinates, anchorBody, (uid, anchorable), true))
         {
             _popup.PopupClient(Loc.GetString("anchorable-occupied"), uid, userUid);
             return;
@@ -331,6 +337,80 @@ public sealed partial class AnchorableSystem : EntitySystem
     {
         return TileFree((grid.Owner, grid), gridIndices, collisionLayer, collisionMask);
     }
+
+    // VDS start
+    /// <summary>
+    /// Returns true if no hard anchored entities exist on the coordinate tile that would collide with the provided physics body.
+    /// Also returns true if their hard AABB bounds would not intersect after being anchored.
+    /// </summary>
+    public bool TileBoundsFree(EntityCoordinates coordinates, PhysicsComponent anchorBody, Entity<AnchorableComponent> anchorEnt, bool checkGroup = true)
+    {
+        var gridUid = _transformSystem.GetGrid(coordinates);
+
+        if (!TryComp<MapGridComponent>(gridUid, out var grid))
+            return false;
+
+        var tileIndices = _map.TileIndicesFor((gridUid.Value, grid), coordinates);
+        return TileBoundsFree((gridUid.Value, grid), tileIndices, anchorBody, anchorEnt, checkGroup);
+    }
+
+    /// <summary>
+    /// Returns true if no hard anchored entities match the collision layer or mask specified
+    /// Also returns true if their hard AABB bounds would not intersect after being anchored.
+    /// </summary>
+    public bool TileBoundsFree(Entity<MapGridComponent> grid, Vector2i gridIndices, PhysicsComponent anchorBody, Entity<AnchorableComponent> anchorEnt, bool checkGroup = true)
+    {
+        if (checkGroup && TileFree(grid, gridIndices, anchorBody.CollisionLayer, anchorBody.CollisionMask))
+        {
+            return true; // return an early true if checking collision groups & tilefree returns true.
+        }
+
+        if (!anchorEnt.Comp.Snap)
+            return true; // no need to check intersections if we're not snapping.
+
+        // if we're snapping to the grid, we need to calculate where the anchor will end up,
+        // rather than where it currently is.
+        var pos = _map.GridTileToLocal(grid.Owner, grid.Comp, gridIndices);
+
+        // we also take rotation into account, rounding into cardinal angles since it'll snap to grid.
+        var anchoredAngle = Transform(anchorEnt).LocalRotation;
+        var anchoredBounds = _lookup.GetAABBNoContainer(anchorEnt, pos.Position, anchoredAngle.RoundToCardinalAngle());
+
+        var enumerator = _map.GetAnchoredEntitiesEnumerator(grid.Owner, grid.Comp, gridIndices);
+        while (enumerator.MoveNext(out var ent))
+        {
+            if (ent.Equals(anchorEnt)) continue;
+
+            if (!_physicsQuery.TryGetComponent(ent, out var body) ||
+                !body.CanCollide ||
+                !body.Hard)
+            {
+                continue;
+            }
+
+            if (!_fixturesQuery.TryGetComponent(ent, out var fix)) continue;
+
+            var entXform = _physics.GetLocalPhysicsTransform(ent.Value);
+
+            // iterate through each hard fixture, grabbing their shape and
+            // check if it intersects our AABB.
+            foreach (var fixture in fix.Fixtures)
+            {
+                if (!fixture.Value.Hard)
+                    continue;
+
+                var shape = fixture.Value.Shape;
+                for (var i = 0; i < shape.ChildCount; i++)
+                {
+                    var entBounds = shape.ComputeAABB(entXform, i);
+                    if (entBounds.Intersects(anchoredBounds))
+                        return false;
+                }
+            }
+        }
+        return true;
+    }
+    // VDS end
 
     /// <summary>
     /// Returns true if any unstackables are also on the corresponding tile.
