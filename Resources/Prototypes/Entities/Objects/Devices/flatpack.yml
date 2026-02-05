@@ -280,3 +280,29 @@
   - type: GuideHelp
     guides:
     - FoodRecipes
+
+- type: entity
+  parent: BaseFlatpack
+  id: TeleframeScienceFlatpack
+  name: teleframe core flatpack
+  description: A flatpack used for constructing a teleframe core. It seems warm.
+  components:
+  - type: Flatpack
+    entity: TeleframeScience
+  - type: StaticPrice
+    price: 5000
+  - type: GuideHelp
+    guides:
+    - Telescience
+
+- type: entity
+  parent: BaseFlatpack
+  id: ComputerTeleframeFlatpack
+  name: teleframe console flatpack
+  description: A flatpack used for constructing a teleframe console.
+  components:
+  - type: Flatpack
+    entity: ComputerTeleframe
+  - type: GuideHelp
+    guides:
+    - Telescience

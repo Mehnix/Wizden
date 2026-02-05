@@ -57,3 +57,14 @@
   cost: 10000
   category: cargoproduct-category-name-science
   group: market
+
+- type: cargoProduct
+  id: ScienceTeleframe
+  icon:
+    sprite: Structures/cargo_telepad.rsi
+    state: display
+  data: !type:CargoProductItemData
+    product: CrateScienceTeleframe
+  cost: 15000
+  category: cargoproduct-category-name-science
+  group: market

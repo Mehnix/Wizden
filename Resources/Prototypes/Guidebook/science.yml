@@ -6,6 +6,7 @@
   - Technologies
   - AnomalousResearch
   - Xenoarchaeology
+  - Telescience
   - Robotics
 
 - type: guideEntry
@@ -61,3 +62,21 @@
   id: Cyborgs
   name: guide-entry-cyborgs
   text: "/ServerInfo/Guidebook/Science/Cyborgs.xml"
+
+- type: guideEntry
+  id: Telescience
+  name: guide-entry-telescience
+  text: "/ServerInfo/Guidebook/Science/Telescience.xml"
+  children:
+  - TeleframesBeacons
+  - TelechargeScience
+
+- type: guideEntry
+  id: TeleframesBeacons
+  name: guide-entry-teleframe
+  text: "/ServerInfo/Guidebook/Science/Teleframe.xml"
+
+- type: guideEntry
+  id: TelechargeScience
+  name: guide-entry-teleframe
+  text: "/ServerInfo/Guidebook/Science/Telecharge.xml"

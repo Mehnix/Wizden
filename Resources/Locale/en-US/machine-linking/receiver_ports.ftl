@@ -89,3 +89,9 @@ signal-port-description-logic-enable = Only loads the input signal into the memo
 
 signal-port-name-logic-random-input = Input Signal
 signal-port-description-logic-random-input = Receives any signal to trigger a random output.
+
+signal-port-name-teleport-receiver = Teleframe Link
+signal-port-description-teleporter-receiver = Teleframe signal receiver
+
+signal-port-name-teleport-beacon-receiver = Console Beacon
+signal-port-description-teleport-beacon-receiver = Teleport Beacon coordinate signal receiver

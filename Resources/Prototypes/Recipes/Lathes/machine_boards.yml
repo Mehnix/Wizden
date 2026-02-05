@@ -211,6 +211,10 @@
   result: StasisBedMachineCircuitboard
 
 ## Science
+- type: latheRecipe
+  parent: [ BaseSilverCircuitboardRecipe, BaseResearchMachineRecipeCategory ]
+  id: TeleframeScienceMachineCircuitboard
+  result: TeleframeScienceMachineCircuitboard
 
 # Artifact
 - type: latheRecipe
@@ -255,7 +259,7 @@
   parent: [BaseCircuitboardRecipe]
   id: SmartFridgeCircuitboard
   result: SmartFridgeCircuitboard
-  
+
 # Bar
 - type: latheRecipe
   parent: [ BaseCircuitboardRecipe, BaseServiceMachineRecipeCategory ]

@@ -28,6 +28,9 @@
   id: Ambrosia # ConstructionGraph: flowerwreath
 
 - type: Tag
+  id: AnomalyCore # Identifies Anomaly Cores, used in Teleframe Core construction
+
+- type: Tag
   id: AnomalyHost # Targeting whitelist: BaseAnomalyInjector
 
 - type: Tag
@@ -1402,6 +1405,9 @@
 
 - type: Tag
   id: Taser # Storage whitelist: ClothingBeltSecurity
+
+- type: Tag
+  id: TeleportImmune # Entities blacklisted from being teleported by a Teleframe
 
 - type: Tag
   id: TheaterBagel # used for Bagel Station's randomized theater

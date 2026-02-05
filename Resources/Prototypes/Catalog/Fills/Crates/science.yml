@@ -45,3 +45,25 @@
         - id: CableApcStack1
         - id: SheetRGlass1
           amount: 2
+
+- type: entity
+  id: CrateScienceTeleporter
+  parent: CrateScienceSecure
+  name: teleframe installation crate
+  description: Contains a flatpack of an experimental teleframe core, a console to control it, and some useful peripherals for experimentation. Requires Science access to open.
+  components:
+  - type: EntityTableContainerFill
+    containers:
+      entity_storage: !type:AllSelector
+        children:
+        #- id: TeleportCharge
+        #  amount: 2
+        - id: TeleportBeacon
+          amount: 2
+        - id: Multitool
+          amount: 1
+        - id: TeleframeScienceFlatpack
+          amount: 1
+        - id: ComputerTeleframeFlatpack
+          amount: 1
+

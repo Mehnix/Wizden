@@ -1367,3 +1367,24 @@
         GlassBeaker:
           amount: 2
           defaultPrototype: Beaker
+
+- type: entity
+  parent: BaseMachineCircuitboard
+  id: TeleframeScienceMachineCircuitboard
+  name: teleframe core machine board
+  description: A machine printed circuit board for a teleframe core.
+  components:
+  - type: Sprite
+    state: science
+  - type: MachineBoard
+    prototype: TeleframeScience
+    stackRequirements:
+      Plasma: 10
+      Cable: 10
+      CableHV: 5
+      Manipulator: 5
+      Glass: 1
+    tagRequirements:
+      AnomalyCore: #accepts any anomaly core, inert or active
+        amount: 1
+        defaultPrototype: AnomalyCoreBluespaceInert
