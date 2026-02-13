@@ -32,6 +32,7 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
         InitializeIncidents();
         InitializeRelay();
         InitializeRadio();
+        InitializePower();
 
         SubscribeLocalEvent<TeleframeComponent, MapInitEvent>(OnMapInit);
         SubscribeLocalEvent<TeleframeComponent, ExaminedEvent>(OnExamined);

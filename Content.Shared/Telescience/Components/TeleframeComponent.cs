@@ -59,18 +59,6 @@ public sealed partial class TeleframeComponent : Component
     public float TeleportRadius = 1.5f;
 
     /// <summary>
-    /// Power draw when actively charging/recharging
-    /// </summary>
-    [DataField]
-    public int PowerUseActive = 10000;
-
-    /// <summary>
-    /// Power draw when idle
-    /// </summary>
-    [DataField]
-    public int PowerUseIdle = 1000;
-
-    /// <summary>
     /// score that must be met or exceeded for the teleframe to explode due to a random incident, incidentMult*(1d100/100)
     /// avoid setting below 1.
     /// </summary>

@@ -1,6 +1,5 @@
 using Content.Server.Administration.Logs;
 using Content.Server.Power.Components;
-using Content.Server.Power.EntitySystems;
 using Content.Shared.Telescience;
 using Content.Shared.Telescience.Events;
 using Content.Shared.Telescience.Systems;
@@ -28,10 +27,6 @@ public sealed partial class TeleframeSystem : SharedTeleframeSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<TeleframeComponent, PowerConsumerReceivedChanged>(ReceivedChanged);
-        SubscribeLocalEvent<TeleframeComponent, AnchorStateChangedEvent>(OnAnchorStateChanged);
-        SubscribeLocalEvent<TeleframeComponent, ComponentStartup>(OnStartup);
 
         SubscribeLocalEvent<TeleframeChargingComponent, ComponentStartup>(OnChargeStart);
         SubscribeLocalEvent<TeleframeRechargingComponent, ComponentRemove>(OnRechargeEnd);
@@ -70,18 +65,18 @@ public sealed partial class TeleframeSystem : SharedTeleframeSystem
     /// </summary>
     private void OnChargeStart(Entity<TeleframeChargingComponent> ent, ref ComponentStartup args)
     {
-        if (!TryComp<TeleframeComponent>(ent, out var teleComp)) //when charging starts, update appearance to charge animation
-            return;
-
-        UpdateAppearance((ent.Owner, teleComp));
-        if (TryComp<PowerConsumerComponent>(ent, out var powerConsumer))
-            powerConsumer.DrawRate = teleComp.PowerUseActive; // set to high power draw, it actually takes a while to build up due to high demand so this preps for recharge
+        if (TryComp<TeleframeComponent>(ent, out var teleComp)) //when charging starts, update appearance to charge animation
+            UpdateAppearance((ent.Owner, teleComp));
     }
 
     private void OnRechargeEnd(Entity<TeleframeRechargingComponent> ent, ref ComponentRemove args)
     {
-        if (TryComp<TeleframeComponent>(ent, out var teleComp)) //when recharging ends, update appearance to on animation
-            UpdateAppearance((ent.Owner, teleComp));            //recharge component isn't removed if teleframe is depowered
+        if (!TryComp<TeleframeComponent>(ent, out var teleComp)) //when recharging ends, update appearance to on animation
+            return;
+
+        var rechargeEv = new TeleframeReadyEvent(ent.Owner); //raise event to indicate recharge complete
+        RaiseLocalEvent(ent, ref rechargeEv);
+        UpdateAppearance((ent.Owner, teleComp));            //recharge component isn't removed if teleframe is depowered
     }
 
     /// <summary>
@@ -106,7 +101,7 @@ public sealed partial class TeleframeSystem : SharedTeleframeSystem
             TeleportFail(ent, failReason); //if not, say why
 
         RemCompDeferred<TeleframeChargingComponent>(ent); //stop charging
-        if (!HasComp<TeleframeRechargingComponent>(ent)) //
+        if (!HasComp<TeleframeRechargingComponent>(ent))
         {
             var rechargeComp = AddComp<TeleframeRechargingComponent>(ent); //start recharging
             rechargeComp.Duration = ent.Comp1.RechargeDuration;
@@ -130,8 +125,8 @@ public sealed partial class TeleframeSystem : SharedTeleframeSystem
         }
 
         var pos = Transform(ent).Coordinates;
-        SpawnAtPosition("EffectFlashBluespace", pos); //flash
-        SpawnAtPosition("WizardSmoke", pos); //and a pop of smoke
+        TrySpawnNextTo("EffectFlashBluespace", ent.Owner, out var flash); //flash
+        //SpawnAtPosition("WizardSmoke", pos); //and a pop of smoke
 
         var reasonWrapped = Loc.GetString("teleport-fail", ("reason", failReason));
 
@@ -153,9 +148,6 @@ public sealed partial class TeleframeSystem : SharedTeleframeSystem
             }
         }
         RemCompDeferred<TeleframeRechargingComponent>(ent);
-        if (TryComp<PowerConsumerComponent>(ent, out var powerConsumer))
-            powerConsumer.DrawRate = ent.Comp.PowerUseIdle; // recharge end so idle power
-
         UpdateAppearance(ent);
     }
 
@@ -213,8 +205,6 @@ public sealed partial class TeleframeSystem : SharedTeleframeSystem
                 throw new NotImplementedException();
         }
 
-        //add power draw here
-        //add teleportbegin event here?
         ent.Comp.ReadyToTeleport = false;
         var chargeComp = AddComp<TeleframeChargingComponent>(ent);
         chargeComp.Duration = ent.Comp.ChargeDuration;
@@ -268,7 +258,10 @@ public sealed partial class TeleframeSystem : SharedTeleframeSystem
 
             _transform.SetWorldPosition(tp, scatterpos); //set final position after scatter
 
-            var frameEv = new TeleframeTeleportedEvent(tp, tpToCoords, tpFromCoords); //raise teleport event on teleported entity
+            var tpEv = new TeleframeUserTeleportedEvent(ent.Owner, tpToCoords, tpFromCoords); //raise teleport event on teleported entity so it knows it was just teleported
+            RaiseLocalEvent(tp, ref tpEv);
+
+            var frameEv = new TeleframeTeleportedEvent(tp, tpToCoords, tpFromCoords); //raise teleport event on teleframe so it knows what it just teleported
             RaiseLocalEvent(ent.Owner, ref frameEv);
 
             teleported.Add(tp);
@@ -299,62 +292,22 @@ public sealed partial class TeleframeSystem : SharedTeleframeSystem
     }
 
     /// <summary>
-    /// checks power situation when spawned
-    /// </summary>
-    private void OnStartup(Entity<TeleframeComponent> ent, ref ComponentStartup args)
-    {
-        if (!TryComp<PowerConsumerComponent>(ent, out var powerConsume))
-            return;
-
-        if (powerConsume.ReceivedPower < powerConsume.DrawRate)
-            PowerOff(ent);
-        else
-            PowerOn(ent);
-    }
-
-    /// <summary>
-    /// Checks power situation if received amount changes
-    /// </summary>
-    private void ReceivedChanged(Entity<TeleframeComponent> ent, ref PowerConsumerReceivedChanged args)
-    {
-        if (Math.Ceiling(args.ReceivedPower) < Math.Floor(args.DrawRate)) //floating point errors at large values
-        {
-            if (TryComp<TeleframeRechargingComponent>(ent, out var rechargeComp) && args.ReceivedPower > 0) //if recharging and there is some power, don't turn off, just wait.
-            {
-                rechargeComp.Pause = true;
-                rechargeComp.PauseTime = rechargeComp.EndTime - Timing.CurTime;
-                Dirty(ent.Owner, rechargeComp);
-            }
-            else
-            {
-                if (args.ReceivedPower <= 0)
-                    PowerOff(ent);
-            }
-        }
-        else
-        {
-            PowerOn(ent);
-        }
-    }
-
-    /// <summary>
-    /// turn off teleframe, interrupt charge and fail it, and pause recharge if it wasn't caught before now
+    /// turn off teleframe, interrupt charge and fail it, pause recharge and update its pause time
     /// </summary>
     private void PowerOff(Entity<TeleframeComponent> ent)
     {
         ent.Comp.IsPowered = false;
-        if (TryComp<PowerConsumerComponent>(ent, out var powerConsumer))
-            powerConsumer.DrawRate = 1; //draw rate is 1 rather than 0 as this means when power is applied a PowerConsumerRecievedChanged event fires to update power again.
 
-        if (TryComp<TeleframeChargingComponent>(ent, out var chargeComp))
-        {
+        if (TryComp<TeleframeChargingComponent>(ent, out var chargeComp)) // power off during charge is a failed teleport, so prepare for fail
+        {   //we can't punish non brownout powerloss as power increase isn't instant
             chargeComp.TeleportSuccess = false;
             chargeComp.FailReason = Loc.GetString("teleport-fail-power");
             EndTeleportCharge((ent.Owner, ent.Comp, chargeComp));
             Dirty(ent.Owner, chargeComp);
+            return; //EndTeleportCharge already updates appearance
         }
 
-        if (TryComp<TeleframeRechargingComponent>(ent, out var rechargeComp))
+        if (TryComp<TeleframeRechargingComponent>(ent, out var rechargeComp)) //pause recharge and update its pause time
         {
             rechargeComp.Pause = true;
             rechargeComp.PauseTime = rechargeComp.EndTime - Timing.CurTime;
@@ -371,39 +324,26 @@ public sealed partial class TeleframeSystem : SharedTeleframeSystem
     private void PowerOn(Entity<TeleframeComponent> ent)
     {
         ent.Comp.IsPowered = true;
-        if (HasComp<TeleframeChargingComponent>(ent))
+
+        if (HasComp<TeleframeChargingComponent>(ent)) //full power while charging? All good so just end here.
             return;
 
-        if (TryComp<TeleframeRechargingComponent>(ent, out var rechargeComp))
+        if (TryComp<TeleframeRechargingComponent>(ent, out var rechargeComp)) //full power while recharging? Enable if we were previously recharging
         {
-            if (rechargeComp.Pause == true)
+            if (rechargeComp.Pause == true) //if we were paused, restart charging process by adding on pause time to get a new end time for recharge completion
             {
                 rechargeComp.Pause = false;
                 rechargeComp.EndTime = Timing.CurTime + rechargeComp.PauseTime;
                 rechargeComp.PauseTime = TimeSpan.FromSeconds(0);
-                if (TryComp<PowerConsumerComponent>(ent, out var powerConsumer))
-                    powerConsumer.DrawRate = ent.Comp.PowerUseActive; // set to high power draw as still recharging
                 Dirty(ent.Owner, rechargeComp);
             }
-        }
-        else
-        {
-            if (TryComp<PowerConsumerComponent>(ent, out var powerConsumer))
-                powerConsumer.DrawRate = ent.Comp.PowerUseIdle; // set to active power draw
+            else //if not paused, all good so just end here.
+            {
+                return;
+            }
         }
 
         UpdateAppearance(ent);
         Dirty(ent);
-    }
-
-    /// <summary>
-    /// immediately turn off if unanchored
-    /// </summary>
-    private void OnAnchorStateChanged(Entity<TeleframeComponent> ent, ref AnchorStateChangedEvent args)
-    {
-        if (args.Anchored)
-            return;
-
-        PowerOff(ent);
     }
 }

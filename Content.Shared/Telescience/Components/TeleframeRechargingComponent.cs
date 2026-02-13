@@ -7,14 +7,7 @@ namespace Content.Shared.Telescience.Components;
 /// Tracker for a recharging Teleframe
 /// <seealso cref="TeleframeComponent"/>
 /// </summary>
-/// <remarks>
-/// Gee Bill! How come you get TWO charging-related components?
-/// Well Bob the two need differentiating as a finished charge results in teleportation whereas a finished recharge just results in re-activiation!
-/// Well Bill couldn't you just do that inside the TeleframeComponent itself and have two seperate variables to keep track of the two times?
-/// I sure could Bob but we here use !ENTITY COMPONENT SYSTEM! and having events tied to the creation and destruction of components lets us keep our code nice and organised!
-/// You're making that up as you go Bill and I know it! This is just ActiveMaterialReclaimerComponent but with the specificity sanded off!
-/// Sure is Bob!
-/// </remarks>
+
 [RegisterComponent, NetworkedComponent, AutoGenerateComponentState(true), AutoGenerateComponentPause]
 public sealed partial class TeleframeRechargingComponent : Component
 {
@@ -36,6 +29,10 @@ public sealed partial class TeleframeRechargingComponent : Component
     /// </summary>
     [DataField, AutoNetworkedField]
     public bool Pause = false;
+
+    /// <summary>
+    /// Time that still needs to count down after pause ends
+    /// </summary>
 
     [DataField, AutoNetworkedField]
     public TimeSpan PauseTime;
