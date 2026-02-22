@@ -3,16 +3,6 @@ using Robust.Shared.Map;
 
 
 namespace Content.Shared.Telescience.Events;
-///<summary>
-///Event raised on the teleframe and any upgrade modules it has just before teleportation occurs
-/// </summary>
-[ByRefEvent]
-public struct TeleframeCanTeleportEvent(EntityUid teleframe, MapCoordinates target)
-{
-    public readonly EntityUid Teleframe = teleframe;
-    public readonly MapCoordinates Target = target;
-    public bool Cancelled = false;
-}
 
 [ByRefEvent]
 public readonly record struct TeleframeConsoleToFrameRelayEvent<T>(Entity<TeleframeConsoleComponent> Console, T Args);
@@ -20,8 +10,19 @@ public readonly record struct TeleframeConsoleToFrameRelayEvent<T>(Entity<Telefr
 [ByRefEvent]
 public readonly record struct TeleframeToConsoleRelayEvent<T>(Entity<TeleframeComponent> Frame, T Args);
 
+///<summary>
+///Event raised on the teleframe and any upgrade modules it begins charging
+/// </summary>
+[ByRefEvent]
+public struct TeleframeStartChargeEvent(EntityUid teleframe, MapCoordinates target)
+{
+    public readonly EntityUid Teleframe = teleframe;
+    public readonly MapCoordinates Target = target;
+    public bool Cancelled = false;
+}
+
 /// <summary>
-///Event raised on the teleframe when failing to teleport
+///Event raised on the teleframe when teleportation fails
 /// </summary>
 [ByRefEvent]
 public readonly record struct TeleframeTeleportFailedEvent(string Reason);
@@ -45,13 +46,13 @@ public record struct TeleframeUserIncidentEvent(float Score, float IncidentMult)
 public readonly record struct TeleframeTeleportedEvent(EntityUid Teleported, MapCoordinates To, MapCoordinates From);
 
 /// <summary>
-/// Event raised on the teleframe just it has finished teleporting everything it can
+/// Event raised on the teleframe just after it has finished teleporting everything it can
 /// </summary>
 [ByRefEvent]
 public readonly record struct TeleframeTeleportedAllEvent(List<EntityUid> Teleported, MapCoordinates To, MapCoordinates From);
 
 /// <summary>
-///Event raised just after on the user of a teleframe just after teleportation
+///Event raised just after the user of a teleframe has teleported
 /// </summary>
 [ByRefEvent]
 public readonly record struct TeleframeUserTeleportedEvent(EntityUid Teleframe, MapCoordinates To, MapCoordinates From);
@@ -62,4 +63,14 @@ public readonly record struct TeleframeUserTeleportedEvent(EntityUid Teleframe, 
 [ByRefEvent]
 public readonly record struct TeleframeReadyEvent(EntityUid Teleframe);
 
+/// <summary>
+/// Event confirming charging has begun and that the charging component is present
+/// </summary>
+[ByRefEvent]
+public readonly record struct ChargingEvent();
 
+/// <summary>
+/// Event confirming recharging has begun and that the recharging component is present
+/// </summary>
+[ByRefEvent]
+public readonly record struct RechargingEvent();

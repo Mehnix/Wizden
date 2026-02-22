@@ -156,7 +156,7 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
     }
 
     /// <summary>
-    /// update teleframe appearance between on, off, charged, and recharged
+    /// update teleframe appearance between on, off, charging, and recharging
     /// also enables/disables lights
     /// </summary>
     /// <param name="ent"></param>S

@@ -21,14 +21,14 @@ public sealed partial class TeleframeSystem : SharedTeleframeSystem
     {
         base.InitializeRadio();
 
-        SubscribeLocalEvent<TeleframeConsoleRadioComponent, TeleframeToConsoleRelayEvent<TeleframeCanTeleportEvent>>(OnRadioTeleported);
+        SubscribeLocalEvent<TeleframeConsoleRadioComponent, TeleframeToConsoleRelayEvent<TeleframeStartChargeEvent>>(OnRadioTeleported);
     }
 
     // in server as nav beacons arent in shared, no idea why as it uses nothing from the server
     /// <summary>
     /// Prepare to send teleport initiation message, gets target and constructs message around its location
     /// </summary>
-    private void OnRadioTeleported(Entity<TeleframeConsoleRadioComponent> ent, ref TeleframeToConsoleRelayEvent<TeleframeCanTeleportEvent> args)
+    private void OnRadioTeleported(Entity<TeleframeConsoleRadioComponent> ent, ref TeleframeToConsoleRelayEvent<TeleframeStartChargeEvent> args)
     {
         if (args.Frame.Comp.ActiveTeleportInfo is not { } teleInfo)
             return;

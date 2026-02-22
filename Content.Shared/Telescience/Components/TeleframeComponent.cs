@@ -97,6 +97,9 @@ public sealed partial class TeleframeComponent : Component
     public TeleframeActiveTeleportInfo? ActiveTeleportInfo;
 }
 
+[Serializable, NetSerializable]
+public readonly record struct TeleframeActiveTeleportInfo(TeleframeActivationMode Mode, NetEntity To, NetEntity From);
+
 [NetSerializable, Serializable]
 public enum TeleframeVisuals : byte
 {

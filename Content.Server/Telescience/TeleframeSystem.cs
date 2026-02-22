@@ -29,6 +29,7 @@ public sealed partial class TeleframeSystem : SharedTeleframeSystem
         base.Initialize();
 
         SubscribeLocalEvent<TeleframeChargingComponent, ComponentStartup>(OnChargeStart);
+        SubscribeLocalEvent<TeleframeRechargingComponent, ComponentStartup>(OnRechargeStart);
         SubscribeLocalEvent<TeleframeRechargingComponent, ComponentRemove>(OnRechargeEnd);
     }
 
@@ -65,8 +66,28 @@ public sealed partial class TeleframeSystem : SharedTeleframeSystem
     /// </summary>
     private void OnChargeStart(Entity<TeleframeChargingComponent> ent, ref ComponentStartup args)
     {
-        if (TryComp<TeleframeComponent>(ent, out var teleComp)) //when charging starts, update appearance to charge animation
-            UpdateAppearance((ent.Owner, teleComp));
+        if (!TryComp<TeleframeComponent>(ent, out var teleComp)) //when charging starts, update appearance to charge animation
+            return;
+
+        ent.Comp.Duration = teleComp.ChargeDuration;
+        ent.Comp.EndTime = teleComp.ChargeDuration + Timing.CurTime;
+
+        var chargingEv = new ChargingEvent(); //raise event to indicate charging starting successfully
+        RaiseLocalEvent(ent, ref chargingEv);
+        UpdateAppearance((ent.Owner, teleComp));
+    }
+
+    private void OnRechargeStart(Entity<TeleframeRechargingComponent> ent, ref ComponentStartup args)
+    {
+        if (!TryComp<TeleframeComponent>(ent, out var teleComp)) //when charging starts, update appearance to charge animation
+            return;
+
+        ent.Comp.Duration = teleComp.RechargeDuration;
+        ent.Comp.EndTime = teleComp.RechargeDuration + Timing.CurTime;
+
+        var rechargingEv = new RechargingEvent(); //raise event to indicate recharging starting successfully
+        RaiseLocalEvent(ent, ref rechargingEv);
+        UpdateAppearance((ent.Owner, teleComp));
     }
 
     private void OnRechargeEnd(Entity<TeleframeRechargingComponent> ent, ref ComponentRemove args)
@@ -104,8 +125,6 @@ public sealed partial class TeleframeSystem : SharedTeleframeSystem
         if (!HasComp<TeleframeRechargingComponent>(ent))
         {
             var rechargeComp = AddComp<TeleframeRechargingComponent>(ent); //start recharging
-            rechargeComp.Duration = ent.Comp1.RechargeDuration;
-            rechargeComp.EndTime = ent.Comp1.RechargeDuration + Timing.CurTime;
             Dirty(ent, rechargeComp);
         }
 
@@ -207,10 +226,8 @@ public sealed partial class TeleframeSystem : SharedTeleframeSystem
 
         ent.Comp.ReadyToTeleport = false;
         var chargeComp = AddComp<TeleframeChargingComponent>(ent);
-        chargeComp.Duration = ent.Comp.ChargeDuration;
-        chargeComp.EndTime = ent.Comp.ChargeDuration + Timing.CurTime;
 
-        var ev = new TeleframeCanTeleportEvent(ent, target);
+        var ev = new TeleframeStartChargeEvent(ent, target);
         RaiseLocalEvent(ent, ref ev);
 
         Dirty(ent, chargeComp);
@@ -307,7 +324,7 @@ public sealed partial class TeleframeSystem : SharedTeleframeSystem
             return; //EndTeleportCharge already updates appearance
         }
 
-        if (TryComp<TeleframeRechargingComponent>(ent, out var rechargeComp)) //pause recharge and update its pause time
+        if (TryComp<TeleframeRechargingComponent>(ent, out var rechargeComp) && rechargeComp.Pause == false) //pause recharge and update its pause time
         {
             rechargeComp.Pause = true;
             rechargeComp.PauseTime = rechargeComp.EndTime - Timing.CurTime;

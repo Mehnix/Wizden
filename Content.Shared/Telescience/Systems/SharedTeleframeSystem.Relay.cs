@@ -7,7 +7,7 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
 {
     protected virtual void InitializeRelay()
     {
-        SubscribeLocalEvent<TeleframeComponent, TeleframeCanTeleportEvent>(RelayToConsole);
+        SubscribeLocalEvent<TeleframeComponent, TeleframeStartChargeEvent>(RelayToConsole);
         SubscribeLocalEvent<TeleframeComponent, TeleframeTeleportFailedEvent>(RelayToConsole);
     }
 

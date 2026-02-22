@@ -13,6 +13,9 @@
       range: 20000 #can't link across different maps but should be able to function once set up?
       ports:
         - TeleportBeaconSender
+    - type: GuideHelp
+      guides:
+      - Telescience
 
 - type: entity
   id: TeleportBeacon
@@ -43,7 +46,7 @@
       drawdepth: SmallObjects
       noRot: true
       layers:
-        - state: icon_anchored
+        - state: icon
           map: [ "anchorLayer" ]
 
 - type: entity
@@ -55,6 +58,10 @@
   components:
   - type: Transform
     anchored: true
+  - type: Sprite
+    layers:
+      - state: icon_anchored
+        map: [ "anchorLayer" ]
 
 - type: entity
   name: handheld teleframe console
