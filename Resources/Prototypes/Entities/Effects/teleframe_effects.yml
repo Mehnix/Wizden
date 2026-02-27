@@ -119,20 +119,21 @@
     location: Teleportation Warp Point
     follow: true
   - type: EmitSoundOnSpawn
+    positional: true
     sound:
-      path: /Audio/Effects/Grenades/Supermatter/whitehole_start.ogg
+      path: /Audio/Effects/Grenades/Supermatter/supermatter_end.ogg
       volume: -5
-      range: 2
+      range: 4
   - type: EmitSoundOnTrigger #send trigger event to delete with sound
     positional: true
     sound:
       path: /Audio/Effects/Grenades/Supermatter/supermatter_end.ogg
-      volume: -3
+      volume: -5
       range: 4
   - type: AmbientSound
     enabled: true
-    volume: -5
-    range: 4
+    volume: -3
+    range: 5
     sound:
       path: /Audio/Effects/Grenades/Supermatter/whitehole_loop.ogg
   - type: GravityWell
@@ -146,9 +147,9 @@
   - type: PointLight
     enabled: true
     color: "#a05555"
-    energy: 1
-    radius: 1
-    softness: 1
+    energy: 2
+    radius: 2
+    softness: 2
     offset: "0, 0"
 
 - type: entity
@@ -159,20 +160,21 @@
   categories: [ HideSpawnMenu ]
   components:
     - type: EmitSoundOnSpawn
+      positional: true
       sound:
-        path: /Audio/Effects/Grenades/Supermatter/supermatter_start.ogg
-        volume: -5
-        range: 2
+        path: /Audio/Effects/Grenades/Supermatter/supermatter_end.ogg
+        volume: -5 #the volume of this doesn't work >:(((((((((((((
+        range: 5
     - type: EmitSoundOnTrigger #send trigger event to delete with sound
       positional: true
       sound:
         path: /Audio/Effects/Grenades/Supermatter/supermatter_end.ogg
-        volume: -3
-        range: 4
+        volume: -5
+        range: 5
     - type: AmbientSound
       enabled: true
-      volume: -5
-      range: 4
+      volume: -3
+      range: 5
       sound:
         path: /Audio/Effects/Grenades/Supermatter/supermatter_loop.ogg
     - type: GravityWell
@@ -187,8 +189,8 @@
     - type: PointLight
       enabled: true
       color: "#a05555"
-      energy: 1
-      radius: 1
-      softness: 1
+      energy: 2
+      radius: 2
+      softness: 2
       offset: "0, 0"
 

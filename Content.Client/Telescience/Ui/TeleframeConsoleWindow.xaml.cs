@@ -11,7 +11,6 @@ using Robust.Client.Graphics;
 using Robust.Client.Player;
 using Robust.Shared.Map;
 using Robust.Shared.Timing;
-using Content.Shared.IdentityManagement;
 
 namespace Content.Client.Telescience.Ui;
 
@@ -77,12 +76,18 @@ public sealed partial class TeleframeConsoleWindow : FancyWindow
 
         bool coordsValid;
 
+        var logMan = IoCManager.Resolve<ILogManager>();
+        var log = logMan.RootSawmill;
+
         _currentBeacon = null; //if typing in text, invalidate beacon teleport
         var message = Loc.GetString("teleporter-summary-insufficient");
-        if (ent.Comp1.MaxRange == null || coords.LengthSquared < ent.Comp1.MaxRange * ent.Comp1.MaxRange) //range from console rather than teleporter because it's simpler to code.
-        {
+        var coordsLength = Math.Pow(Math.Pow(coords.X, 2) + Math.Pow(coords.Y, 2), 0.5); //Vector 2i .Length overflows at high values
+        log.Debug($"{ent.Comp1.MaxRange} {coordsLength} {_transform.GetMapCoordinates(ent).Position.Length()}");
+
+        if (ent.Comp1.MaxRange == null || coordsLength < ent.Comp1.MaxRange + _transform.GetMapCoordinates(ent).Position.Length())
+        { //sanity check distance of teleport from teleframe console. This is mostly just to stop stupidly high teleports to millions of tiles out and shouldn't effect normal gameplay
             coordsValid = true;
-        }
+        } //the system has a seperate check later that prevents you teleporting to empty space, so no blind teleports to say, get rid of a body.
         else
         {
             message = Loc.GetString("teleporter-summary-bigrange", ("range", ent.Comp1.MaxRange));
@@ -102,6 +107,10 @@ public sealed partial class TeleframeConsoleWindow : FancyWindow
         TeleportCheck(ent, coordsValid, message);
     }
 
+    /// <summary>
+    /// Switch to beacon mode if a beacon is clicked on in the UI, and set teleport target to its coordinates
+    /// </summary>
+    /// <param name="beacon">clicked beacon</param>
     private void OnBeaconClicked(TeleportPoint beacon)
     {
         _currentCoords = null;
@@ -109,25 +118,18 @@ public sealed partial class TeleframeConsoleWindow : FancyWindow
         TeleportCheck(_console!.Value, true, Loc.GetString("teleporter-summary-beacon", ("beacon", beacon.Location)));
     }
 
+    /// <summary>
+    /// Send the teleport message to initiate teleportation
+    /// </summary>
+    /// <param name="mode"></param>
     private void SendActivateMessage(TeleframeActivationMode mode)
     {
-        //check accesses
-        if (_user == null || _console == null) //check player and console are not null
-            return;
-
-        if (!_accessReaderSystem.IsAllowed(_user.Value, _console.Value)) //check player has the right access
-        {
-            _popupSystem.PopupClient(Loc.GetString("teleport-console-access-denied"), Identity.Entity(_console.Value, _entMan, _user.Value), Identity.Entity(_user.Value, _entMan, _user.Value));
-            return; //if not tell them
-        }
-
         TeleframeActivateMessage msg;
 
-        //for beacons, have an if that is true if beacon is selected and false if not. If true, use a separate activate message.
-        if (_currentCoords is { } coords)
-            msg = new TeleframeActivateMessage(new MapCoordinates(coords.X, coords.Y, _coords!.Value.MapId), Loc.GetString("teleporter-target-custom"), mode);
-        else if (_currentBeacon is { } beacon)
-            msg = new TeleframeActivateMessage(_transform.GetMapCoordinates(_entMan.GetEntity(beacon.TelePoint)), beacon.Location, mode, true);
+        if (_currentCoords is { } coords) //if we used coordinates, collate the X/Y Map coordinates and go somewhere on the current map
+            msg = new TeleframeActivateMessage(new MapCoordinates(coords.X, coords.Y, _coords!.Value.MapId), Loc.GetString("teleporter-target-custom"), mode, NetEntity.Invalid);
+        else if (_currentBeacon is { } beacon) //if we used beacons, get the map coordinates of the beacon, its name, and attach the entity itself for easier predictive teleportation
+            msg = new TeleframeActivateMessage(_transform.GetMapCoordinates(_entMan.GetEntity(beacon.TelePoint)), beacon.Location, mode, beacon.TelePoint);
         else
             return;
 
@@ -135,7 +137,11 @@ public sealed partial class TeleframeConsoleWindow : FancyWindow
         TeleportCheck(_console!.Value, false, Loc.GetString("teleporter-summary-notready"));
     }
 
-    //get valid beacons only, also make sure beacons exist!
+    /// <summary>
+    /// Get valid beacons only, also make sure beacons exist!
+    /// </summary>
+    /// <param name="totalList"></param>
+    /// <returns></returns>
     private IEnumerable<TeleportPoint> GetValidBeacons(IEnumerable<TeleportPoint> totalList)
     {
         foreach (var beacon in totalList)
@@ -151,18 +157,22 @@ public sealed partial class TeleframeConsoleWindow : FancyWindow
         }
     }
 
-    private string GetChargeState(EntityUid uid, TeleframeComponent tpComp)
+    /// <summary>
+    /// Get teleframe charge state for UI
+    /// </summary>
+    /// <returns>string station what that charge state is</returns>
+    private string GetChargeState(Entity<TeleframeComponent> ent)
     {
-        if (tpComp.IsPowered == false)
+        if (ent.Comp.IsPowered == false)
             return Loc.GetString("teleporter-unpowered");
 
-        if (_entMan.TryGetComponent<TeleframeChargingComponent>(uid, out var charge))
+        if (_entMan.TryGetComponent<TeleframeChargingComponent>(ent.Owner, out var charge))
         {
             var timeLeft = (int)(charge.EndTime - _timing.CurTime).TotalSeconds;
             return Loc.GetString("teleporter-charging", ("time", timeLeft));
         }
 
-        if (_entMan.TryGetComponent<TeleframeRechargingComponent>(uid, out var recharge))
+        if (_entMan.TryGetComponent<TeleframeRechargingComponent>(ent.Owner, out var recharge))
         {
             if (recharge.Pause == false)
             {
@@ -178,12 +188,23 @@ public sealed partial class TeleframeConsoleWindow : FancyWindow
         return Loc.GetString("teleporter-active");
     }
 
-    //check if teleportation console and linked teleframe are valid
-    //return true if they are (doesn't mean teleportation is possible)
-    //check should be performed any time teleportation possibility changes
-    //check should be performed consistently outside this too, not sure how to do that, could just add a refresh button.
+
+    /// <summary>
+    /// check if teleportation console and linked teleframe are valid
+    /// return true if they are (doesn't mean teleportation is possible)
+    /// check should be performed any time teleportation possibility changes
+    /// check should be performed consistently outside this too, not sure how to do that, could just add a refresh button.
+    /// </summary>
+    /// <param name="ent"></param>
+    /// <param name="buttons">Default button state if checks succeed</param>
+    /// <param name="message">Default message to send if checks succeed</param>
+    /// <param name="change">did anything change, this function gets called for draw checks too</param>
+    /// <returns>whether teleframe check finished in an expected manner</returns>
     private bool TeleportCheck(Entity<TeleframeConsoleComponent> ent, bool buttons, string? message, bool change = true)
     {
+        if (_user == null || _console == null) //check player and console are not null
+            return false;
+
         if (_knownBeacons == null || !Equals(_knownBeacons, ent.Comp.BeaconList))
         {
             _knownBeacons = ent.Comp.BeaconList;
@@ -197,7 +218,7 @@ public sealed partial class TeleframeConsoleWindow : FancyWindow
             if (!_entMan.TryGetComponent<TeleframeComponent>(linked, out var tpComp))
                 return false;
 
-            SetLinkName(Loc.GetString("teleporter-linked-to", ("name", meta.EntityName), ("state", GetChargeState(linked, tpComp)))); //kind of want a sprite here as well
+            SetLinkName(Loc.GetString("teleporter-linked-to", ("name", meta.EntityName), ("state", GetChargeState((linked, tpComp))))); //kind of want a sprite here as well
 
             if (!tpComp.IsPowered || !tpComp.ReadyToTeleport)
             {
@@ -214,6 +235,13 @@ public sealed partial class TeleframeConsoleWindow : FancyWindow
             return true;
         }
 
+        if (!_accessReaderSystem.IsAllowed(_user.Value, _console.Value)) //check player has the right access
+        {
+            UpdateTeleportButtons(false);
+            UpdateTeleportSummary(Loc.GetString("teleport-console-access-denied"));
+            return true;
+        }
+
         if (change) //change for specific updates but not for continuous draw checks
         {
             UpdateTeleportButtons(buttons);
@@ -225,6 +253,10 @@ public sealed partial class TeleframeConsoleWindow : FancyWindow
         return true;
     }
 
+    /// <summary>
+    /// Populate teleport beacon list
+    /// </summary>
+    /// <param name="beacons"></param>
     private void AddBeaconButtons(IEnumerable<TeleportPoint> beacons)
     {
         BeaconButtonContainer.RemoveAllChildren();
@@ -237,16 +269,28 @@ public sealed partial class TeleframeConsoleWindow : FancyWindow
         }
     }
 
+    /// <summary>
+    /// Populate name of teleframe the console is linked to, or say "None" if not linked
+    /// </summary>
+    /// <param name="link"></param>
     private void SetLinkName(string link)
     {
         LinkLabel.Text = link;
     }
 
+    /// <summary>
+    /// Update text describing current teleframe possibility, or reason if not possible
+    /// </summary>
+    /// <param name="summary"></param>
     private void UpdateTeleportSummary(string summary)
     {
         SummaryLabel.Text = summary;
     }
 
+    /// <summary>
+    /// Update Send and Receive buttons depending on whether teleportation is possible
+    /// </summary>
+    /// <param name="valid">true if possible, false if not</param>
     private void UpdateTeleportButtons(bool valid)
     {
         SendToButton.Disabled = !valid;

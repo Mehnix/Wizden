@@ -62,19 +62,8 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
         if (!teleComp.IsPowered || !teleComp.ReadyToTeleport)
             return; //if the teleframe isn't powered or ready, return
 
-        var consoleCoords = Transform(ent).Coordinates;
-
-        // this should not be blindly trusting the client
-        // TODO: proper validation of input
-        if (!args.RangeBypass && ent.Comp.MaxRange is { } maxRange)
-        {
-            if (args.Coords.MapId != _transform.GetMapId(consoleCoords))
-                return;
-
-            var adjustedPos = args.Coords.Offset(consoleCoords.Position);
-            if (adjustedPos.Position.LengthSquared() > maxRange * maxRange)
-                return;
-        }
+        if (ent.Comp.MaxRange != null && args.Coords.Position.Length() > ent.Comp.MaxRange + _transform.GetMapCoordinates(ent).Position.Length())
+            return; //if the teleframe's target is outside the maximum range, return
 
         if (!StartTeleport((teleEnt, teleComp), args.Mode, args.Coords))
             return;

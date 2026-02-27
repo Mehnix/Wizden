@@ -16,12 +16,6 @@ public sealed partial class TeleframeConsoleComponent : Component
     [DataField, AutoNetworkedField, ViewVariables]
     public EntityUid? LinkedTeleframe;
 
-    /// <summary>
-    /// largest coordinate value allowed for teleporting.
-    /// </summary>
-    [DataField]
-    public int? MaxRange = null;
-
     [DataField]
     public SoundSpecifier? TeleportRechargedSound = new SoundPathSpecifier("/Audio/Machines/scan_finish.ogg", AudioParams.Default.WithVolume(-4f));
 
@@ -31,6 +25,15 @@ public sealed partial class TeleframeConsoleComponent : Component
     [DataField]
     public ProtoId<SourcePortPrototype> LinkingPort = "TeleportSender";
 
+    /// <summary>
+    /// List of all linked teleport beacons
+    /// </summary>
     [DataField, ViewVariables, AutoNetworkedField]
     public HashSet<TeleportPoint> BeaconList = new(); //times switching between TeleportPoint and NetCoordinates: 4
+
+    /// <summary>
+    /// Coordinate teleportation range limiter. If no limit is set the hard maximum will be the integer limit which works just fine
+    /// </summary>
+    [DataField, AutoNetworkedField, ViewVariables]
+    public int? MaxRange = 1000000;
 }

@@ -28,6 +28,7 @@
     - state: offline
     - state: idle
       map: ["TeleframeVisualState"]
+      shader: unshaded
   - type: GenericVisualizer
     visuals:
       enum.TeleframeVisuals.VisualState:
@@ -54,7 +55,7 @@
       - TeslaEnergyBall
       - NoFTL
       tags:
-      - TeleportImmune
+      - TeleportImmune #not great, won't work if you hide the entity in a container.
       - Diagonal
       - Wall
       - Window
@@ -72,17 +73,17 @@
     damageContainer: StructuralInorganic
     damageModifierSet: StructuralMetallicStrong
   - type: CollideOnAnchor
-  - type: PowerConsumer #set power draw in teleport component, add/remove when teleporter powers on/off. See EmitterSystem for example.
-    voltage: High
+  - type: PowerConsumer #set power draw in TeleframeStructurePower component. See EmitterSystem for example.
+    voltage: Medium
   - type: NodeContainer
     examinable: true
     nodes:
       input:
         !type:CableDeviceNode
-        nodeGroupID: HVPower
+        nodeGroupID: MVPower
   - type: PointLight
-    radius: 1
-    energy: 1.5
+    radius: 2
+    energy: 2.5
     color: "#00fff2"
   - type: TeleframeStructurePower
 
@@ -111,19 +112,19 @@
   id: TeleframeSyndicate
   parent: [BaseTeleframeStructure, BaseTeleportBeacon]
   name: cybersun TP-X covert teleframe core
-  description: A modification of stolen Nanotrasen blueprints, used in covert infiltration. Often outfitted with advanced upgrades.
+  description: A modification of stolen Nanotrasen blueprints to prioritise reliability and power efficiency for covert infiltration. Often outfitted with advanced upgrades.
   components:
   - type: Teleframe
     teleportBeginEffect: EffectGravityPulse
     chargeDuration: 5
-    rechargeDuration: 10
+    rechargeDuration: 30
     teleportScatterRange: 0.5
     teleportModeEffects:
       Send: TeleportFromEffectQuiet
       Receive: TeleportToEffectQuiet
     explosionScore: 2.4 #if Emagged 20% explosion chance per use
   - type: TeleframeIncidentLiable
-    incidentChance: 0.10
+    incidentChance: 0.05
     incidentMultiplier: 0.50
   - type: TeleframeStructurePower
     powerUseActive: 5000
@@ -141,13 +142,13 @@
     color: "#9c0000"
 
 - type: entity
-  id: TeleporterCC
+  id: TeleframeCC
   parent: [BaseTeleframeStructure, BaseTeleportBeacon]
   name: central command hyperframe core
   description: A precise tool for the uppermost echelons of Central Command, allowing for rapid deployment and extraction of critical assets. Unfathomably Expensive.
   components:
   - type: Teleframe
-    chargeDuration: 0.15
+    chargeDuration: 5
     rechargeDuration: 1
     teleportScatterRange: 0.25
     teleportRange: 0.45
@@ -166,8 +167,8 @@
       shader: unshaded
 
 - type: entity
-  id: TeleporterMoff
-  parent: TeleporterCC
+  id: TeleframeMoff
+  parent: TeleframeCC
   name: mothroachframe
   suffix: Admeme
   description: This is beyond science.

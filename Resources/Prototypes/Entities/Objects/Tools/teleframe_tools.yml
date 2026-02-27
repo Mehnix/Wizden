@@ -94,7 +94,7 @@
   - type: DeviceNetwork
     deviceNetId: Wired
   - type: DeviceLinkSource
-    range: 20000
+    range: 10
     ports:
       - TeleportSender
       - TeleportBeaconSender
@@ -102,7 +102,7 @@
     ports:
       - TeleportBeaconReceiver
   - type: TeleframeConsole
-    maxRange: 20000
+    maxRange: 50000
     announcementChannel: Science
   - type: ActivatableUI
     key: enum.TeleframeConsoleUiKey.Key
