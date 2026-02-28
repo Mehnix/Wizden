@@ -140,3 +140,82 @@
     slots:
       cell_slot:
         name: power-cell-slot-component-slot-name-default
+
+- type: entity
+  name: bluespace depth charge
+  parent: BaseItem
+  id: TeleportCharge
+  description: A football-sized sensor device that can survive the rigors of teleportation and collect data on fractures in reality.
+               It requires someone to return it to the science department afterwards for analysis, perhaps that could be you.
+  components:
+  - type: Sprite
+    sprite: Objects/Specific/Research/teleportcharge.rsi
+    drawdepth: SmallObjects
+    noRot: true
+    layers:
+    - state: icon
+    - state: fuel
+      shader: unshaded
+      #map: [ "enum.PowerDeviceVisualLayers.Powered" ]
+  - type: Item
+    size: Normal
+    inhandVisuals:
+      left:
+      - state: inhand-left
+      right:
+      - state: inhand-right
+  - type: Appearance
+#  - type: GenericVisualizer
+#    visuals:
+#      enum.TeleChargeVisuals.State:
+#        burnLayer:
+#          True: { visible: true }
+#          False: { visible: false }
+  - type: Speech
+    speechVerb: Robotic
+  - type: Telecharge
+    announcementChannel: Science
+    whitelist:
+      components:
+      - TelescienceFracture
+
+- type: entity
+  id: RealityFracture
+  name: reality fracture
+  description: A malformed tear in the fabric in reality that failed to manifest as a true anomaly.
+              Peering beyond the veil within its presence may yield scientific insights, or madness.
+  components:
+  - type: Transform
+    anchored: True
+  - type: Physics
+    bodyType: Static
+    bodyStatus: InAir
+  - type: Fixtures
+    fixtures:
+      fix1:
+        shape:
+          !type:PhysShapeCircle
+          radius: 0.35
+        density: 50
+        mask:
+        - FlyingMobMask
+        layer:
+        - FlyingMobLayer
+  - type: InteractionOutline
+  - type: Clickable
+  - type: Damageable
+  - type: Appearance
+  - type: AnimationPlayer
+  - type: Sprite
+    sprite: Objects/Magic/Eldritch/reality_fracture.rsi
+    noRot: true
+    drawdepth: Effects
+    layers:
+    - state: icon
+  - type: PointLight
+    radius: 1.5
+    energy: 12.5
+    color: "#793a80"
+  - type: TelescienceFracture
+    minHealthRoll: 15000
+    maxHealthRoll: 30000
