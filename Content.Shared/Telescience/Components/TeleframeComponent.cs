@@ -46,6 +46,12 @@ public sealed partial class TeleframeComponent : Component
     public EntProtoId? TeleportFinishEffect = null;
 
     /// <summary>
+    /// Effect produced if the teleport fails
+    /// </summary>
+    [DataField]
+    public EntProtoId? TeleportFailEffect = null;
+
+    /// <summary>
     /// Randomness of Teleportation arrival positions entities will be placed +/- of this value from exact target
     /// </summary>
     [DataField]
@@ -84,7 +90,7 @@ public sealed partial class TeleframeComponent : Component
     /// The corresponding Teleframe Console entity this Teleframe is linked to.
     /// Can be null if not linked.
     /// </summary>
-    [DataField, ViewVariables, AutoNetworkedField]
+    [ViewVariables, AutoNetworkedField]
     public EntityUid? LinkedConsole;
 
     /// <summary>
@@ -93,6 +99,9 @@ public sealed partial class TeleframeComponent : Component
     [ViewVariables, AutoNetworkedField]
     public bool ReadyToTeleport = true;
 
+    /// <summary>
+    /// Store information regarding the current teleporation cycle, cleared after it concludes
+    /// </summary>
     [ViewVariables, AutoNetworkedField]
     public TeleframeActiveTeleportInfo? ActiveTeleportInfo;
 }

@@ -153,6 +153,5 @@ public sealed partial class TeleframeSystem : SharedTeleframeSystem
         lastRecv = newRecv;
         var msg = new PowerConsumerReceivedChanged(newRecv, ent.Comp.DrawRate);
         RaiseLocalEvent(ent, ref msg);
-        Log.Debug($"Checked {newRecv} {ent.Comp.DrawRate}");
     }
 }

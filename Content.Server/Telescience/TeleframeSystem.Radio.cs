@@ -1,12 +1,12 @@
 using Content.Shared.Chat;
-using Content.Server.Chat.Systems;
-using Content.Server.Pinpointer;
-using Content.Server.Radio.EntitySystems;
 using Content.Shared.Emag.Systems;
 using Content.Shared.IdentityManagement;
 using Content.Shared.Telescience.Components;
 using Content.Shared.Telescience.Events;
 using Content.Shared.Telescience.Systems;
+using Content.Server.Chat.Systems;
+using Content.Server.Pinpointer;
+using Content.Server.Radio.EntitySystems;
 using Robust.Shared.Utility;
 
 namespace Content.Server.Telescience;
@@ -16,6 +16,7 @@ public sealed partial class TeleframeSystem : SharedTeleframeSystem
     [Dependency] private readonly ChatSystem _chat = default!;
     [Dependency] private readonly RadioSystem _radio = default!;
     [Dependency] private readonly NavMapSystem _navMap = default!;
+    [Dependency] private readonly EmagSystem _emag = default!;
 
     protected override void InitializeRadio()
     {

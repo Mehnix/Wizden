@@ -82,7 +82,6 @@ public sealed partial class TeleframeConsoleWindow : FancyWindow
         _currentBeacon = null; //if typing in text, invalidate beacon teleport
         var message = Loc.GetString("teleporter-summary-insufficient");
         var coordsLength = Math.Pow(Math.Pow(coords.X, 2) + Math.Pow(coords.Y, 2), 0.5); //Vector 2i .Length overflows at high values
-        log.Debug($"{ent.Comp1.MaxRange} {coordsLength} {_transform.GetMapCoordinates(ent).Position.Length()}");
 
         if (ent.Comp1.MaxRange == null || coordsLength < ent.Comp1.MaxRange + _transform.GetMapCoordinates(ent).Position.Length())
         { //sanity check distance of teleport from teleframe console. This is mostly just to stop stupidly high teleports to millions of tiles out and shouldn't effect normal gameplay
