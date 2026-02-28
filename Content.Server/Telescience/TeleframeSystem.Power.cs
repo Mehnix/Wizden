@@ -1,3 +1,4 @@
+using Content.Shared.Emp;
 using Content.Shared.Telescience.Systems;
 using Content.Shared.Telescience.Components;
 using Content.Shared.Telescience.Events;
@@ -15,6 +16,7 @@ public sealed partial class TeleframeSystem : SharedTeleframeSystem
         SubscribeLocalEvent<TeleframeStructurePowerComponent, ComponentStartup>(OnStartup);
         SubscribeLocalEvent<TeleframeStructurePowerComponent, PowerConsumerReceivedChanged>(ReceivedChanged);
         SubscribeLocalEvent<TeleframeStructurePowerComponent, AnchorStateChangedEvent>(OnAnchorStateChanged);
+        SubscribeLocalEvent<TeleframeStructurePowerComponent, EmpPulseEvent>(OnEmpPulseStructure);
         SubscribeLocalEvent<TeleframeStructurePowerComponent, ChargingEvent>(OnTeleframeChargingStart);
         SubscribeLocalEvent<TeleframeStructurePowerComponent, RechargingEvent>(OnTeleframeRechargingStart);
         SubscribeLocalEvent<TeleframeStructurePowerComponent, TeleframeReadyEvent>(OnTeleframeRecharged);
@@ -101,6 +103,14 @@ public sealed partial class TeleframeSystem : SharedTeleframeSystem
         if (args.Anchored)
             return;
 
+        StructPowerOff(ent);
+    }
+
+    /// <summary>
+    /// immediately turn off if EMP'd
+    /// </summary>
+    private void OnEmpPulseStructure(Entity<TeleframeStructurePowerComponent> ent, ref EmpPulseEvent args)
+    {
         StructPowerOff(ent);
     }
 

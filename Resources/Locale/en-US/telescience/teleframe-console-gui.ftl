@@ -39,11 +39,10 @@ beacon-unlinked = Teleporter Beacon Unlinked
 
 teleport-fail = Teleport Attempt Failed, Reason: {$reason}
 teleport-fail-unknown = Unknown
-teleport-fail-nolink = Bluespace Link Damaged
-teleport-fail-EMP = Electromagnetic Interference
+teleport-fail-nolink = Bluespace Link Destabilised
 teleport-fail-power = Insufficient Charge
 teleport-fail-nogrid = Destination in Free Space
-teleport-fail-collide = Matter Collision Detected
+teleport-fail-collision = Destination in Solid Object
 teleport-fail-boom = CATASTROPHIC ERROR
 
 teleport-console-access-denied = Access Denied

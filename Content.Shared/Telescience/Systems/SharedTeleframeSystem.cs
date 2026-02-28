@@ -3,6 +3,7 @@ using Content.Shared.Database;
 using Content.Shared.DeviceLinking;
 using Content.Shared.Emag.Systems;
 using Content.Shared.Examine;
+using Content.Shared.Physics;
 using Content.Shared.Telescience.Components;
 using Content.Shared.Telescience.Ui;
 using Content.Shared.Telescience.Events;
@@ -11,6 +12,7 @@ using Content.Shared.Trigger.Components.Effects;
 using Content.Shared.Whitelist;
 using Robust.Shared.Audio.Systems;
 using Robust.Shared.GameStates;
+using Robust.Shared.Physics.Systems;
 using Robust.Shared.Player;
 using Robust.Shared.Random;
 using Robust.Shared.Timing;
@@ -32,6 +34,7 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
     [Dependency] private readonly EntityLookupSystem _lookup = default!;
     [Dependency] private readonly EntityWhitelistSystem _whitelistSystem = default!;
     [Dependency] private readonly ISharedAdminLogManager _adminLogger = default!;
+    [Dependency] private readonly SharedPhysicsSystem _physics = default!;
     private const LookupFlags RangeFlags = LookupFlags.Approximate | LookupFlags.Dynamic | LookupFlags.Sundries;
     public override void Initialize()
     {
@@ -42,6 +45,7 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
         InitializeRadio(); //The console saying things over radio, mostly server.
         InitializePower(); //turning the teleframe on and off, and TeleframeStructurePower in Server
         InitializeConsole(); //Teleframe Console specific stuff dealing with new links and PVS
+        InitializeTeleportal(); //Teleport Entity (Teleportal) effects and additional ways teleport charging can fail
 
         SubscribeLocalEvent<TeleframeComponent, MapInitEvent>(OnMapInit);
         SubscribeLocalEvent<TeleframeComponent, ExaminedEvent>(OnExamined);
@@ -111,14 +115,14 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
     /// <returns>true if succeeeding, false if failing</returns>
     private bool StartTeleport(Entity<TeleframeComponent> ent, TeleframeActivateMessage args)
     {
-        if (!Timing.IsFirstTimePredicted) //prevent it getting spammed
+        if (ent.Comp.ActiveTeleportInfo != null || ent.Comp.ReadyToTeleport != true || HasComp<TeleframeChargingComponent>(ent) || HasComp<TeleframeRechargingComponent>(ent)) //nuh uh, we recharging
             return false;
 
-        if (ent.Comp.ReadyToTeleport != true || HasComp<TeleframeChargingComponent>(ent) || HasComp<TeleframeRechargingComponent>(ent)) //nuh uh, we recharging
-            return false;
+        ent.Comp.ReadyToTeleport = false;
+        var chargeComp = AddComp<TeleframeChargingComponent>(ent);
 
-        if (ent.Comp.ActiveTeleportInfo != null)
-            return false;
+        var ev = new TeleframeStartChargeEvent(ent, args.Coords);
+        RaiseLocalEvent(ent, ref ev);
 
         var tp = Transform(ent); //get transform of the Teleframe
 
@@ -129,7 +133,7 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
         PredictedSpawnNextToOrDrop(ent.Comp.TeleportBeginEffect, sourcePortal); //flash start effect
 
         var targetPortal = EntityUid.Invalid;
-        if (GetEntity(args.TargetEnt) != EntityUid.Invalid)
+        if (GetEntity(args.TargetEnt) != EntityUid.Invalid) //if there's a known entity associated with the target, use that instead of just coordinates
             targetPortal = EntityManager.PredictedSpawnNextToOrDrop(targetEffect, GetEntity(args.TargetEnt)); //put target portal on target Coords.
         else
             targetPortal = EntityManager.PredictedSpawn(targetEffect, args.Coords); //put target portal on target Coords.
@@ -142,38 +146,41 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
             _ => throw new NotImplementedException()
         };
 
-        //prevent teleportation if receiving portal is not on a grid
         switch (args.Mode)
         {
             case TeleframeActivationMode.Send:
-                if (_transform.GetGrid(targetPortal) == null)
-                {
-                    TeleportFail(ent, Loc.GetString("teleport-fail-nogrid"));
-                    return false;
-                }
-
+                (chargeComp.TeleportSuccess, chargeComp.FailReason) = CheckTeleportal(targetPortal);
                 break;
             case TeleframeActivationMode.Receive:
-                if (_transform.GetGrid(sourcePortal) == null)
-                {
-                    TeleportFail(ent, Loc.GetString("teleport-fail-nogrid"));
-                    return false;
-                }
-
+                (chargeComp.TeleportSuccess, chargeComp.FailReason) = CheckTeleportal(sourcePortal);
                 break;
-
             default:
                 throw new NotImplementedException();
         }
 
-        ent.Comp.ReadyToTeleport = false;
-        var chargeComp = AddComp<TeleframeChargingComponent>(ent);
+        var sourceComp = EnsureComp<TeleframeTeleportalComponent>(sourcePortal); //make sure teleportal component is here to track interactions made with them
+        sourceComp.Teleframe = ent.Owner;
+        var targetComp = EnsureComp<TeleframeTeleportalComponent>(targetPortal);
+        targetComp.Teleframe = ent.Owner;
 
-        var ev = new TeleframeStartChargeEvent(ent, args.Coords);
-        RaiseLocalEvent(ent, ref ev);
 
         Dirty(ent, chargeComp);
         return true;
+    }
+    /// <summary>
+    /// Prevent teleportation if receive teleportal is not on a grid or inside a wall, send teleportal is allowed to be off grid so you can teleport from empty space but not to.
+    /// </summary>
+    /// <param name="teleportal">teleportal entity</param>
+    /// <returns></returns>
+    private (bool, string) CheckTeleportal(EntityUid teleportal)
+    {
+        if (_transform.GetGrid(teleportal) == null)
+            return (false, "teleport-fail-nogrid");
+
+        if (_physics.GetEntitiesIntersectingBody(teleportal, (int)CollisionGroup.Impassable).Count > 0)
+            return (false, "teleport-fail-collision");
+
+        return (true, "teleport-fail-unknown");
     }
 
     /// <summary>
@@ -226,27 +233,19 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
             teleported.Add(tp);
         }
 
-        var target = Transform(tpTo);
-        var from = Transform(tpFrom);
-        _adminLogger.Add(LogType.Teleport, $"{ToPrettyString(ent.Owner)} has teleported {teleported.Count} entities from {_transform.ToMapCoordinates(from.Coordinates)} to {_transform.ToMapCoordinates(target.Coordinates)}.");
+        PredictedSpawnNextToOrDrop(ent.Comp.TeleportFinishEffect, tpTo); //finish effects
+        PredictedSpawnNextToOrDrop(ent.Comp.TeleportFinishEffect, tpFrom);
 
-        var frameFinishEv = new TeleframeTeleportedAllEvent(teleported, tpToCoords, tpFromCoords);
-        RaiseLocalEvent(ent.Owner, ref frameFinishEv);
-
-        Spawn(ent.Comp.TeleportFinishEffect, tpToCoords); //finish effects
-        Spawn(ent.Comp.TeleportFinishEffect, tpFromCoords);
-
-        // TODO: whenever trigger refactor is merged make this just fire a trigger
-        // and use a ComponentRegistry
-        var trig = new TriggerEvent(tpTo);
-        EnsureComp<DeleteOnTriggerComponent>(tpTo); //if it doesn't have it for some reason now it does
+        var trig = new TriggerEvent(tpTo); //send a trigger to the teleportals in case they have any last actions
         RaiseLocalEvent(tpTo, ref trig);
-
-        EnsureComp<DeleteOnTriggerComponent>(tpFrom);
         RaiseLocalEvent(tpFrom, ref trig);
 
+        var frameFinishEv = new TeleframeTeleportedAllEvent(teleported, tpToCoords, tpFromCoords); //all done event
+        RaiseLocalEvent(ent.Owner, ref frameFinishEv);
+
         //clean up
-        ent.Comp.ActiveTeleportInfo = null;
+        _adminLogger.Add(LogType.Teleport, $"{ToPrettyString(ent.Owner)} has teleported {teleported.Count} entities from {tpTo} to {tpFrom}.");
+        TeleportCleanup(ent, null);
         Dirty(ent);
     }
 
@@ -307,12 +306,13 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
             failReason = Loc.GetString("teleport-fail-nolink");
         }
 
+        RemCompDeferred<TeleframeChargingComponent>(ent); //stop charging
+
         if (ent.Comp2.TeleportSuccess) //if teleport is still good to go, engage
             OnTeleport(ent); //teleport
         else
-            TeleportFail(ent, failReason); //if not, say why
+            TeleportCleanup(ent, failReason); //if not, say why
 
-        RemCompDeferred<TeleframeChargingComponent>(ent); //stop charging
         if (!HasComp<TeleframeRechargingComponent>(ent))
         {
             var rechargeComp = AddComp<TeleframeRechargingComponent>(ent); //start recharging
@@ -343,23 +343,27 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
     #region Teleport Fail Cleanup
 
     ///<summary>
-    /// Teleportation has failed, clean up teleportation entities
-    /// also summon some l̶i̶g̶h̶t̶n̶i̶n̶g̶ , for fun.
+    /// Teleportation has concluded, clean up teleportation entities
+    /// also if we failed raise an event and summon some l̶i̶g̶h̶t̶n̶i̶n̶g̶ , for fun.
     /// </summary>
-    protected void TeleportFail(Entity<TeleframeComponent> ent, string failReason)
+    protected void TeleportCleanup(Entity<TeleframeComponent> ent, string? failReason = null)
     {
         if (ent.Comp.ActiveTeleportInfo is { } teleInfo)
         {
             PredictedQueueDel(GetEntity(teleInfo.From));
             PredictedQueueDel(GetEntity(teleInfo.To));
         }
+        ent.Comp.ActiveTeleportInfo = null; //clean up our teleport info
 
-        PredictedSpawnNextToOrDrop(ent.Comp.TeleportFailEffect, ent.Owner); //flash
+        if (failReason != null) //fail if we have a reason for it
+        {
+            PredictedSpawnNextToOrDrop(ent.Comp.TeleportFailEffect, ent.Owner); //flash
 
-        var reasonWrapped = Loc.GetString("teleport-fail", ("reason", failReason));
+            var reasonWrapped = Loc.GetString("teleport-fail", ("reason", Loc.GetString(failReason)));
 
-        var ev = new TeleframeTeleportFailedEvent(reasonWrapped);
-        RaiseLocalEvent(ent.Owner, ref ev);
+            var ev = new TeleframeTeleportFailedEvent(reasonWrapped);
+            RaiseLocalEvent(ent.Owner, ref ev);
+        }
     }
 
     #endregion

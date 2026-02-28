@@ -18,9 +18,8 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
 
         if (TryComp<TeleframeChargingComponent>(ent, out var chargeComp)) // power off during charge is a failed teleport, so prepare for fail
         {   //we can't punish non brownout powerloss as power increase isn't instant
+            chargeComp.FailReason = "teleport-fail-power";
             chargeComp.TeleportSuccess = false;
-            chargeComp.FailReason = Loc.GetString("teleport-fail-power");
-            EndTeleportCharge((ent.Owner, ent.Comp, chargeComp));
             Dirty(ent.Owner, chargeComp);
             return; //EndTeleportCharge already updates appearance
         }

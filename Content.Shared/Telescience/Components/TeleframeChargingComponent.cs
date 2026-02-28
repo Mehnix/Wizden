@@ -34,5 +34,5 @@ public sealed partial class TeleframeChargingComponent : Component
     /// Message stated by console on failure reason
     /// </summary>
     [DataField]
-    public LocId FailReason = "teleport-failure-unknown";
+    public LocId FailReason = "teleport-fail-unknown";
 }

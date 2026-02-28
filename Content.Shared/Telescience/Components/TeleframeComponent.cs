@@ -54,12 +54,13 @@ public sealed partial class TeleframeComponent : Component
     /// <summary>
     /// Randomness of Teleportation arrival positions entities will be placed +/- of this value from exact target
     /// </summary>
+    /// <remarks>Scattering won't check if the scattered position is inside a wall so keep this value low</remarks>
     [DataField]
     public float TeleportScatterRange = 0.75f;
 
     /// <summary>
     /// Radius from centre of teleportation within which entities will be teleported
-    /// Don't make this value too high
+    /// Don't make this value too high as it becomes awkward
     /// </summary>
     [DataField]
     public float TeleportRadius = 1.5f;

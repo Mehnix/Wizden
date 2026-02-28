@@ -1,13 +1,4 @@
 - type: entity
-  id: EffectFlashTeleportFinish
-  parent: [ EffectFlashBluespace]
-  categories: [HideSpawnMenu]
-  components:
-  - type: TriggerOnSpawn
-  - type: SpawnOnTrigger
-    proto: EffectGravityPulse
-
-- type: entity
   id: BaseTeleportEffect
   abstract: true
   components:
@@ -40,6 +31,8 @@
   - type: Tag
     tags:
     - TeleportImmune
+  - type: TeleframeTeleportal
+    teleportalDestructionEffect: EffectGravityPulse
 
 
 - type: entity

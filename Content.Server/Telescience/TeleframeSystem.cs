@@ -1,12 +1,10 @@
 using Content.Shared.Telescience.Systems;
 using Content.Shared.Telescience.Components;
-using Content.Shared.Emag.Systems;
 
 namespace Content.Server.Telescience;
 
 public sealed partial class TeleframeSystem : SharedTeleframeSystem
 {
-    [Dependency] private readonly EmagSystem _emag = default!;
     [Dependency] private readonly SharedMapSystem _maps = default!;
     public override void Initialize()
     {
@@ -17,14 +15,11 @@ public sealed partial class TeleframeSystem : SharedTeleframeSystem
     {
         base.Update(frameTime);
 
-        if (!Timing.IsFirstTimePredicted)
-            return;
-
         //search for Teleframe entities with the TeleframeChargingComponent and check if they've reached the end of their timer.
         var queryCharge = EntityQueryEnumerator<TeleframeChargingComponent, TeleframeComponent>();
         while (queryCharge.MoveNext(out var uid, out var charge, out var teleframe))
         {
-            if (Timing.CurTime < charge.EndTime)
+            if (Timing.CurTime < charge.EndTime && charge.TeleportSuccess == true) //end if charge time runs out or we're failing
                 continue;
 
             EndTeleportCharge((uid, teleframe, charge));

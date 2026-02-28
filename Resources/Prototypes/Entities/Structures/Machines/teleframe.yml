@@ -99,7 +99,7 @@
     chargeDuration: 5
     rechargeDuration: 20
     teleportBeginEffect: EffectGravityPulse
-    teleportFinishEffect: EffectFlashTeleportFinish
+    teleportFinishEffect: EffectFlashBluespace
     teleportModeEffects:
       Send: TeleportFromEffect
       Receive: TeleportToEffect
