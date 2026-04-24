@@ -8,7 +8,6 @@ using Content.Shared.Telescience.Components;
 using Content.Shared.Telescience.Ui;
 using Content.Shared.Telescience.Events;
 using Content.Shared.Trigger;
-using Content.Shared.Trigger.Components.Effects;
 using Content.Shared.Whitelist;
 using Robust.Shared.Audio.Systems;
 using Robust.Shared.GameStates;
@@ -130,14 +129,21 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
         var targetEffect = ent.Comp.TeleportModeEffects.GetValueOrDefault(args.Mode.GetOpposite());
 
         var sourcePortal = EntityManager.PredictedSpawnAtPosition(sourceEffect, tp.Coordinates); //put source portal on Teleframe
-        PredictedSpawnNextToOrDrop(ent.Comp.TeleportBeginEffect, sourcePortal); //flash start effect
 
         var targetPortal = EntityUid.Invalid;
         if (GetEntity(args.TargetEnt) != EntityUid.Invalid) //if there's a known entity associated with the target, use that instead of just coordinates
             targetPortal = EntityManager.PredictedSpawnNextToOrDrop(targetEffect, GetEntity(args.TargetEnt)); //put target portal on target Coords.
         else
             targetPortal = EntityManager.PredictedSpawn(targetEffect, args.Coords); //put target portal on target Coords.
-        PredictedSpawnNextToOrDrop(ent.Comp.TeleportBeginEffect, targetPortal); //flash start effect
+
+        if (ent.Comp.TeleportBeginEffect != null) //create effects at source teleportal
+        {
+            foreach (var effect in ent.Comp.TeleportBeginEffect)
+            {
+                PredictedSpawnNextToOrDrop(effect, sourcePortal); //flash start effect
+                PredictedSpawnNextToOrDrop(effect, targetPortal); //flash start effect
+            }
+        }
 
         ent.Comp.ActiveTeleportInfo = args.Mode switch
         {
@@ -148,10 +154,10 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
 
         switch (args.Mode)
         {
-            case TeleframeActivationMode.Send:
+            case TeleframeActivationMode.Send: //prevent sending into empty space or a wall
                 (chargeComp.TeleportSuccess, chargeComp.FailReason) = CheckTeleportal(targetPortal);
                 break;
-            case TeleframeActivationMode.Receive:
+            case TeleframeActivationMode.Receive: //prevent receiving into empty space or a wall
                 (chargeComp.TeleportSuccess, chargeComp.FailReason) = CheckTeleportal(sourcePortal);
                 break;
             default:
@@ -233,8 +239,14 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
             teleported.Add(tp);
         }
 
-        PredictedSpawnNextToOrDrop(ent.Comp.TeleportFinishEffect, tpTo); //finish effects
-        PredictedSpawnNextToOrDrop(ent.Comp.TeleportFinishEffect, tpFrom);
+        if (ent.Comp.TeleportFinishEffect != null)
+        {
+            foreach (var effect in ent.Comp.TeleportFinishEffect)
+            {
+                PredictedSpawnNextToOrDrop(effect, tpTo); //finish effects
+                PredictedSpawnNextToOrDrop(effect, tpFrom);
+            }
+        }
 
         var trig = new TriggerEvent(tpTo); //send a trigger to the teleportals in case they have any last actions
         RaiseLocalEvent(tpTo, ref trig);
@@ -295,9 +307,6 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
     /// </summary>
     public void EndTeleportCharge(Entity<TeleframeComponent, TeleframeChargingComponent> ent)
     {
-        if (!Timing.IsFirstTimePredicted) //prevent it getting spammed
-            return;
-
         var failReason = ent.Comp2.FailReason;
 
         if (ent.Comp1.ActiveTeleportInfo == null || ent.Comp1.ActiveTeleportInfo is not { } teleInfo || !Exists(GetEntity(teleInfo.From)) || !Exists(GetEntity(teleInfo.To)))
@@ -344,7 +353,7 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
 
     ///<summary>
     /// Teleportation has concluded, clean up teleportation entities
-    /// also if we failed raise an event and summon some l̶i̶g̶h̶t̶n̶i̶n̶g̶ , for fun.
+    /// also if we failed raise an event and summon some l̶i̶g̶h̶t̶n̶i̶n̶g̶  smoke, for fun.
     /// </summary>
     protected void TeleportCleanup(Entity<TeleframeComponent> ent, string? failReason = null)
     {
@@ -357,7 +366,11 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
 
         if (failReason != null) //fail if we have a reason for it
         {
-            PredictedSpawnNextToOrDrop(ent.Comp.TeleportFailEffect, ent.Owner); //flash
+            if (ent.Comp.TeleportFailEffect != null)
+            {
+                foreach (var effect in ent.Comp.TeleportFailEffect)
+                    PredictedSpawnNextToOrDrop(effect, ent.Owner); //fail effects
+            }
 
             var reasonWrapped = Loc.GetString("teleport-fail", ("reason", Loc.GetString(failReason)));
 

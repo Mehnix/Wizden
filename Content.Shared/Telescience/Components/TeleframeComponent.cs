@@ -37,19 +37,19 @@ public sealed partial class TeleframeComponent : Component
     /// Effect produced when teleport entities spawn
     /// </summary>
     [DataField]
-    public EntProtoId? TeleportBeginEffect = null;
+    public List<EntProtoId>? TeleportBeginEffect = null;
 
     /// <summary>
     /// Effect produced when teleport finishes
     /// </summary>
     [DataField]
-    public EntProtoId? TeleportFinishEffect = null;
+    public List<EntProtoId>? TeleportFinishEffect = null;
 
     /// <summary>
     /// Effect produced if the teleport fails
     /// </summary>
     [DataField]
-    public EntProtoId? TeleportFailEffect = null;
+    public List<EntProtoId>? TeleportFailEffect = null;
 
     /// <summary>
     /// Randomness of Teleportation arrival positions entities will be placed +/- of this value from exact target

@@ -98,8 +98,8 @@
   - type: Teleframe
     chargeDuration: 5
     rechargeDuration: 20
-    teleportBeginEffect: EffectGravityPulse
-    teleportFinishEffect: EffectFlashBluespace
+    teleportBeginEffect: [EffectGravityPulse]
+    teleportFinishEffect: [EffectFlashBluespace, EffectGravityPulse]
     teleportModeEffects:
       Send: TeleportFromEffect
       Receive: TeleportToEffect
@@ -111,11 +111,12 @@
 - type: entity
   id: TeleframeSyndicate
   parent: [BaseTeleframeStructure, BaseTeleportBeacon]
-  name: cybersun TP-X covert teleframe core
+  name: CSTF-X infiltrator core
   description: A modification of stolen Nanotrasen blueprints to prioritise reliability and power efficiency for covert infiltration. Often outfitted with advanced upgrades.
   components:
   - type: Teleframe
-    teleportBeginEffect: EffectGravityPulse
+    teleportBeginEffect: [EffectGravityPulse]
+    teleportFinishEffect: [DecalSpawnerBurnsSingle]
     chargeDuration: 5
     rechargeDuration: 30
     teleportScatterRange: 0.5
@@ -174,12 +175,12 @@
   description: This is beyond science.
   components:
   - type: Teleframe
-    chargeDuration: 4
+    chargeDuration: 5
     rechargeDuration: 5
     teleportScatterRange: 0.25
     teleportRange: 1
     teleportModeEffects:
       Send: MobMothroach #these entities can be anything that doesn't despawn too quickly
       Receive: MobMothroach #they'll delete themselves after teleportation concludes
-    teleportBeginEffect: EffectGravityPulse #so can these but they don't delete themselves automatically
-    teleportFinishEffect: EffectFlashTeleportFinish
+    teleportBeginEffect: [EffectGravityPulse] #so can these but they don't delete themselves automatically
+    teleportFinishEffect: [EffectFlashTeleportFinish]
