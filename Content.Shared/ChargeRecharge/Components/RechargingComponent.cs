@@ -1,14 +1,15 @@
 using Robust.Shared.GameStates;
 using Robust.Shared.Serialization.TypeSerializers.Implementations.Custom;
 
-namespace Content.Shared.Telescience.Components;
+namespace Content.Shared.ChargeRecharge.Components;
 
 /// <summary>
-/// Tracker for a charging Teleframe
-/// <seealso cref="TeleframeComponent"/>
+/// Tracker for somoething recharging before an effect can occur again
+/// <seealso cref="ChargeRechargeComponent"/>
 /// </summary>
+
 [RegisterComponent, NetworkedComponent, AutoGenerateComponentState(true), AutoGenerateComponentPause]
-public sealed partial class TeleframeChargingComponent : Component
+public sealed partial class RechargingComponent : Component
 {
     /// <summary>
     /// when charge will finish
@@ -24,15 +25,15 @@ public sealed partial class TeleframeChargingComponent : Component
     public TimeSpan Duration;
 
     /// <summary>
-    /// if false, teleportation doesn't continue
-    /// EG: if EMP'd or otherwise de-powered
+    /// pause recharge, such as if there's a lack of power
     /// </summary>
     [DataField, AutoNetworkedField]
-    public bool TeleportSuccess = true;
+    public bool Pause = false;
 
     /// <summary>
-    /// Message stated by console on failure reason
+    /// Time that still needs to count down after pause ends
     /// </summary>
-    [DataField]
-    public LocId FailReason = "teleport-fail-unknown";
+
+    [DataField, AutoNetworkedField]
+    public TimeSpan PauseTime;
 }

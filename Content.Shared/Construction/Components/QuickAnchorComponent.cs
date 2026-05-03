@@ -1,6 +1,10 @@
 
 namespace Content.Shared.Construction.Components;
 
+/// <summary>
+/// Component adding an alt verb to let a user anchor or unanchor something
+/// </summary>
+[RegisterComponent]
 public sealed partial class QuickAnchorComponent : Component
 {
     /// <summary>

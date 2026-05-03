@@ -11,6 +11,9 @@ public enum TeleframeActivationMode : byte
 
 public static class TeleframeActivationModeHelpers
 {
+    /// <summary>
+    /// Get the opposite of the input TeleframeActivationMode. Input Send, Output Receive.
+    /// </summary>
     public static TeleframeActivationMode GetOpposite(this TeleframeActivationMode mode)
     {
         return mode switch

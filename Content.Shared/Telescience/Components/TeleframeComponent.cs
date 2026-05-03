@@ -13,20 +13,11 @@ namespace Content.Shared.Telescience.Components;
 public sealed partial class TeleframeComponent : Component
 {
     /// <summary>
-    /// The amount of time the Teleframe charges for before teleporting
+    /// Teleportal entities placed at the source and target. Everything valid around the "From" entity will be moved to the "To" entity on teleportation.
+    /// The Datafield defines which entity is placed at the source during a send and a receive, the opposite entity is placed at the target.
+    /// EG: When sending, "From" is placed at source, "To" at target.
     /// </summary>
-    [DataField]
-    [AutoNetworkedField]
-    public TimeSpan ChargeDuration = TimeSpan.FromSeconds(0.25);
-
-    /// <summary>
-    /// The amount of time after the Teleframe has teleported before it can be used again
-    /// </summary>
-    [DataField]
-    [AutoNetworkedField]
-    public TimeSpan RechargeDuration = TimeSpan.FromSeconds(1);
-
-    [DataField]
+    [DataField, ViewVariables]
     public Dictionary<TeleframeActivationMode, EntProtoId?> TeleportModeEffects = new()
     {
         { TeleframeActivationMode.Send, "TeleportFromEffect" },
@@ -34,58 +25,58 @@ public sealed partial class TeleframeComponent : Component
     };
 
     /// <summary>
-    /// Effect produced when teleport entities spawn
+    /// Effect produced when at both teleportals when teleportation begins.
     /// </summary>
-    [DataField]
+    [DataField, ViewVariables]
     public List<EntProtoId>? TeleportBeginEffect = null;
 
     /// <summary>
-    /// Effect produced when teleport finishes
+    /// Effect produced at both teleportals when teleportation finishes
     /// </summary>
-    [DataField]
+    [DataField, ViewVariables]
     public List<EntProtoId>? TeleportFinishEffect = null;
 
     /// <summary>
-    /// Effect produced if the teleport fails
+    /// Effect produced at the source if teleportation fails
     /// </summary>
-    [DataField]
+    [DataField, ViewVariables]
     public List<EntProtoId>? TeleportFailEffect = null;
 
     /// <summary>
-    /// Randomness of Teleportation arrival positions entities will be placed +/- of this value from exact target
+    /// Randomness of Teleportation arrival positions. Entities will be placed +/- of this value from exact target
     /// </summary>
     /// <remarks>Scattering won't check if the scattered position is inside a wall so keep this value low</remarks>
-    [DataField]
+    [DataField, ViewVariables]
     public float TeleportScatterRange = 0.75f;
 
     /// <summary>
     /// Radius from centre of teleportation within which entities will be teleported
     /// Don't make this value too high as it becomes awkward
     /// </summary>
-    [DataField]
+    [DataField, ViewVariables]
     public float TeleportRadius = 1.5f;
-
-    /// <summary>
-    /// score that must be met or exceeded for the teleframe to explode due to a random incident, incidentMult*(1d100/100)
-    /// avoid setting below 1.
-    /// </summary>
-    [DataField]
-    public float ExplosionScore = 1000f;
 
     /// <summary>
     /// Blacklisted Tags and Components that won't be teleported
     /// Amusing things that haven't been included: Observers
     /// </summary>
-    [DataField]
+    [DataField, ViewVariables]
     public EntityWhitelist? Blacklist;
 
-    //##########################################
+    /// <summary>
+    /// Allow teleportation inside walls, default false
+    /// </summary>
+    [DataField, ViewVariables]
+    public bool AllowCollision = false;
 
     /// <summary>
-    /// Whether the Teleframe is powered
+    /// Allow Teleportation to places with no grid underneath, default null
+    /// If left null, "From" teleportals can and "To" teleportals can't. Letting you teleport from space but not to it.
     /// </summary>
-    [ViewVariables, AutoNetworkedField]
-    public bool IsPowered = false;
+    [DataField, ViewVariables]
+    public bool? AllowGridless = null;
+
+    //##########################################
 
     /// <summary>
     /// The corresponding Teleframe Console entity this Teleframe is linked to.
@@ -97,11 +88,11 @@ public sealed partial class TeleframeComponent : Component
     /// <summary>
     /// Marker, is Teleframe ready to teleport again?
     /// </summary>
-    [ViewVariables, AutoNetworkedField]
+    [DataField, ViewVariables, AutoNetworkedField]
     public bool ReadyToTeleport = true;
 
     /// <summary>
-    /// Store information regarding the current teleporation cycle, cleared after it concludes
+    /// Stored information regarding the current teleporation cycle, cleared after it concludes
     /// </summary>
     [ViewVariables, AutoNetworkedField]
     public TeleframeActiveTeleportInfo? ActiveTeleportInfo;
@@ -109,18 +100,3 @@ public sealed partial class TeleframeComponent : Component
 
 [Serializable, NetSerializable]
 public readonly record struct TeleframeActiveTeleportInfo(TeleframeActivationMode Mode, NetEntity To, NetEntity From);
-
-[NetSerializable, Serializable]
-public enum TeleframeVisuals : byte
-{
-    VisualState
-}
-
-[NetSerializable, Serializable]
-public enum TeleframeVisualState : byte
-{
-    On,
-    Charging,
-    Recharging,
-    Off
-}

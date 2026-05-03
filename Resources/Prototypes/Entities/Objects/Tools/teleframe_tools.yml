@@ -113,9 +113,6 @@
     interfaces:
       enum.TeleframeConsoleUiKey.Key:
         type: TeleframeConsoleBoundUserInterface
-      enum.WiresUiKey.Key:
-        type: WiresBoundUserInterface
-  - type: Computer
   - type: ContainerContainer
     containers:
       board: !type:Container
@@ -132,8 +129,6 @@
   - type: ActiveRadio
     channels:
     - Science
-  - type: Speech
-    speechVerb: Robotic
 
 - type: entity
   name: handheld teleframe console

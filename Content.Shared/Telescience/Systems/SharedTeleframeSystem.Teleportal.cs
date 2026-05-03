@@ -10,8 +10,6 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
         base.Initialize();
         SubscribeLocalEvent<TeleframeTeleportalComponent, EmpPulseEvent>(OnEmpPulseTeleportal);
         SubscribeLocalEvent<TeleframeTeleportalComponent, EntityTerminatingEvent>(OnDeletion);
-        SubscribeLocalEvent<TeleframeComponent, EmpPulseEvent>(OnEmpPulseFrame);
-
     }
 
     /// <summary>
@@ -22,7 +20,7 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
         if (ent.Comp.Teleframe is not { } teleEnt)
             return;
 
-        FailCharge(teleEnt);
+        _chargeRecharge.EndCharge(teleEnt, false, "teleport-fail-emp");
     }
 
     /// <summary>
@@ -35,33 +33,7 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
         if (ent.Comp.Teleframe is not { } teleEnt)
             return;
 
-        FailCharge(teleEnt);
-    }
-
-    /// <summary>
-    /// If the frame is emp'd, fail immediately
-    /// Portals should be emp'd at the same time but just covering all cases
-    /// </summary>
-    private void OnEmpPulseFrame(Entity<TeleframeComponent> ent, ref EmpPulseEvent args)
-    {
-        if (!TryComp<TeleframeChargingComponent>(ent, out var chargeComp))
-            return;
-
-        FailCharge(ent.Owner);
-    }
-
-    /// <summary>
-    /// Kill charging
-    /// </summary>
-    /// <param name="uid"></param>
-    /// <param name="reason"></param>
-    private void FailCharge(EntityUid uid, string reason = "teleport-fail-nolink")
-    {
-        if (!TryComp<TeleframeChargingComponent>(uid, out var chargeComp))
-            return;
-
-        chargeComp.FailReason = reason;
-        chargeComp.TeleportSuccess = false; //fail immediately
-        Dirty(uid, chargeComp);
+        if (ent.Comp.Complete == false) //if teleportation is complete, not an failiure that this dies
+            _chargeRecharge.EndCharge(teleEnt, false, "teleport-fail-nolink");
     }
 }

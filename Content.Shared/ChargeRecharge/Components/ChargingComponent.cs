@@ -1,15 +1,14 @@
 using Robust.Shared.GameStates;
 using Robust.Shared.Serialization.TypeSerializers.Implementations.Custom;
 
-namespace Content.Shared.Telescience.Components;
+namespace Content.Shared.ChargeRecharge.Components;
 
 /// <summary>
-/// Tracker for a recharging Teleframe
-/// <seealso cref="TeleframeComponent"/>
+/// Tracker for something charging before an effect occurs
+/// <seealso cref="ChargeRechargeComponent"/>
 /// </summary>
-
 [RegisterComponent, NetworkedComponent, AutoGenerateComponentState(true), AutoGenerateComponentPause]
-public sealed partial class TeleframeRechargingComponent : Component
+public sealed partial class ChargingComponent : Component
 {
     /// <summary>
     /// when charge will finish
@@ -23,17 +22,4 @@ public sealed partial class TeleframeRechargingComponent : Component
     /// </summary>
     [DataField]
     public TimeSpan Duration;
-
-    /// <summary>
-    /// pause recharge, such as if there's a lack of power
-    /// </summary>
-    [DataField, AutoNetworkedField]
-    public bool Pause = false;
-
-    /// <summary>
-    /// Time that still needs to count down after pause ends
-    /// </summary>
-
-    [DataField, AutoNetworkedField]
-    public TimeSpan PauseTime;
 }

@@ -22,4 +22,10 @@ public sealed partial class TeleframeStructurePowerComponent : Component
     [DataField]
     public int PowerUseIdle = 1000;
 
+    /// <summary>
+    /// Whether the teleframe is powered
+    /// </summary>
+    [DataField]
+    public bool IsPowered = true;
+
 }

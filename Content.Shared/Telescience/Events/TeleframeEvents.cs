@@ -11,24 +11,23 @@ public readonly record struct TeleframeConsoleToFrameRelayEvent<T>(Entity<Telefr
 public readonly record struct TeleframeToConsoleRelayEvent<T>(Entity<TeleframeComponent> Frame, T Args);
 
 ///<summary>
-///Event raised on the teleframe and any upgrade modules it begins charging
+///Event raised on the teleframe, console, and any upgrade modules when teleportation charging is successfully initiated
 /// </summary>
 [ByRefEvent]
-public struct TeleframeStartChargeEvent(EntityUid teleframe, MapCoordinates target)
+public struct TeleframeInitiatedEvent(EntityUid teleframe, MapCoordinates target)
 {
     public readonly EntityUid Teleframe = teleframe;
     public readonly MapCoordinates Target = target;
-    public bool Cancelled = false;
 }
 
 /// <summary>
-///Event raised on the teleframe when teleportation fails
+///Event raised on the teleframe and console when teleportation fails
 /// </summary>
 [ByRefEvent]
 public readonly record struct TeleframeTeleportFailedEvent(string Reason);
 
 /// <summary>
-/// Event raised on the teleframe when experiencing a teleport incident
+/// Event raised on the teleframe and console when experiencing a teleport incident
 /// </summary>
 [ByRefEvent]
 public record struct TeleframeIncidentEvent(float Score, float IncidentMult);
@@ -40,7 +39,7 @@ public record struct TeleframeIncidentEvent(float Score, float IncidentMult);
 public record struct TeleframeUserIncidentEvent(float Score, float IncidentMult);
 
 /// <summary>
-///Event raised on the teleframe just after teleporting an entity
+/// Event raised on the teleframe just after teleporting an entity
 /// </summary>
 [ByRefEvent]
 public readonly record struct TeleframeTeleportedEvent(EntityUid Teleported, MapCoordinates To, MapCoordinates From);
@@ -58,19 +57,7 @@ public readonly record struct TeleframeTeleportedAllEvent(List<EntityUid> Telepo
 public readonly record struct TeleframeUserTeleportedEvent(EntityUid Teleframe, MapCoordinates To, MapCoordinates From);
 
 /// <summary>
-/// Event raised on the teleframe when it has finished recharging and may be used again
+/// Event raised on the teleframe and console when it has finished recharging and may be used again
 /// </summary>
 [ByRefEvent]
 public readonly record struct TeleframeReadyEvent(EntityUid Teleframe);
-
-/// <summary>
-/// Event confirming charging has begun and that the charging component is present
-/// </summary>
-[ByRefEvent]
-public readonly record struct ChargingEvent();
-
-/// <summary>
-/// Event confirming recharging has begun and that the recharging component is present
-/// </summary>
-[ByRefEvent]
-public readonly record struct RechargingEvent();
