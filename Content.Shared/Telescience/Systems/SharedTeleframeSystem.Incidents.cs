@@ -19,19 +19,12 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
     {
         if (!TryRollForIncident(ent, out var severity))
             return;
-
-        //TODO: raise TeleframeIncidentEvent and TeleframeUserIncidentEvent when incidents are refactored
-        if (TryComp<TeleframeComponent>(ent, out var teleComp) && severity > teleComp.ExplosionScore)
-            TeleframeIncidentExplode(ent, severity!.Value);
     }
 
     private void OnIncidentFailed(Entity<TeleframeIncidentLiableComponent> ent, ref TeleframeTeleportFailedEvent args)
     {
         if (!TryRollForIncident(ent, out var severity))
             return;
-
-        if (TryComp<TeleframeComponent>(ent, out var teleComp) && severity > teleComp.ExplosionScore)
-            TeleframeIncidentExplode(ent, severity!.Value);
     }
 
     /// <summary>
@@ -63,9 +56,5 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
 
         severity = null;
         return false;
-    }
-
-    protected virtual void TeleframeIncidentExplode(Entity<TeleframeIncidentLiableComponent> ent, float severity)
-    {
     }
 }

@@ -1,5 +1,6 @@
 using Content.Shared.Telescience.Components;
 using Content.Shared.Telescience.Events;
+using Content.Shared.ChargeRecharge.Events;
 
 namespace Content.Shared.Telescience.Systems;
 
@@ -7,12 +8,12 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
 {
     protected virtual void InitializeRelay()
     {
-        SubscribeLocalEvent<TeleframeComponent, TeleframeStartChargeEvent>(RelayToConsole);
+        SubscribeLocalEvent<TeleframeComponent, TeleframeInitiatedEvent>(RelayToConsole);
         SubscribeLocalEvent<TeleframeComponent, TeleframeTeleportFailedEvent>(RelayToConsole);
     }
 
     /// <summary>
-    /// Relay InitialRelay's events on the Teleframe to its connected Console if it has one
+    /// Relay events on the Teleframe to the Console
     /// </summary>
     protected void RelayToConsole<T>(Entity<TeleframeComponent> ent, ref T args)
     {
@@ -24,7 +25,7 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
     }
 
     /// <summary>
-    /// Relay InitialiseRelay's events on the Console to its connected Teleframe if it has one
+    /// Relay events on the Console to the Teleframe
     /// </summary>
     protected void RelayToFrame<T>(Entity<TeleframeConsoleComponent> ent, ref T args)
     {

@@ -1,66 +1,56 @@
+using Content.Shared.ChargeRecharge.Components;
 using Content.Shared.Telescience.Components;
+using Content.Shared.Examine;
 
 namespace Content.Shared.Telescience.Systems;
 
 public abstract partial class SharedTeleframeSystem : EntitySystem
 {
+    [Dependency] private readonly SharedPointLightSystem _lights = default!;
     protected virtual void InitializePower()
     {
         base.Initialize();
+        SubscribeLocalEvent<TeleframeStructurePowerComponent, ExaminedEvent>(OnExamined);
     }
 
     /// <summary>
     /// turn off teleframe, interrupt charge and fail it, pause recharge and update its pause time (if it wasn't already)
     /// </summary>
-    protected void PowerOff(Entity<TeleframeComponent> ent)
+    protected void PowerOff(Entity<TeleframeStructurePowerComponent> ent)
     {
+        if (!HasComp<ChargeRechargeComponent>(ent.Owner))
+            return;
+
         ent.Comp.IsPowered = false;
 
-        if (TryComp<TeleframeChargingComponent>(ent, out var chargeComp)) // power off during charge is a failed teleport, so prepare for fail
-        {   //we can't punish non brownout powerloss as power increase isn't instant
-            chargeComp.FailReason = "teleport-fail-power";
-            chargeComp.TeleportSuccess = false;
-            Dirty(ent.Owner, chargeComp);
-            return; //EndTeleportCharge already updates appearance
-        }
+        _chargeRecharge.DisableCharge(ent.Owner, "a-power");
 
-        if (TryComp<TeleframeRechargingComponent>(ent, out var rechargeComp) && rechargeComp.Pause == false) //pause recharge and update its pause time
-        {
-            rechargeComp.Pause = true;
-            rechargeComp.PauseTime = rechargeComp.EndTime - Timing.CurTime;
-            Dirty(ent.Owner, rechargeComp);
-        }
+        if (_lights.TryGetLight(ent.Owner, out var light) && light.Enabled == true) //set light off whilst here
+            _lights.SetEnabled(ent.Owner, false);
 
-        UpdateAppearance(ent);
         Dirty(ent);
     }
 
     /// <summary>
     /// power on teleframe, unpause recharge if it was there.
     /// </summary>
-    protected void PowerOn(Entity<TeleframeComponent> ent)
+    protected void PowerOn(Entity<TeleframeStructurePowerComponent> ent)
     {
+        _chargeRecharge.EnableCharge(ent.Owner);
+
         ent.Comp.IsPowered = true;
 
-        if (HasComp<TeleframeChargingComponent>(ent)) //full power while charging? All good so just end here.
-            return;
+        if (_lights.TryGetLight(ent.Owner, out var light) && light.Enabled == false) //set light on whilst here
+            _lights.SetEnabled(ent.Owner, true); //dirties itself
 
-        if (TryComp<TeleframeRechargingComponent>(ent, out var rechargeComp)) //full power while recharging? Enable if we were previously recharging
-        {
-            if (rechargeComp.Pause == true) //if we were paused, restart charging process by adding on pause time to get a new end time for recharge completion
-            {
-                rechargeComp.Pause = false;
-                rechargeComp.EndTime = Timing.CurTime + rechargeComp.PauseTime;
-                rechargeComp.PauseTime = TimeSpan.FromSeconds(0);
-                Dirty(ent.Owner, rechargeComp);
-            }
-            else //if not paused, all good so just end here.
-            {
-                return;
-            }
-        }
-
-        UpdateAppearance(ent);
         Dirty(ent);
+    }
+
+    public void OnExamined(Entity<TeleframeStructurePowerComponent> ent, ref ExaminedEvent args)
+    {
+        if (ent.Comp.IsPowered == true) //manually apply power level descriptions
+            args.PushMarkup(Loc.GetString("power-receiver-component-on-examine-main", ("stateText", Loc.GetString("power-receiver-component-on-examine-powered"))));
+        else
+            args.PushMarkup(Loc.GetString("power-receiver-component-on-examine-main", ("stateText", Loc.GetString("power-receiver-component-on-examine-unpowered"))));
     }
 }
