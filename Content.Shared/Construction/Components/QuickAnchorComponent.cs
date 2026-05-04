@@ -1,3 +1,4 @@
+using Robust.Shared.Audio;
 
 namespace Content.Shared.Construction.Components;
 
@@ -24,4 +25,9 @@ public sealed partial class QuickAnchorComponent : Component
     /// </summary>
     [DataField]
     public AnchorableFlags Flags = AnchorableFlags.Anchorable | AnchorableFlags.Unanchorable;
+
+    /// <summary>
+    /// Sound made on anchoring
+    /// </summary>
+    public SoundSpecifier AnchorSound = new SoundPathSpecifier("/Audio/Items/ratchet.ogg");
 }

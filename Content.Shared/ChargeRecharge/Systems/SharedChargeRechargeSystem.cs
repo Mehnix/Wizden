@@ -159,9 +159,10 @@ public abstract partial class SharedChargeRechargeSystem : EntitySystem
         {
             ResumeRecharge(uid);
         }
-
-        _appearance.SetData(uid, ChargeRechargeVisuals.VisualState, ChargeRechargeVisualState.On); //Dirties itself
-
+        else
+        {
+            _appearance.SetData(uid, ChargeRechargeVisuals.VisualState, ChargeRechargeVisualState.On); //Dirties itself
+        }
     }
 
     public void UpdateAppearance(Entity<ChargeRechargeComponent> ent)

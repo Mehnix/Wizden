@@ -90,7 +90,7 @@
 
 - type: entity
   id: TeleframeScience
-  parent: [BaseTeleframeStructure, BaseTeleportBeacon]
+  parent: [BaseTeleframeStructure]
   name: experimental teleframe core
   description: The core of an advanced device that rips holes in reality for near-instanteous travel. With time and material its capabilities can be expanded. Safety not guaranteed.
   components:
@@ -99,7 +99,7 @@
   - type: Teleframe
     teleportBeginEffect: [EffectGravityPulse]
     teleportFinishEffect: [EffectFlashBluespace, EffectGravityPulse]
-    teleportFailEffect: [WizardSmoke]
+    teleportFailEffect: [EffectTeslaSparks, EffectFlashBluespace]
     teleportModeEffects:
       Send: TeleportFromEffect
       Receive: TeleportToEffect
@@ -112,7 +112,7 @@
 
 - type: entity
   id: TeleframeSyndicate
-  parent: [BaseTeleframeStructure, BaseTeleportBeacon]
+  parent: [BaseTeleframeStructure]
   name: CSTF-X infiltrator core
   description: A modification of stolen Nanotrasen blueprints to prioritise reliability and power efficiency for covert infiltration. Often outfitted with advanced upgrades.
   components:
@@ -147,7 +147,7 @@
 
 - type: entity
   id: TeleframeCC
-  parent: [BaseTeleframeStructure, BaseTeleportBeacon]
+  parent: [BaseTeleframeStructure]
   name: central command hyperframe core
   description: A precise tool for the uppermost echelons of Central Command, allowing for rapid deployment and extraction of critical assets. Unfathomably Expensive.
   components:

@@ -38,6 +38,7 @@
   parent: BaseTeleportEffect
   name: bluespace distortion
   description: Something's about to arrive...
+  categories: [ HideSpawnMenu ]
   components:
   - type: WarpPoint #it's there if you can catch it for the few seconds it'll exist
     location: Teleportation Warp Point

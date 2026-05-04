@@ -5,7 +5,6 @@ using Content.Shared.Coordinates.Helpers;
 using Content.Shared.Database;
 using Content.Shared.DeviceLinking;
 using Content.Shared.Emag.Systems;
-using Content.Shared.Physics;
 using Content.Shared.Random.Helpers;
 using Content.Shared.Telescience.Components;
 using Content.Shared.Telescience.Ui;
@@ -13,7 +12,6 @@ using Content.Shared.Telescience.Events;
 using Content.Shared.Whitelist;
 using Robust.Shared.Audio.Systems;
 using Robust.Shared.GameStates;
-using Robust.Shared.Map;
 using Robust.Shared.Physics.Systems;
 using Robust.Shared.Player;
 using Robust.Shared.Random;
@@ -25,7 +23,7 @@ namespace Content.Shared.Telescience.Systems;
 
 public abstract partial class SharedTeleframeSystem : EntitySystem
 {
-    [Dependency] private readonly SharedTransformSystem _transform = default!;
+    [Dependency] protected readonly SharedTransformSystem Xform = default!;
     [Dependency] protected readonly SharedAudioSystem Audio = default!;
     [Dependency] protected readonly IGameTiming Timing = default!;
     [Dependency] private readonly EmagSystem _emag = default!;
@@ -35,7 +33,7 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
     [Dependency] private readonly EntityLookupSystem _lookup = default!;
     [Dependency] private readonly EntityWhitelistSystem _whitelistSystem = default!;
     [Dependency] private readonly ISharedAdminLogManager _adminLogger = default!;
-    [Dependency] private readonly SharedPhysicsSystem _physics = default!;
+    [Dependency] protected readonly SharedPhysicsSystem Physics = default!;
     [Dependency] private readonly SharedChargeRechargeSystem _chargeRecharge = default!;
     private const LookupFlags RangeFlags = LookupFlags.Approximate | LookupFlags.Dynamic | LookupFlags.Sundries;
     public override void Initialize()
@@ -51,9 +49,7 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
 
         SubscribeLocalEvent<TeleframeComponent, MapInitEvent>(OnMapInit);
         SubscribeLocalEvent<TeleframeConsoleComponent, TeleframeActivateMessage>(OnTeleportActivate);
-        SubscribeLocalEvent<ChargingComponent, ComponentStartup>(OnStartTeleportCharge);
-        SubscribeLocalEvent<ChargingComponent, ComponentRemove>(OnEndTeleportCharge);
-        SubscribeLocalEvent<RechargingComponent, ComponentRemove>(OnEndTeleportRecharge);
+        SubscribeLocalEvent<TeleframeComponent, EndChargingEvent>(OnEndTeleportCharge);
         SubscribeLocalEvent<TeleframeComponent, EntityTerminatingEvent>(OnDeletion);
     }
 
@@ -85,9 +81,6 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
     /// </summary>
     private void OnTeleportActivate(Entity<TeleframeConsoleComponent> ent, ref TeleframeActivateMessage args)
     {
-        if (!Timing.IsFirstTimePredicted) //prevent it getting spammed
-            return;
-
         //confirmation of client, ideally these should never return false as the client-side UI should block teleportation if these aren't satisfied.
         if (ent.Comp.LinkedTeleframe is not { } teleEnt || !TryComp<TeleframeComponent>(teleEnt, out var teleComp))
             return; //if null, nonexistent, or lacking teleframe component, return
@@ -95,7 +88,7 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
         if (!teleComp.ReadyToTeleport)
             return; //if the teleframe isn't ready, return
 
-        if (ent.Comp.MaxRange != null && args.Coords.Position.Length() > ent.Comp.MaxRange + _transform.GetMapCoordinates(ent).Position.Length())
+        if (ent.Comp.MaxRange != null && args.Coords.Position.Length() > ent.Comp.MaxRange + Xform.GetMapCoordinates(ent).Position.Length())
             return; //if the teleframe's target is outside the maximum range, return
 
         if (!StartTeleport((teleEnt, teleComp), args))
@@ -151,9 +144,10 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
             }
         }
 
-        Log.Debug("Initiated 1");
+
         _chargeRecharge.StartCharge(ent.Owner); //begin charging!
 
+        Log.Debug("Initiated 1");
         return true;
     }
 
@@ -179,8 +173,8 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
 
         var entities = _lookup.GetEntitiesInRange(tpFrom, ent.Comp.TeleportRadius, RangeFlags); //get everything in teleport radius range that isn't in a container
         //getting from inside a container would result in teleporting organs outside of the body, or machine parts outside of machines, this is not good.
-        var tpToCoords = _transform.ToMapCoordinates(Transform(tpTo).Coordinates); //have to use map coordinates as these entities will be deleted after teleportation concludes
-        var tpFromCoords = _transform.ToMapCoordinates(Transform(tpFrom).Coordinates);
+        var tpToCoords = Xform.ToMapCoordinates(Transform(tpTo).Coordinates); //have to use map coordinates as these entities will be deleted after teleportation concludes
+        var tpFromCoords = Xform.ToMapCoordinates(Transform(tpFrom).Coordinates);
 
         List<EntityUid> teleported = new(entities.Count);
         foreach (var tp in entities) //for each entity in list of detected entities
@@ -196,12 +190,12 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
             if (_whitelistSystem.IsWhitelistPass(ent.Comp.Blacklist, tp)) //if it's on the blacklist, skip it. Don't teleport things like the singularity.
                 continue;
 
-            _transform.DropNextTo(tp, tpTo); //bit scuffed but because the map the target will be on won't neccisarily be the same as the Teleframe's we first drop them next to the target THEN scatter.
+            Xform.DropNextTo(tp, tpTo); //bit scuffed but because the map the target will be on won't neccisarily be the same as the Teleframe's we first drop them next to the target THEN scatter.
             var scatterpos = new Vector2( //create scatter coordinates as teleported entities' X and Y values +/- scatter range.
-                _transform.ToMapCoordinates(tpEnt.Coordinates).X + rand.NextFloat() * ent.Comp.TeleportScatterRange - ent.Comp.TeleportScatterRange,
-                _transform.ToMapCoordinates(tpEnt.Coordinates).Y + rand.NextFloat() * ent.Comp.TeleportScatterRange - ent.Comp.TeleportScatterRange);
+                Xform.ToMapCoordinates(tpEnt.Coordinates).X + rand.NextFloat() * ent.Comp.TeleportScatterRange - ent.Comp.TeleportScatterRange,
+                Xform.ToMapCoordinates(tpEnt.Coordinates).Y + rand.NextFloat() * ent.Comp.TeleportScatterRange - ent.Comp.TeleportScatterRange);
 
-            _transform.SetWorldPosition(tp, scatterpos); //set final position after scatter
+            Xform.SetWorldPosition(tp, scatterpos); //set final position after scatter
 
             var tpEv = new TeleframeUserTeleportedEvent(ent.Owner, tpToCoords, tpFromCoords); //raise teleport event on teleported entity so it knows it was just teleported
             RaiseLocalEvent(tp, ref tpEv);
@@ -232,78 +226,34 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
     }
 
     #endregion
-    #region Charge/Recharge
-
-    /// <summary>
-    /// When Teleport Charge starts, check teleframe and teleportals have initialised correctly
-    /// </summary>
-    public void OnStartTeleportCharge(Entity<ChargingComponent> ent, ref ComponentStartup args)
-    {
-        if (!TryComp<TeleframeComponent>(ent.Owner, out var teleComp))
-            return;
-
-        Log.Debug("Teleporting Initiated 2");
-        teleComp.ReadyToTeleport = false;
-        Dirty(ent);
-
-        var (teleportSuccess, failReason) = CheckTeleportation((ent.Owner, teleComp));
-        if (teleportSuccess != true) //start of charge wellness check on the teleframe
-        {
-            _chargeRecharge.EndCharge(ent, false, failReason);
-        }
-        else
-        {
-            var ev = new TeleframeInitiatedEvent(ent.Owner, _transform.ToMapCoordinates(Transform(GetTeleframeTarget((ent.Owner, teleComp))).Coordinates));
-            RaiseLocalEvent(ent, ref ev);
-        }
-
-    }
+    public abstract (bool, string?) CheckTeleportation(Entity<TeleframeComponent> ent);
 
     /// <summary>
     /// When Teleport Charge completes, check whether Teleportation is allowed
     /// </summary>
-    public void OnEndTeleportCharge(Entity<ChargingComponent> ent, ref ComponentRemove args)
+    public void OnEndTeleportCharge(Entity<TeleframeComponent> ent, ref EndChargingEvent args)
     {
-        if (!TryComp<TeleframeComponent>(ent.Owner, out var teleComp))
-            return;
+        _chargeRecharge.StartRecharge(ent.Owner);
 
         Log.Debug("Teleporting starting 1");
-        /*if (args.Success != true) //if anything caused a fail, cleanup
+        if (args.Success == false) //if anything caused a fail, cleanup
         {
             TeleportCleanup(ent, args.FailReason);
-            return;
         }
-
-        var (teleportSuccess, failReason) = CheckTeleportation(ent);
-        if (teleportSuccess != true) //end of charge wellness check on the teleframe
+        else
         {
-            TeleportCleanup(ent, failReason); //cleanup if not passed
-            return;
-        }*/
-
-        OnTeleport((ent, teleComp)); //if all good, teleport
-        TeleportCleanup((ent, teleComp), null);
-        _chargeRecharge.StartRecharge(ent.Owner);
+            var (teleportSuccess, failReason) = CheckTeleportation(ent);
+            if (teleportSuccess == false) //start of charge wellness check on the teleframe
+            {
+                TeleportCleanup(ent, failReason);
+            }
+            else
+            {
+                OnTeleport(ent); //if all good, teleport
+                TeleportCleanup(ent, null);
+            }
+        }
     }
-
-    /// <summary>
-    /// Recharge is done, indicate this to player at console
-    /// </summary>
-    public void OnEndTeleportRecharge(Entity<RechargingComponent> ent, ref ComponentRemove args)
-    {
-        if (!TryComp<TeleframeComponent>(ent.Owner, out var teleComp))
-            return;
-
-        Log.Debug("end teleport recharge");
-
-        teleComp.ReadyToTeleport = true;
-        Dirty(ent);
-
-        if (teleComp.LinkedConsole != null && TryComp<TeleframeConsoleComponent>(teleComp.LinkedConsole, out var consoleComp))
-            Audio.PlayPredicted(consoleComp.TeleportRechargedSound, teleComp.LinkedConsole!.Value, teleComp.LinkedConsole!.Value); //ping the console
-    }
-
-    #endregion
     #region Teleport Fail Cleanup/Checking
 
     ///<summary>
@@ -349,50 +299,6 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
     }
 
     /// <summary>
-    /// Prevent teleportation if receive teleportal is not on a grid or inside a wall, send teleportal is allowed to be off grid so you can teleport from empty space but not to.
-    /// </summary>
-    /// <param name="teleportal">teleportal entity</param>
-    /// <returns></returns>
-    private (bool, string?) CheckTeleportal(EntityUid teleportal, bool allowCollision = false, bool allowGridless = false)
-    {
-        if (!Exists(teleportal) || Transform(teleportal).MapID == MapId.Nullspace) //does this entity exist and is not in nullspace
-            return (false, "teleport-fail-nolink");
-
-        if (!HasComp<TeleframeTeleportalComponent>(teleportal)) //does the teleportal have its tracking component
-            return (false, "teleport-fail-nolink");
-
-        if (_transform.GetGrid(teleportal) == null && allowGridless == false) //prevent portals off grids unless permitted
-            return (false, "teleport-fail-nogrid");
-
-        if (_physics.GetEntitiesIntersectingBody(teleportal, (int)CollisionGroup.Impassable).Count > 0 && allowCollision == false) //prevent collision with impassible objects unless permitted
-            return (false, "teleport-fail-collision");
-
-        return (true, null);
-    }
-
-    /// <summary>
-    /// Check teleframe has done its book-keeping and that it knows where it wants to go
-    /// Then check teleportals to see if they're valid
-    /// </summary>
-    /// <param name="ent">The teleframe</param>
-    /// <returns>validity , fail reason if there is one</returns>
-    private (bool, string?) CheckTeleportation(Entity<TeleframeComponent> ent)
-    {
-        if (ent.Comp.ActiveTeleportInfo == null || ent.Comp.ActiveTeleportInfo is not { } teleInfo || !Exists(GetEntity(teleInfo.From)) || !Exists(GetEntity(teleInfo.To))) //is active teleport info null, is the teleport info empty, do either teleport entity not exist
-            return (false, "teleport-fail-nolink");
-        //check From teleportal
-        var (teleportSuccess, failReason) = CheckTeleportal(GetEntity(teleInfo.From), ent.Comp.AllowCollision, ent.Comp.AllowGridless ?? true);
-        if (teleportSuccess != true)
-            return (teleportSuccess, failReason);
-        //check To teleportal
-        (teleportSuccess, failReason) = CheckTeleportal(GetEntity(teleInfo.To), ent.Comp.AllowCollision, ent.Comp.AllowGridless ?? false);
-        if (teleportSuccess != true)
-            return (teleportSuccess, failReason);
-
-        return (true, null);
-    }
-
-    /// <summary>
     /// If the teleframe is deleted, make sure charging/recharging shuts down
     /// </summary>
     public void OnDeletion(Entity<TeleframeComponent> ent, ref EntityTerminatingEvent args)
@@ -401,21 +307,6 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
             _chargeRecharge.DisableCharge(ent.Owner, "teleport-fail-boom");
     }
     #endregion
-    #region Other Helpers
-    private EntityUid GetTeleframeTarget(Entity<TeleframeComponent> ent)
-    {
-        if (ent.Comp.ActiveTeleportInfo == null || ent.Comp.ActiveTeleportInfo is not { } teleInfo || !Exists(GetEntity(teleInfo.From)) || !Exists(GetEntity(teleInfo.To))) //is active teleport info null, is the teleport info empty, do either teleport entity not exist
-            return EntityUid.Invalid;
 
-        switch (teleInfo.Mode)
-        {
-            case TeleframeActivationMode.Send:
-                return GetEntity(teleInfo.To);
-            case TeleframeActivationMode.Receive:
-                return GetEntity(teleInfo.From);
-            default:
-                return EntityUid.Invalid;
-        }
-    }
 }
-#endregion
+
