@@ -35,19 +35,21 @@ public sealed partial class TeleframeSystem : SharedTeleframeSystem
         if (args.Frame.Comp.ActiveTeleportInfo is not { } teleInfo)
             return;
 
-        var proximity = _navMap.GetNearestBeaconString(args.Args.Target);
+        /*
+        var target = Xform.ToMapCoordinates(Transform(GetTeleportalTarget(args.Args.TeleportInfo)).Coordinates);
+        var proximity = _navMap.GetNearestBeaconString(GetTeleportalTarget(args.Args.TeleportInfo));
 
         var message = Loc.GetString(
             "teleporter-console-activate",
             ("send", teleInfo.Mode),
             ("targetName", Identity.Entity(args.Frame.Owner, EntityManager)),
-            ("X", args.Args.Target.Position.X.ToString("0")),
-            ("Y", args.Args.Target.Position.Y.ToString("0")),
+            ("X", target.Position.X.ToString("0")),
+            ("Y", target.Position.Y.ToString("0")),
             ("proximity", proximity), //contains colour data, which messes with spoken notifications
-            ("map", _maps.TryGetMap(args.Args.Target.MapId, out var mapEnt) ? Name(mapEnt!.Value) : Loc.GetString("teleporter-location-unknown"))
+            ("map", _maps.TryGetMap(target.MapId, out var mapEnt) ? Name(mapEnt!.Value) : Loc.GetString("teleporter-location-unknown"))
         );                                                                  //if mapEnt is null the other option would have been chosen so safe denullable
 
-        SendRadioMessage(ent, message);
+        SendRadioMessage(ent, message);*/
     }
     ///<summary>
     /// Sends radio and/or IC messages as long as the parent device isn't emagged.

@@ -1,6 +1,7 @@
 using Content.Shared.DeviceLinking.Events;
 using Content.Shared.Emag.Systems;
 using Content.Shared.Telescience.Components;
+using Content.Shared.Telescience.Events;
 using Content.Shared.Telescience.Ui;
 
 namespace Content.Shared.Telescience.Systems;
@@ -14,6 +15,8 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
         SubscribeLocalEvent<TeleframeConsoleComponent, NewLinkEvent>(OnNewLink);
         SubscribeLocalEvent<TeleframeConsoleComponent, PortDisconnectedEvent>(OnPortDisconnected);
         SubscribeLocalEvent<TeleframeConsoleComponent, GotEmaggedEvent>(OnConsoleEmagged);
+        SubscribeLocalEvent<TeleframeConsoleComponent, TeleframeToConsoleRelayEvent<TeleframeReadyEvent>>(OnReady);
+        SubscribeLocalEvent<TeleframeConsoleComponent, TeleframeToConsoleRelayEvent<TeleframeIncidentEvent>>(OnIncident);
 
         SubscribeLocalEvent<TeleframeConsoleComponent, BoundUIOpenedEvent>(OnUiOpen);
         SubscribeLocalEvent<TeleframeConsoleComponent, BoundUIClosedEvent>(OnUiClosed);
@@ -50,6 +53,25 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
             ent.Comp.LinkedTeleframe = null;
             Dirty(ent);
         }
+    }
+
+    /// <summary>
+    /// Play a sound from the console to indicate it is ready for use again
+    /// </summary>
+    private void OnReady(Entity<TeleframeConsoleComponent> ent, ref TeleframeToConsoleRelayEvent<TeleframeReadyEvent> args)
+    {
+        Audio.PlayPvs(ent.Comp.TeleportRechargedSound, ent.Owner);
+    }
+
+    /// <summary>
+    /// Inform nearby players that a teleport incident occurred
+    /// </summary>
+    /// <param name="ent"></param>
+    /// <param name="args"></param>
+
+    private void OnIncident(Entity<TeleframeConsoleComponent> ent, ref TeleframeToConsoleRelayEvent<TeleframeIncidentEvent> args)
+    {
+        // Something Something just a week away
     }
 
     /// <summary>

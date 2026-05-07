@@ -15,11 +15,14 @@ public sealed partial class TeleframeSystem : SharedTeleframeSystem
         base.Initialize();
 
         SubscribeLocalEvent<TeleframeComponent, StartChargingEvent>(OnStartTeleportCharge);
+        SubscribeLocalEvent<TeleframeComponent, EndChargingEvent>(OnEndTeleportCharge);
         SubscribeLocalEvent<TeleframeComponent, EndRechargingEvent>(OnEndTeleportRecharge);
 
     }
 
     #region Charge/Recharge
+    // Functions handling whether teleportation is successful are unreliable to predict, as teleportation can go anywhere.
+    // While the base functions that call these checks could be in shared and call an overridden abstract function, it results in teleport failiure mispredictions that feel weird.
     /// <summary>
     /// When Teleport Charge starts, check teleframe and teleportals have initialised correctly
     /// </summary>
@@ -36,21 +39,49 @@ public sealed partial class TeleframeSystem : SharedTeleframeSystem
             ent.Comp.ReadyToTeleport = false;
             Dirty(ent);
 
-            var ev = new TeleframeInitiatedEvent(ent.Owner, Xform.ToMapCoordinates(Transform(GetTeleframeTarget(ent)).Coordinates));
+            var ev = new TeleframeInitiatedEvent(ent.Owner, ent.Comp.ActiveTeleportInfo!.Value);
             RaiseLocalEvent(ent, ref ev);
         }
     }
+
+    /// <summary>
+    /// When Teleport Charge completes, check whether Teleportation is allowed
+    /// </summary>
+    public void OnEndTeleportCharge(Entity<TeleframeComponent> ent, ref EndChargingEvent args)
+    {
+        _chargeRecharge.StartRecharge(ent.Owner);
+
+        Log.Debug("Teleporting starting 1");
+        if (args.Success == false) //if anything caused a fail, cleanup
+        {
+            TeleportCleanup(ent, args.FailReason);
+        }
+        else
+        {
+            var (teleportSuccess, failReason) = CheckTeleportation(ent);
+            if (teleportSuccess == false) //start of charge wellness check on the teleframe
+            {
+                TeleportCleanup(ent, failReason);
+            }
+            else
+            {
+                var ev = new TeleframeTeleportBeginEvent(ent.Owner, ent.Comp.ActiveTeleportInfo!.Value);
+                RaiseLocalEvent(ent, ref ev);
+            }
+        }
+    }
+
     /// <summary>
     /// Recharge is done, indicate this to player at console
     /// </summary>
     public void OnEndTeleportRecharge(Entity<TeleframeComponent> ent, ref EndRechargingEvent args)
     {
         Log.Debug("end teleport recharge");
-
-        if (ent.Comp.LinkedConsole != null && TryComp<TeleframeConsoleComponent>(ent.Comp.LinkedConsole, out var consoleComp))
-            Audio.PlayPredicted(consoleComp.TeleportRechargedSound, ent.Comp.LinkedConsole.Value, null); //there is no user for this sound, it's play
-
         ent.Comp.ReadyToTeleport = true;
+
+        var ev = new TeleframeReadyEvent(ent.Owner);
+        RaiseLocalEvent(ent, ref ev);
+
         Dirty(ent);
     }
     #endregion
@@ -84,7 +115,7 @@ public sealed partial class TeleframeSystem : SharedTeleframeSystem
     /// </summary>
     /// <param name="ent">The teleframe</param>
     /// <returns>validity , fail reason if there is one</returns>
-    public override (bool, string?) CheckTeleportation(Entity<TeleframeComponent> ent)
+    public (bool, string?) CheckTeleportation(Entity<TeleframeComponent> ent)
     {
         if (ent.Comp.ActiveTeleportInfo == null || ent.Comp.ActiveTeleportInfo is not { } teleInfo || !Exists(GetEntity(teleInfo.From)) || !Exists(GetEntity(teleInfo.To))) //is active teleport info null, is the teleport info empty, do either teleport entity not exist
             return (false, "teleport-fail-nolink");
@@ -99,22 +130,4 @@ public sealed partial class TeleframeSystem : SharedTeleframeSystem
 
         return (true, null);
     }
-
-    #region Other Helpers
-    private EntityUid GetTeleframeTarget(Entity<TeleframeComponent> ent)
-    {
-        if (ent.Comp.ActiveTeleportInfo == null || ent.Comp.ActiveTeleportInfo is not { } teleInfo || !Exists(GetEntity(teleInfo.From)) || !Exists(GetEntity(teleInfo.To))) //is active teleport info null, is the teleport info empty, do either teleport entity not exist
-            return EntityUid.Invalid;
-
-        switch (teleInfo.Mode)
-        {
-            case TeleframeActivationMode.Send:
-                return GetEntity(teleInfo.To);
-            case TeleframeActivationMode.Receive:
-                return GetEntity(teleInfo.From);
-            default:
-                return EntityUid.Invalid;
-        }
-    }
-    #endregion
 }
