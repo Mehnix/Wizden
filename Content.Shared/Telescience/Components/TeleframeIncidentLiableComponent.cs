@@ -27,7 +27,7 @@ public sealed partial class TeleframeIncidentLiableComponent : Component
     /// Minimum Severity level required for an incident of Minor, Moderate, Major, or Malefic occuring.
     /// </summary>
     [DataField]
-    public List<float> IncidentSeverityMinimum = [0, 1, 2, 3];
+    public List<float> IncidentSeverityMinimum = new List<float> { 0, 1, 2, 3 };
 
     //potentially with upgrades, emagging could be considered an invisible "upgrade" that can't be gotten rid of and moved to there.
     /// <summary>
@@ -41,4 +41,5 @@ public sealed partial class TeleframeIncidentLiableComponent : Component
     /// </summary>
     [DataField]
     public float EmagIncidentMultiplier = 1f;
+
 }

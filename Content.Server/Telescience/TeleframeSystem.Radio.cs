@@ -14,10 +14,12 @@ namespace Content.Server.Telescience;
 public sealed partial class TeleframeSystem : SharedTeleframeSystem
 {
     [Dependency] private readonly ChatSystem _chat = default!;
-    [Dependency] private readonly RadioSystem _radio = default!;
-    [Dependency] private readonly NavMapSystem _navMap = default!;
     [Dependency] private readonly EmagSystem _emag = default!;
+    [Dependency] private readonly NavMapSystem _navMap = default!;
     [Dependency] private readonly SharedMapSystem _maps = default!;
+    [Dependency] private readonly RadioSystem _radio = default!;
+
+
 
     protected override void InitializeRadio()
     {
@@ -32,16 +34,12 @@ public sealed partial class TeleframeSystem : SharedTeleframeSystem
     /// </summary>
     private void OnRadioTeleported(Entity<TeleframeConsoleRadioComponent> ent, ref TeleframeToConsoleRelayEvent<TeleframeInitiatedEvent> args)
     {
-        if (args.Frame.Comp.ActiveTeleportInfo is not { } teleInfo)
-            return;
-
-        /*
         var target = Xform.ToMapCoordinates(Transform(GetTeleportalTarget(args.Args.TeleportInfo)).Coordinates);
         var proximity = _navMap.GetNearestBeaconString(GetTeleportalTarget(args.Args.TeleportInfo));
 
         var message = Loc.GetString(
             "teleporter-console-activate",
-            ("send", teleInfo.Mode),
+            ("send", args.Args.TeleportInfo.Mode),
             ("targetName", Identity.Entity(args.Frame.Owner, EntityManager)),
             ("X", target.Position.X.ToString("0")),
             ("Y", target.Position.Y.ToString("0")),
@@ -49,7 +47,7 @@ public sealed partial class TeleframeSystem : SharedTeleframeSystem
             ("map", _maps.TryGetMap(target.MapId, out var mapEnt) ? Name(mapEnt!.Value) : Loc.GetString("teleporter-location-unknown"))
         );                                                                  //if mapEnt is null the other option would have been chosen so safe denullable
 
-        SendRadioMessage(ent, message);*/
+        SendRadioMessage(ent, message);
     }
     ///<summary>
     /// Sends radio and/or IC messages as long as the parent device isn't emagged.

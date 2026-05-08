@@ -1,10 +1,10 @@
 using Content.Shared.ChargeRecharge.Events;
-using Content.Shared.Telescience;
+using Content.Shared.Physics;
 using Content.Shared.Telescience.Components;
 using Content.Shared.Telescience.Events;
 using Content.Shared.Telescience.Systems;
 using Robust.Shared.Map;
-using Content.Shared.Physics;
+
 
 namespace Content.Server.Telescience;
 
@@ -29,13 +29,12 @@ public sealed partial class TeleframeSystem : SharedTeleframeSystem
     public void OnStartTeleportCharge(Entity<TeleframeComponent> ent, ref StartChargingEvent args)
     {
         var (teleportSuccess, failReason) = CheckTeleportation(ent);
-        if (teleportSuccess == false) //start of charge wellness check on the teleframe
+        if (teleportSuccess == false) //start of charge wellness check on the teleframe, if not good, just end the charge immediately
         {
             _chargeRecharge.EndCharge(ent.Owner, false, failReason);
         }
         else
         {
-            Log.Debug("Teleporting Initiated 2");
             ent.Comp.ReadyToTeleport = false;
             Dirty(ent);
 
@@ -51,17 +50,16 @@ public sealed partial class TeleframeSystem : SharedTeleframeSystem
     {
         _chargeRecharge.StartRecharge(ent.Owner);
 
-        Log.Debug("Teleporting starting 1");
-        if (args.Success == false) //if anything caused a fail, cleanup
+        if (args.Success == false) //if anything caused a fail during charging, cleanup
         {
-            TeleportCleanup(ent, args.FailReason);
+            TeleportFail(ent, args.FailReason);
         }
         else
         {
             var (teleportSuccess, failReason) = CheckTeleportation(ent);
-            if (teleportSuccess == false) //start of charge wellness check on the teleframe
+            if (teleportSuccess == false) //end of charge wellness check on the teleframe
             {
-                TeleportCleanup(ent, failReason);
+                TeleportFail(ent, failReason);
             }
             else
             {
@@ -76,7 +74,6 @@ public sealed partial class TeleframeSystem : SharedTeleframeSystem
     /// </summary>
     public void OnEndTeleportRecharge(Entity<TeleframeComponent> ent, ref EndRechargingEvent args)
     {
-        Log.Debug("end teleport recharge");
         ent.Comp.ReadyToTeleport = true;
 
         var ev = new TeleframeReadyEvent(ent.Owner);

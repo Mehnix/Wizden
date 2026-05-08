@@ -15,10 +15,10 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
 
         SubscribeLocalEvent<TeleframeIncidentLiableComponent, GotEmaggedEvent>(OnIncidentEmagged);
     }
-
     /// <summary>
     /// Once the teleframe finishes teleportation, roll for incident
     /// </summary>
+
     private void OnIncidentTeleported(Entity<TeleframeIncidentLiableComponent> ent, ref TeleframeTeleportedAllEvent args)
     {
         if (!TryRollForIncident(ent, out var severity))
@@ -30,7 +30,7 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
         var rand = new RobustRandom(); //generate a new RobustRandom object with its own seed the Client and Server can agree on
         rand.SetSeed(SharedRandomExtensions.HashCodeCombine((int)Timing.CurTick.Value, GetNetEntity(ent.Owner).Id));
 
-        /*if (rand.NextFloat() < ent.Comp.IncidentTarget) //choose whether incident occurs at target or source
+        if (rand.NextFloat() < ent.Comp.IncidentTarget) //choose whether incident occurs at target or source
         {
             var target = GetTeleportalTarget(args.TeleportInfo);
             if (target != EntityUid.Invalid)
@@ -41,7 +41,7 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
             var source = GetTeleportalSource(args.TeleportInfo);
             if (source != EntityUid.Invalid)
                 DoIncident(source, severity!.Value);
-        }*/
+        }
     }
 
     /// <summary>
@@ -55,9 +55,9 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
         if (args.TeleportInfo == null || args.TeleportInfo is not { } teleInfo || severity != null)
             return;
 
-        /*var target = GetTeleportalSource(teleInfo); //teleportation failed, blame the teleframe
+        var target = GetTeleportalSource(teleInfo); //teleportation failed, blame the teleframe
         if (target != EntityUid.Invalid)
-            DoIncident(target, severity!.Value);*/
+            DoIncident(target, severity!.Value);
 
     }
 
@@ -100,4 +100,5 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
             return false;
         }
     }
+
 }

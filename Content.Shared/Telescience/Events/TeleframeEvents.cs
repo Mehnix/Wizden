@@ -1,6 +1,4 @@
 using Content.Shared.Telescience.Components;
-using Robust.Shared.Map;
-
 
 namespace Content.Shared.Telescience.Events;
 

@@ -22,18 +22,17 @@ namespace Content.Shared.Telescience.Systems;
 
 public abstract partial class SharedTeleframeSystem : EntitySystem
 {
-    [Dependency] protected readonly SharedTransformSystem Xform = default!;
-    [Dependency] protected readonly SharedPhysicsSystem Physics = default!;
     [Dependency] protected readonly SharedAudioSystem Audio = default!;
+    [Dependency] protected readonly SharedPhysicsSystem Physics = default!;
     [Dependency] protected readonly IGameTiming Timing = default!;
-    [Dependency] private readonly EmagSystem _emag = default!;
-    [Dependency] protected readonly IRobustRandom Random = default!;
-    [Dependency] private readonly SharedPvsOverrideSystem _pvs = default!;
-    [Dependency] private readonly ISharedPlayerManager _player = default!;
-    [Dependency] private readonly EntityLookupSystem _lookup = default!;
-    [Dependency] private readonly EntityWhitelistSystem _whitelistSystem = default!;
+    [Dependency] protected readonly SharedTransformSystem Xform = default!;
     [Dependency] private readonly ISharedAdminLogManager _adminLogger = default!;
     [Dependency] private readonly SharedChargeRechargeSystem _chargeRecharge = default!;
+    [Dependency] private readonly EmagSystem _emag = default!;
+    [Dependency] private readonly EntityLookupSystem _lookup = default!;
+    [Dependency] private readonly SharedPvsOverrideSystem _pvs = default!;
+    [Dependency] private readonly ISharedPlayerManager _player = default!;
+    [Dependency] private readonly EntityWhitelistSystem _whitelistSystem = default!;
     private const LookupFlags RangeFlags = LookupFlags.Approximate | LookupFlags.Dynamic | LookupFlags.Sundries;
     public override void Initialize()
     {
@@ -146,7 +145,6 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
         _adminLogger.Add(LogType.Teleport, $"Teleportation initiated at {ToPrettyString(ent.Owner)} teleporting to {ToPrettyString(targetPortal)} ({Xform.ToMapCoordinates(Transform(targetPortal).Coordinates)}) from {ToPrettyString(targetPortal)} ({Xform.ToMapCoordinates(Transform(sourcePortal).Coordinates)})");
         _chargeRecharge.StartCharge(ent.Owner); //begin charging!
 
-        Log.Debug("Initiated 1");
         return true;
     }
 
@@ -162,8 +160,6 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
     /// <param name="ent">TeleframeComponent Entity</param>
     private void OnTeleport(Entity<TeleframeComponent> ent, ref TeleframeTeleportBeginEvent args)
     {
-        Log.Debug("Teleporting Start");
-
         var tpFrom = GetEntity(args.TeleportInfo.From);
         var tpTo = GetEntity(args.TeleportInfo.To);
 
@@ -209,11 +205,9 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
         var frameFinishEv = new TeleframeTeleportedAllEvent(teleported, args.TeleportInfo); //all done event
         RaiseLocalEvent(ent.Owner, ref frameFinishEv);
 
-        Log.Debug("Teleporting End");
-
         //clean up
         _adminLogger.Add(LogType.Teleport, $"{ToPrettyString(ent.Owner)} has teleported {teleported.Count} entities to {ToPrettyString(tpTo)} ({Xform.ToMapCoordinates(Transform(tpTo).Coordinates)}) to {ToPrettyString(tpFrom)} ({Xform.ToMapCoordinates(Transform(tpFrom).Coordinates)}).");
-        TeleportCleanup(ent, null);
+        TeleportCleanup(ent);
         Dirty(ent);
     }
 
@@ -222,9 +216,8 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
 
     ///<summary>
     /// Teleportation has concluded, clean up teleportation entities
-    /// also if we failed raise an event and summon some l̶i̶g̶h̶t̶n̶i̶n̶g̶  smoke, for fun.
     /// </summary>
-    protected void TeleportCleanup(Entity<TeleframeComponent> ent, string? failReason = null)
+    protected void TeleportCleanup(Entity<TeleframeComponent> ent)
     {
         if (ent.Comp.ActiveTeleportInfo is { } teleInfo)
         {
@@ -245,21 +238,26 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
             PredictedQueueDel(teleTo);
         }
 
-        if (failReason != null) //fail if we have a reason for it
+        ent.Comp.ActiveTeleportInfo = null; //clean up our teleport info
+    }
+
+    /// <summary>
+    /// Indicate teleportation has failed, raise an event, then clean up the teleportals
+    /// </summary>
+    protected void TeleportFail(Entity<TeleframeComponent> ent, string? failReason = null)
+    {
+        if (ent.Comp.TeleportFailEffect != null)
         {
-            if (ent.Comp.TeleportFailEffect != null)
-            {
-                foreach (var effect in ent.Comp.TeleportFailEffect)
-                    PredictedSpawnNextToOrDrop(effect, ent.Owner); //fail effects
-            }
-
-            var reasonWrapped = Loc.GetString("teleport-fail", ("reason", Loc.GetString(failReason)));
-
-            var ev = new TeleframeTeleportFailedEvent(reasonWrapped, ent.Comp.ActiveTeleportInfo);
-            RaiseLocalEvent(ent.Owner, ref ev);
+            foreach (var effect in ent.Comp.TeleportFailEffect)
+                PredictedSpawnNextToOrDrop(effect, ent.Owner); //fail effects
         }
 
-        ent.Comp.ActiveTeleportInfo = null; //clean up our teleport info
+        var reasonWrapped = Loc.GetString("teleport-fail", ("reason", Loc.GetString(failReason ?? "teleport-fail-unknown")));
+
+        var ev = new TeleframeTeleportFailedEvent(reasonWrapped, ent.Comp.ActiveTeleportInfo);
+        RaiseLocalEvent(ent.Owner, ref ev);
+
+        TeleportCleanup(ent);
     }
 
     /// <summary>
@@ -272,7 +270,7 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
     }
     #endregion
 
-    /*
+
     #region Other Helpers
     /// <summary>
     /// Gets the Teleportal at the teleframe's target
@@ -311,6 +309,6 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
                 return EntityUid.Invalid;
         }
     }
-    #endregion*/
+    #endregion
 }
 

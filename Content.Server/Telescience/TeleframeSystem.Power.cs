@@ -1,11 +1,10 @@
 using Content.Shared.ChargeRecharge.Events;
 using Content.Shared.ChargeRecharge.Systems;
 using Content.Shared.Emp;
-using Content.Shared.Telescience.Systems;
 using Content.Shared.Telescience.Components;
-using Content.Shared.Telescience.Events;
-using Content.Server.Power.EntitySystems;
+using Content.Shared.Telescience.Systems;
 using Content.Server.Power.Components;
+using Content.Server.Power.EntitySystems;
 
 namespace Content.Server.Telescience;
 
