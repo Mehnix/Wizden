@@ -17,24 +17,22 @@ using Robust.Shared.Player;
 using Robust.Shared.Random;
 using Robust.Shared.Timing;
 using System.Numerics;
-using Content.Shared.ChargeRecharge.Events;
 
 namespace Content.Shared.Telescience.Systems;
 
 public abstract partial class SharedTeleframeSystem : EntitySystem
 {
-    [Dependency] protected readonly SharedTransformSystem Xform = default!;
     [Dependency] protected readonly SharedAudioSystem Audio = default!;
+    [Dependency] protected readonly SharedPhysicsSystem Physics = default!;
     [Dependency] protected readonly IGameTiming Timing = default!;
+    [Dependency] protected readonly SharedTransformSystem Xform = default!;
+    [Dependency] private readonly ISharedAdminLogManager _adminLogger = default!;
+    [Dependency] private readonly SharedChargeRechargeSystem _chargeRecharge = default!;
     [Dependency] private readonly EmagSystem _emag = default!;
-    [Dependency] protected readonly IRobustRandom Random = default!;
+    [Dependency] private readonly EntityLookupSystem _lookup = default!;
     [Dependency] private readonly SharedPvsOverrideSystem _pvs = default!;
     [Dependency] private readonly ISharedPlayerManager _player = default!;
-    [Dependency] private readonly EntityLookupSystem _lookup = default!;
     [Dependency] private readonly EntityWhitelistSystem _whitelistSystem = default!;
-    [Dependency] private readonly ISharedAdminLogManager _adminLogger = default!;
-    [Dependency] protected readonly SharedPhysicsSystem Physics = default!;
-    [Dependency] private readonly SharedChargeRechargeSystem _chargeRecharge = default!;
     private const LookupFlags RangeFlags = LookupFlags.Approximate | LookupFlags.Dynamic | LookupFlags.Sundries;
     public override void Initialize()
     {
@@ -49,7 +47,7 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
 
         SubscribeLocalEvent<TeleframeComponent, MapInitEvent>(OnMapInit);
         SubscribeLocalEvent<TeleframeConsoleComponent, TeleframeActivateMessage>(OnTeleportActivate);
-        SubscribeLocalEvent<TeleframeComponent, EndChargingEvent>(OnEndTeleportCharge);
+        SubscribeLocalEvent<TeleframeComponent, TeleframeTeleportBeginEvent>(OnTeleport);
         SubscribeLocalEvent<TeleframeComponent, EntityTerminatingEvent>(OnDeletion);
     }
 
@@ -144,10 +142,9 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
             }
         }
 
-
+        _adminLogger.Add(LogType.Teleport, $"Teleportation initiated at {ToPrettyString(ent.Owner)} teleporting to {ToPrettyString(targetPortal)} ({Xform.ToMapCoordinates(Transform(targetPortal).Coordinates)}) from {ToPrettyString(targetPortal)} ({Xform.ToMapCoordinates(Transform(sourcePortal).Coordinates)})");
         _chargeRecharge.StartCharge(ent.Owner); //begin charging!
 
-        Log.Debug("Initiated 1");
         return true;
     }
 
@@ -161,20 +158,13 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
     /// also adminlog
     /// </summary>
     /// <param name="ent">TeleframeComponent Entity</param>
-    private void OnTeleport(Entity<TeleframeComponent> ent)
+    private void OnTeleport(Entity<TeleframeComponent> ent, ref TeleframeTeleportBeginEvent args)
     {
-        if (ent.Comp.ActiveTeleportInfo is not { } teleInfo)
-            return;
-
-        Log.Debug("Teleporting Start");
-
-        var tpFrom = GetEntity(teleInfo.From);
-        var tpTo = GetEntity(teleInfo.To);
+        var tpFrom = GetEntity(args.TeleportInfo.From);
+        var tpTo = GetEntity(args.TeleportInfo.To);
 
         var entities = _lookup.GetEntitiesInRange(tpFrom, ent.Comp.TeleportRadius, RangeFlags); //get everything in teleport radius range that isn't in a container
         //getting from inside a container would result in teleporting organs outside of the body, or machine parts outside of machines, this is not good.
-        var tpToCoords = Xform.ToMapCoordinates(Transform(tpTo).Coordinates); //have to use map coordinates as these entities will be deleted after teleportation concludes
-        var tpFromCoords = Xform.ToMapCoordinates(Transform(tpFrom).Coordinates);
 
         List<EntityUid> teleported = new(entities.Count);
         foreach (var tp in entities) //for each entity in list of detected entities
@@ -197,11 +187,8 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
 
             Xform.SetWorldPosition(tp, scatterpos); //set final position after scatter
 
-            var tpEv = new TeleframeUserTeleportedEvent(ent.Owner, tpToCoords, tpFromCoords); //raise teleport event on teleported entity so it knows it was just teleported
+            var tpEv = new TeleframeUserTeleportedEvent(ent.Owner, args.TeleportInfo); //raise teleport event on teleported entity so it knows it was just teleported
             RaiseLocalEvent(tp, ref tpEv);
-
-            var frameEv = new TeleframeTeleportedEvent(tp, tpToCoords, tpFromCoords); //raise teleport event on teleframe so it knows what it just teleported
-            RaiseLocalEvent(ent.Owner, ref frameEv);
 
             teleported.Add(tp);
         }
@@ -215,52 +202,22 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
             }
         }
 
-        var frameFinishEv = new TeleframeTeleportedAllEvent(teleported, tpToCoords, tpFromCoords); //all done event
+        var frameFinishEv = new TeleframeTeleportedAllEvent(teleported, args.TeleportInfo); //all done event
         RaiseLocalEvent(ent.Owner, ref frameFinishEv);
 
-        Log.Debug("Teleporting End");
-
         //clean up
-        _adminLogger.Add(LogType.Teleport, $"{ToPrettyString(ent.Owner)} has teleported {teleported.Count} entities from {tpTo} to {tpFrom}.");
+        _adminLogger.Add(LogType.Teleport, $"{ToPrettyString(ent.Owner)} has teleported {teleported.Count} entities to {ToPrettyString(tpTo)} ({Xform.ToMapCoordinates(Transform(tpTo).Coordinates)}) to {ToPrettyString(tpFrom)} ({Xform.ToMapCoordinates(Transform(tpFrom).Coordinates)}).");
+        TeleportCleanup(ent);
         Dirty(ent);
     }
 
     #endregion
-    public abstract (bool, string?) CheckTeleportation(Entity<TeleframeComponent> ent);
-
-    /// <summary>
-    /// When Teleport Charge completes, check whether Teleportation is allowed
-    /// </summary>
-    public void OnEndTeleportCharge(Entity<TeleframeComponent> ent, ref EndChargingEvent args)
-    {
-        _chargeRecharge.StartRecharge(ent.Owner);
-
-        Log.Debug("Teleporting starting 1");
-        if (args.Success == false) //if anything caused a fail, cleanup
-        {
-            TeleportCleanup(ent, args.FailReason);
-        }
-        else
-        {
-            var (teleportSuccess, failReason) = CheckTeleportation(ent);
-            if (teleportSuccess == false) //start of charge wellness check on the teleframe
-            {
-                TeleportCleanup(ent, failReason);
-            }
-            else
-            {
-                OnTeleport(ent); //if all good, teleport
-                TeleportCleanup(ent, null);
-            }
-        }
-    }
     #region Teleport Fail Cleanup/Checking
 
     ///<summary>
     /// Teleportation has concluded, clean up teleportation entities
-    /// also if we failed raise an event and summon some l̶i̶g̶h̶t̶n̶i̶n̶g̶  smoke, for fun.
     /// </summary>
-    protected void TeleportCleanup(Entity<TeleframeComponent> ent, string? failReason = null)
+    protected void TeleportCleanup(Entity<TeleframeComponent> ent)
     {
         if (ent.Comp.ActiveTeleportInfo is { } teleInfo)
         {
@@ -282,20 +239,25 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
         }
 
         ent.Comp.ActiveTeleportInfo = null; //clean up our teleport info
+    }
 
-        if (failReason != null) //fail if we have a reason for it
+    /// <summary>
+    /// Indicate teleportation has failed, raise an event, then clean up the teleportals
+    /// </summary>
+    protected void TeleportFail(Entity<TeleframeComponent> ent, string? failReason = null)
+    {
+        if (ent.Comp.TeleportFailEffect != null)
         {
-            if (ent.Comp.TeleportFailEffect != null)
-            {
-                foreach (var effect in ent.Comp.TeleportFailEffect)
-                    PredictedSpawnNextToOrDrop(effect, ent.Owner); //fail effects
-            }
-
-            var reasonWrapped = Loc.GetString("teleport-fail", ("reason", Loc.GetString(failReason)));
-
-            var ev = new TeleframeTeleportFailedEvent(reasonWrapped);
-            RaiseLocalEvent(ent.Owner, ref ev);
+            foreach (var effect in ent.Comp.TeleportFailEffect)
+                PredictedSpawnNextToOrDrop(effect, ent.Owner); //fail effects
         }
+
+        var reasonWrapped = Loc.GetString("teleport-fail", ("reason", Loc.GetString(failReason ?? "teleport-fail-unknown")));
+
+        var ev = new TeleframeTeleportFailedEvent(reasonWrapped, ent.Comp.ActiveTeleportInfo);
+        RaiseLocalEvent(ent.Owner, ref ev);
+
+        TeleportCleanup(ent);
     }
 
     /// <summary>
@@ -308,5 +270,45 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
     }
     #endregion
 
+
+    #region Other Helpers
+    /// <summary>
+    /// Gets the Teleportal at the teleframe's target
+    /// </summary>
+    public EntityUid GetTeleportalTarget(TeleframeActiveTeleportInfo teleInfo)
+    {
+        if (!Exists(GetEntity(teleInfo.From)) || !Exists(GetEntity(teleInfo.To))) //is active teleport info null, is the teleport info empty, do either teleport entity not exist
+            return EntityUid.Invalid;
+
+        switch (teleInfo.Mode)
+        {
+            case TeleframeActivationMode.Send:
+                return GetEntity(teleInfo.To);
+            case TeleframeActivationMode.Receive:
+                return GetEntity(teleInfo.From);
+            default:
+                return EntityUid.Invalid;
+        }
+    }
+
+    /// <summary>
+    /// Gets the Teleportal at the teleframe's source (usually directly above itself unless the teleframe is an item).
+    /// </summary>
+    public EntityUid GetTeleportalSource(TeleframeActiveTeleportInfo teleInfo)
+    {
+        if (!Exists(GetEntity(teleInfo.From)) || !Exists(GetEntity(teleInfo.To))) //is active teleport info null, is the teleport info empty, do either teleport entity not exist
+            return EntityUid.Invalid;
+
+        switch (teleInfo.Mode)
+        {
+            case TeleframeActivationMode.Send:
+                return GetEntity(teleInfo.To);
+            case TeleframeActivationMode.Receive:
+                return GetEntity(teleInfo.From);
+            default:
+                return EntityUid.Invalid;
+        }
+    }
+    #endregion
 }
 

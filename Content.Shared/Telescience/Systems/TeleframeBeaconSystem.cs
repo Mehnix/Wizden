@@ -40,7 +40,7 @@ public sealed partial class TeleframeBeaconSystem : EntitySystem
             var newBeacon = new TeleportPoint(Name(ent.Owner), GetNetEntity(ent.Owner));
             var present = false;
             foreach (var beacon in console.BeaconList) //can't use .Contains on the hashset as you could change the beacon's name and then it wouldn't be recognised
-            {                                          //could do that override thingy but...eeh I don't think this is exactly performance deleting
+            {
                 if (beacon.TelePoint == newBeacon.TelePoint)
                     present = true;
             } //check all netentities in beaconlist to see if the interacter is already there.

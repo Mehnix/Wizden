@@ -17,11 +17,29 @@ public sealed partial class TeleframeIncidentLiableComponent : Component
     [DataField]
     public float IncidentMultiplier = 1f;
 
-    //potentially with upgrades, emagging could be considered an invisible "upgrade" that can't be gotten rid of and these will be moved to there.
+    /// <summary>
+    /// Chance an incident will occur at the target, inverse of this is chance of occurring at the source
+    /// </summary>
+    [DataField]
+    public float IncidentTarget = 0.5f;
 
+    /// <summary>
+    /// Minimum Severity level required for an incident of Minor, Moderate, Major, or Malefic occuring.
+    /// </summary>
+    [DataField]
+    public List<float> IncidentSeverityMinimum = new List<float> { 0, 1, 2, 3 };
+
+    //potentially with upgrades, emagging could be considered an invisible "upgrade" that can't be gotten rid of and moved to there.
+    /// <summary>
+    /// Effect of an emag on Teleframe Incident Chance
+    /// </summary>
     [DataField]
     public float EmagIncidentChance = 1f;
 
+    /// <summary>
+    /// Effect of an emag on Teleframe Incident Multiplier
+    /// </summary>
     [DataField]
-    public float EmagIncidentMultiplier = 2f;
+    public float EmagIncidentMultiplier = 1f;
+
 }

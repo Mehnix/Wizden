@@ -10,6 +10,8 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
     {
         SubscribeLocalEvent<TeleframeComponent, TeleframeInitiatedEvent>(RelayToConsole);
         SubscribeLocalEvent<TeleframeComponent, TeleframeTeleportFailedEvent>(RelayToConsole);
+        SubscribeLocalEvent<TeleframeComponent, TeleframeReadyEvent>(RelayToConsole);
+        SubscribeLocalEvent<TeleframeComponent, TeleframeIncidentEvent>(RelayToConsole);
     }
 
     /// <summary>
