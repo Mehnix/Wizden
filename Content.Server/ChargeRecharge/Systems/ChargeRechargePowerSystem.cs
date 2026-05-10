@@ -1,33 +1,31 @@
+using Content.Shared.ChargeRecharge.Components;
 using Content.Shared.ChargeRecharge.Events;
 using Content.Shared.ChargeRecharge.Systems;
 using Content.Shared.Emp;
-using Content.Shared.Telescience.Components;
-using Content.Shared.Telescience.Systems;
 using Content.Server.Power.Components;
 using Content.Server.Power.EntitySystems;
 
-namespace Content.Server.Telescience;
+namespace Content.Server.ChargeRecharge.Systems;
 
-public sealed partial class TeleframeSystem : SharedTeleframeSystem
+public sealed partial class ChargeRechargePowerSystem : SharedChargeRechargePowerSystem
 {
-    [Dependency] private readonly SharedChargeRechargeSystem _chargeRecharge = default!;
-    protected override void InitializePower()
+    public override void Initialize()
     {
-        base.InitializePower();
+        base.Initialize();
 
-        SubscribeLocalEvent<TeleframeStructurePowerComponent, ComponentStartup>(OnStartup);
-        SubscribeLocalEvent<TeleframeStructurePowerComponent, PowerConsumerReceivedChanged>(ReceivedChanged);
-        SubscribeLocalEvent<TeleframeStructurePowerComponent, AnchorStateChangedEvent>(OnAnchorStateChanged);
-        SubscribeLocalEvent<TeleframeStructurePowerComponent, EmpPulseEvent>(OnEmpPulseStructure);
-        SubscribeLocalEvent<TeleframeStructurePowerComponent, StartChargingEvent>(OnStartChargingPower);
-        SubscribeLocalEvent<TeleframeStructurePowerComponent, StartRechargingEvent>(OnStartRechargingPower);
-        SubscribeLocalEvent<TeleframeStructurePowerComponent, EndRechargingEvent>(OnEndRechargingPower);
+        SubscribeLocalEvent<ChargeRechargePowerComponent, ComponentStartup>(OnStartup);
+        SubscribeLocalEvent<ChargeRechargePowerComponent, PowerConsumerReceivedChanged>(ReceivedChanged);
+        SubscribeLocalEvent<ChargeRechargePowerComponent, AnchorStateChangedEvent>(OnAnchorStateChanged);
+        SubscribeLocalEvent<ChargeRechargePowerComponent, EmpPulseEvent>(OnEmpPulseStructure);
+        SubscribeLocalEvent<ChargeRechargePowerComponent, StartChargingEvent>(OnStartChargingPower);
+        SubscribeLocalEvent<ChargeRechargePowerComponent, StartRechargingEvent>(OnStartRechargingPower);
+        SubscribeLocalEvent<ChargeRechargePowerComponent, EndRechargingEvent>(OnEndRechargingPower);
     }
 
     /// <summary>
     /// checks power situation when spawned
     /// </summary>
-    private void OnStartup(Entity<TeleframeStructurePowerComponent> ent, ref ComponentStartup args)
+    private void OnStartup(Entity<ChargeRechargePowerComponent> ent, ref ComponentStartup args)
     {
         if (!TryComp<PowerConsumerComponent>(ent, out var powerConsumer))
             return;
@@ -40,7 +38,7 @@ public sealed partial class TeleframeSystem : SharedTeleframeSystem
     /// <summary>
     /// Checks power situation if received amount changes
     /// </summary>
-    private void ReceivedChanged(Entity<TeleframeStructurePowerComponent> ent, ref PowerConsumerReceivedChanged args)
+    private void ReceivedChanged(Entity<ChargeRechargePowerComponent> ent, ref PowerConsumerReceivedChanged args)
     {
         //Log.Debug($"{args.ReceivedPower} {args.DrawRate}");
         if (Math.Ceiling(args.ReceivedPower) < Math.Floor(args.DrawRate)) //round or get floating point errors at large values
@@ -51,7 +49,7 @@ public sealed partial class TeleframeSystem : SharedTeleframeSystem
             }
             else
             {
-                _chargeRecharge.PauseRecharge(ent.Owner); //pause recharge if we're above idle power but not at Draw Rate (Active Power)
+                ChargeRecharge.PauseRecharge(ent.Owner); //pause recharge if we're above idle power but not at Draw Rate (Active Power)
             }
         }
         else
@@ -63,14 +61,13 @@ public sealed partial class TeleframeSystem : SharedTeleframeSystem
     /// <summary>
     /// Deals with teleframe structures being in the powered off state
     /// </summary>
-    private void StructPowerOff(Entity<TeleframeStructurePowerComponent, TeleframeComponent?, PowerConsumerComponent?> ent)
+    private void StructPowerOff(Entity<ChargeRechargePowerComponent, PowerConsumerComponent?> ent)
     {
-        Log.Debug("Power Off");
-        if (!Resolve(ent, ref ent.Comp2, ref ent.Comp3)) //Stop here if no Teleframe or PowerConsumer component
+        if (!Resolve(ent, ref ent.Comp2)) //Stop here if no Teleframe or PowerConsumer component
             return;
 
-        if (ent.Comp3.ReceivedPower <= 0) //total blackout
-            ent.Comp3.DrawRate = 1; //draw rate is 1 rather than 0 as this means when power is applied a PowerConsumerRecievedChanged event fires to update power again.
+        if (ent.Comp2.ReceivedPower <= 0) //total blackout
+            ent.Comp2.DrawRate = 1; //draw rate is 1 rather than 0 as this means when power is applied a PowerConsumerRecievedChanged event fires to update power again.
 
         if (ent.Comp1.IsPowered == true)
         {
@@ -78,24 +75,22 @@ public sealed partial class TeleframeSystem : SharedTeleframeSystem
             ent.Comp1.IsPowered = false;
             Dirty(ent.Owner, ent.Comp1);
         }
-
     }
 
     /// <summary>
     /// Deals with teleframe structures being in the powered on state
     /// </summary>
-    private void StructPowerOn(Entity<TeleframeStructurePowerComponent, TeleframeComponent?, PowerConsumerComponent?> ent)
+    private void StructPowerOn(Entity<ChargeRechargePowerComponent, PowerConsumerComponent?> ent)
     {
-        Log.Debug("Power On");
-        if (!Resolve(ent, ref ent.Comp2, ref ent.Comp3)) //Stop here if no Teleframe or PowerConsumer component
+        if (!Resolve(ent, ref ent.Comp2)) //Stop here if no PowerConsumer component
             return;
 
         ent.Comp1.IsPowered = true;
         Dirty(ent.Owner, ent.Comp1);
 
-        if (ent.Comp3.DrawRate == 1)
+        if (ent.Comp2.DrawRate == 1)
         {
-            ent.Comp3.DrawRate = ent.Comp1.PowerUseIdle;
+            ent.Comp2.DrawRate = ent.Comp1.PowerUseIdle;
         }
 
         PowerOn((ent.Owner, ent.Comp1)); //go to generic function
@@ -104,7 +99,7 @@ public sealed partial class TeleframeSystem : SharedTeleframeSystem
     /// <summary>
     /// immediately turn off if unanchored
     /// </summary>
-    private void OnAnchorStateChanged(Entity<TeleframeStructurePowerComponent> ent, ref AnchorStateChangedEvent args)
+    private void OnAnchorStateChanged(Entity<ChargeRechargePowerComponent> ent, ref AnchorStateChangedEvent args)
     {
         if (args.Anchored)
             return;
@@ -115,7 +110,7 @@ public sealed partial class TeleframeSystem : SharedTeleframeSystem
     /// <summary>
     /// immediately turn off if EMP'd
     /// </summary>
-    private void OnEmpPulseStructure(Entity<TeleframeStructurePowerComponent> ent, ref EmpPulseEvent args)
+    private void OnEmpPulseStructure(Entity<ChargeRechargePowerComponent> ent, ref EmpPulseEvent args)
     {
         StructPowerOff(ent);
     }
@@ -123,12 +118,11 @@ public sealed partial class TeleframeSystem : SharedTeleframeSystem
     /// <summary>
     /// Switch to active power when the teleframe starts charging
     /// </summary>
-    private void OnStartChargingPower(Entity<TeleframeStructurePowerComponent> ent, ref StartChargingEvent args)
+    private void OnStartChargingPower(Entity<ChargeRechargePowerComponent> ent, ref StartChargingEvent args)
     {
         if (TryComp<PowerConsumerComponent>(ent, out var powerConsumer))
         {
             powerConsumer.DrawRate = ent.Comp.PowerUseActive; // set to high power draw, it actually takes a while to build up due to high demand so this preps for recharge
-            Log.Debug($"Start Charge power {powerConsumer.DrawRate}");
             CheckPower((ent.Owner, powerConsumer));
         }
     }
@@ -136,12 +130,11 @@ public sealed partial class TeleframeSystem : SharedTeleframeSystem
     /// <summary>
     /// Make sure the Teleframe is on active power for recharging
     /// </summary>
-    private void OnStartRechargingPower(Entity<TeleframeStructurePowerComponent> ent, ref StartRechargingEvent args)
+    private void OnStartRechargingPower(Entity<ChargeRechargePowerComponent> ent, ref StartRechargingEvent args)
     {
         if (TryComp<PowerConsumerComponent>(ent, out var powerConsumer))
         {
             powerConsumer.DrawRate = ent.Comp.PowerUseActive; // confirm high power draw, should already be set, but we need to check power anyway so may as well do this too
-            Log.Debug($"Start Recharge power {powerConsumer.DrawRate}");
             CheckPower((ent.Owner, powerConsumer));
         }
     }
@@ -149,18 +142,17 @@ public sealed partial class TeleframeSystem : SharedTeleframeSystem
     /// <summary>
     /// Switch to idle power when recharge finishes
     /// </summary>
-    private void OnEndRechargingPower(Entity<TeleframeStructurePowerComponent> ent, ref EndRechargingEvent args)
+    private void OnEndRechargingPower(Entity<ChargeRechargePowerComponent> ent, ref EndRechargingEvent args)
     {
         if (TryComp<PowerConsumerComponent>(ent, out var powerConsumer))
         {
             powerConsumer.DrawRate = ent.Comp.PowerUseIdle; // recharge end so idle power
-            Log.Debug($"End recharge power {powerConsumer.DrawRate}");
             CheckPower((ent.Owner, powerConsumer));
         }
     }
 
     /// <summary>
-    /// Make the teleframe check its own power consumption, as it won't always do it on its own if external power doesn't change but its requirements do
+    /// Make the structure check its own power consumption, as it won't always do it on its own if external power doesn't change but its requirements do
     /// </summary>
     private void CheckPower(Entity<PowerConsumerComponent> ent)
     {

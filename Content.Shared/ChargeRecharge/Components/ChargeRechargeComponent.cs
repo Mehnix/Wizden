@@ -5,8 +5,9 @@ namespace Content.Shared.ChargeRecharge.Components;
 
 /// <summary>
 /// Component that holds times that something charges or recharges for, as well as the visuals related to doing so.
+/// This component is not required for the <see cref="SharedChargeRechargeSystem"/> to work, it just lets you provide generic charging and recharging times.
 /// </summary>
-[RegisterComponent, NetworkedComponent, AutoGenerateComponentState(true)]
+[RegisterComponent, NetworkedComponent]
 public sealed partial class ChargeRechargeComponent : Component
 {
     /// <summary>
@@ -22,23 +23,19 @@ public sealed partial class ChargeRechargeComponent : Component
     public TimeSpan? RechargeDuration = null;
 
     /// <summary>
-    /// Immediately begin recharging after charge completes. If false, recharge must be activated through other means
+    /// whether charging/recharging may occur
     /// </summary>
-    [DataField]
-    public bool ImmediateRecharge = true;
+    public bool IsEnabled = true;
 
     /// <summary>
-    /// Whether charging and recharging may occur
+    /// Examine text
     /// </summary>
-    [DataField, AutoNetworkedField]
-    public bool Enabled = true;
-
     [DataField]
-    public string? ChargingString = "teleporter-examine-charging";
+    public string? ChargingString = "examine-charging";
     [DataField]
-    public string? RechargingString = "teleporter-examine-recharging";
+    public string? RechargingString = "examine-recharging";
     [DataField]
-    public string? PausedString = "teleporter-examine-recharging-paused";
+    public string? PausedString = "examine-recharging-paused";
 
 }
 

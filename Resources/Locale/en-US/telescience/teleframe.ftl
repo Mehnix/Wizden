@@ -1,3 +1,3 @@
-teleporter-examine-charging = the teleframe is charging.
-teleporter-examine-recharging = the teleframe is recharging.
-teleporter-examine-recharging-paused = the teleframe has insufficient power to recharge.
+examine-teleframe-charging = the teleframe is charging.
+examine-teleframe-recharging = the teleframe is recharging.
+examine-teleframe-recharging-paused = the teleframe has insufficient power to recharge.

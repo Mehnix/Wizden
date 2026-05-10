@@ -23,11 +23,11 @@ namespace Content.Shared.Telescience.Systems;
 public abstract partial class SharedTeleframeSystem : EntitySystem
 {
     [Dependency] protected readonly SharedAudioSystem Audio = default!;
+    [Dependency] protected readonly SharedChargeRechargeSystem ChargeRecharge = default!;
     [Dependency] protected readonly SharedPhysicsSystem Physics = default!;
     [Dependency] protected readonly IGameTiming Timing = default!;
     [Dependency] protected readonly SharedTransformSystem Xform = default!;
     [Dependency] private readonly ISharedAdminLogManager _adminLogger = default!;
-    [Dependency] private readonly SharedChargeRechargeSystem _chargeRecharge = default!;
     [Dependency] private readonly EmagSystem _emag = default!;
     [Dependency] private readonly EntityLookupSystem _lookup = default!;
     [Dependency] private readonly SharedPvsOverrideSystem _pvs = default!;
@@ -41,7 +41,6 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
         InitializeIncidents(); //TeleframeIncidentLiable stuff
         InitializeRelay(); //Talk between console and teleframe
         InitializeRadio(); //The console saying things over radio, mostly server.
-        InitializePower(); //turning the teleframe on and off, and TeleframeStructurePower in Server
         InitializeConsole(); //Teleframe Console specific stuff dealing with new links and PVS
         InitializeTeleportal(); //Teleport Entity (Teleportal) effects and additional ways teleport charging can fail
 
@@ -143,7 +142,7 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
         }
 
         _adminLogger.Add(LogType.Teleport, $"Teleportation initiated at {ToPrettyString(ent.Owner)} teleporting to {ToPrettyString(targetPortal)} ({Xform.ToMapCoordinates(Transform(targetPortal).Coordinates)}) from {ToPrettyString(targetPortal)} ({Xform.ToMapCoordinates(Transform(sourcePortal).Coordinates)})");
-        _chargeRecharge.StartCharge(ent.Owner); //begin charging!
+        ChargeRecharge.StartCharge(ent.Owner); //begin charging!
 
         return true;
     }
@@ -266,7 +265,7 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
     public void OnDeletion(Entity<TeleframeComponent> ent, ref EntityTerminatingEvent args)
     {
         if (HasComp<ChargeRechargeComponent>(ent))
-            _chargeRecharge.DisableCharge(ent.Owner, "teleport-fail-boom");
+            ChargeRecharge.DisableCharge(ent.Owner, "teleport-fail-boom");
     }
     #endregion
 
