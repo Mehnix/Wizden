@@ -173,7 +173,7 @@ public sealed partial class TeleframeConsoleWindow : FancyWindow
     /// <returns>string station what that charge state is</returns>
     private string GetChargeState(Entity<TeleframeComponent> ent)
     {
-        if (_entMan.TryGetComponent<TeleframeStructurePowerComponent>(ent.Owner, out var telePower) && telePower.IsPowered == false)
+        if (_entMan.TryGetComponent<ChargeRechargePowerComponent>(ent.Owner, out var telePower) && telePower.IsPowered == false)
             return Loc.GetString("teleporter-unpowered"); //if we have the power component and aren't powered, tell the user that
 
         if (_entMan.TryGetComponent<ChargingComponent>(ent.Owner, out var charge)) //if we are charging, say how long is left
@@ -229,7 +229,7 @@ public sealed partial class TeleframeConsoleWindow : FancyWindow
 
             SetLinkName(Loc.GetString("teleporter-linked-to", ("name", meta.EntityName), ("state", GetChargeState((linked, tpComp))))); //kind of want a sprite here as well
 
-            if (tpComp.ReadyToTeleport == false || _entMan.TryGetComponent<TeleframeStructurePowerComponent>(linked, out var telePower) && telePower.IsPowered == false)
+            if (tpComp.ReadyToTeleport == false || _entMan.TryGetComponent<ChargeRechargePowerComponent>(linked, out var telePower) && telePower.IsPowered == false)
             {
                 UpdateTeleportButtons(false);
                 UpdateTeleportSummary(Loc.GetString("teleporter-summary-notready"));

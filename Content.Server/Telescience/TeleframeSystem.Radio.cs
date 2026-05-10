@@ -19,8 +19,6 @@ public sealed partial class TeleframeSystem : SharedTeleframeSystem
     [Dependency] private readonly SharedMapSystem _maps = default!;
     [Dependency] private readonly RadioSystem _radio = default!;
 
-
-
     protected override void InitializeRadio()
     {
         base.InitializeRadio();
@@ -40,7 +38,7 @@ public sealed partial class TeleframeSystem : SharedTeleframeSystem
         var message = Loc.GetString(
             "teleporter-console-activate",
             ("send", args.Args.TeleportInfo.Mode),
-            ("targetName", Identity.Entity(args.Frame.Owner, EntityManager)),
+            ("teleframeName", Identity.Entity(args.Frame.Owner, EntityManager)),
             ("X", target.Position.X.ToString("0")),
             ("Y", target.Position.Y.ToString("0")),
             ("proximity", proximity), //contains colour data, which messes with spoken notifications

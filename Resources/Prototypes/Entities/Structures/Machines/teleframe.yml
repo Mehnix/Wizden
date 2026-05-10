@@ -86,7 +86,10 @@
     radius: 2
     energy: 2.5
     color: "#00fff2"
-  - type: TeleframeStructurePower
+  - type: ChargeRechargePower
+    chargingString: "examine-teleframe-charging"
+    rechargingString: "examine-teleframe-recharging"
+    pausedString: "examine-teleframe-recharging-paused"
 
 - type: entity
   id: TeleframeScience
@@ -127,7 +130,7 @@
   - type: TeleframeIncidentLiable
     incidentChance: 0.05
     incidentMultiplier: 0.50
-  - type: TeleframeStructurePower
+  - type: ChargeRechargePower
     powerUseActive: 5000
   - type: ChargeRecharge
     chargeDuration: 5
@@ -158,7 +161,7 @@
     teleportModeEffects:
       Send: TeleportFromEffect
       Receive: TeleportToEffect
-  - type: TeleframeStructurePower
+  - type: ChargeRechargePower
     powerUseActive: 1000
   - type: ChargeRecharge
     chargeDuration: 1

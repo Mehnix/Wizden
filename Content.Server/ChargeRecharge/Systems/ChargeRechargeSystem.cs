@@ -1,5 +1,6 @@
 using Content.Shared.ChargeRecharge.Systems;
-namespace Content.Client.ChargeRecharge;
+
+namespace Content.Server.ChargeRecharge;
 
 public sealed partial class ChargeRechargeSystem : SharedChargeRechargeSystem
 {

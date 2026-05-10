@@ -5,7 +5,6 @@ using Content.Shared.Telescience.Events;
 using Content.Shared.Telescience.Systems;
 using Robust.Shared.Map;
 
-
 namespace Content.Server.Telescience;
 
 public sealed partial class TeleframeSystem : SharedTeleframeSystem
@@ -17,7 +16,6 @@ public sealed partial class TeleframeSystem : SharedTeleframeSystem
         SubscribeLocalEvent<TeleframeComponent, StartChargingEvent>(OnStartTeleportCharge);
         SubscribeLocalEvent<TeleframeComponent, EndChargingEvent>(OnEndTeleportCharge);
         SubscribeLocalEvent<TeleframeComponent, EndRechargingEvent>(OnEndTeleportRecharge);
-
     }
 
     #region Charge/Recharge
@@ -31,7 +29,7 @@ public sealed partial class TeleframeSystem : SharedTeleframeSystem
         var (teleportSuccess, failReason) = CheckTeleportation(ent);
         if (teleportSuccess == false) //start of charge wellness check on the teleframe, if not good, just end the charge immediately
         {
-            _chargeRecharge.EndCharge(ent.Owner, false, failReason);
+            ChargeRecharge.EndCharge(ent.Owner, false, failReason);
         }
         else
         {
@@ -48,7 +46,7 @@ public sealed partial class TeleframeSystem : SharedTeleframeSystem
     /// </summary>
     public void OnEndTeleportCharge(Entity<TeleframeComponent> ent, ref EndChargingEvent args)
     {
-        _chargeRecharge.StartRecharge(ent.Owner);
+        ChargeRecharge.StartRecharge(ent.Owner);
 
         if (args.Success == false) //if anything caused a fail during charging, cleanup
         {

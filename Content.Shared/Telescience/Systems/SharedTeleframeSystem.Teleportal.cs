@@ -20,7 +20,7 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
         if (ent.Comp.Teleframe is not { } teleEnt)
             return;
 
-        _chargeRecharge.EndCharge(teleEnt, false, "teleport-fail-emp");
+        ChargeRecharge.EndCharge(teleEnt, false, "teleport-fail-emp");
     }
 
     /// <summary>
@@ -34,6 +34,6 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
             return;
 
         if (ent.Comp.Complete == false) //if teleportation is complete, not an failiure that this dies
-            _chargeRecharge.EndCharge(teleEnt, false, "teleport-fail-nolink");
+            ChargeRecharge.EndCharge(teleEnt, false, "teleport-fail-nolink");
     }
 }

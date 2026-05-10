@@ -1,7 +1,7 @@
-using Robust.Shared.Timing;
 using Content.Shared.ChargeRecharge.Components;
 using Content.Shared.ChargeRecharge.Events;
 using Content.Shared.Examine;
+using Robust.Shared.Timing;
 
 namespace Content.Shared.ChargeRecharge.Systems;
 
@@ -13,15 +13,18 @@ public abstract partial class SharedChargeRechargeSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<ChargeRechargeComponent, ExaminedEvent>(OnExamined);
+
+        SubscribeLocalEvent<ChargingComponent, ExaminedEvent>(OnChargeExamined);
+        SubscribeLocalEvent<RechargingComponent, ExaminedEvent>(OnRechargeExamined);
     }
+
     public override void Update(float frameTime)
     {
         base.Update(frameTime);
 
         //search for entities with the ChargingComponent and check if they've reached the end of their timer.
-        var queryCharge = EntityQueryEnumerator<ChargingComponent, ChargeRechargeComponent>();
-        while (queryCharge.MoveNext(out var uid, out var charge, out var chargeRecharge))
+        var queryCharge = EntityQueryEnumerator<ChargingComponent>();
+        while (queryCharge.MoveNext(out var uid, out var charge))
         {
             if (Timing.CurTime < charge.EndTime) //end if charge time runs
                 continue;
@@ -30,8 +33,8 @@ public abstract partial class SharedChargeRechargeSystem : EntitySystem
         }
 
         //search for entities with the RechargingComponent and check if they've reached the end of their timer.
-        var queryRecharge = EntityQueryEnumerator<RechargingComponent, ChargeRechargeComponent>();
-        while (queryRecharge.MoveNext(out var uid, out var recharge, out var chargeRecharge))
+        var queryRecharge = EntityQueryEnumerator<RechargingComponent>();
+        while (queryRecharge.MoveNext(out var uid, out var recharge))
         {
             if (recharge.Pause || Timing.CurTime < recharge.EndTime) //end if recharge time runs out, unless we're currently paused
                 continue;
@@ -40,143 +43,215 @@ public abstract partial class SharedChargeRechargeSystem : EntitySystem
         }
     }
 
-    public void StartCharge(EntityUid uid)
+    #region Charge/Recharge
+    /// <summary>
+    /// Initiate charging. Set charge time manually here or using <see cref="ChargeRechargeComponent"/>
+    /// </summary>
+    public void StartCharge(EntityUid uid, TimeSpan? chargeTime = null)
     {
-        if (TryComp<ChargeRechargeComponent>(uid, out var charReComp)) //can allow this to be requested even if charge already present as it'll just extend the charge time
+        if (HasComp<RechargingComponent>(uid) || TryComp<ChargeRechargeComponent>(uid, out var charReComp) && charReComp.IsEnabled == false)
         {
-            if (charReComp.ChargeDuration == null)
-                return;
+            EndCharge(uid, false, "charge-fail-halted");
+            return;
+        }
 
+        if (chargeTime != null || charReComp != null && charReComp.ChargeDuration != null) //requires either component or provided charge time
+        { //can allow this to be requested even if charge already present as it'll just extend the charge time
             var chargeComp = EnsureComp<ChargingComponent>(uid); //create component and set up its duration and end time
-            chargeComp.Duration = charReComp.ChargeDuration!.Value;
-            chargeComp.EndTime = charReComp.ChargeDuration!.Value + Timing.CurTime;
-            Dirty(uid, chargeComp);
+            chargeComp.Duration = chargeTime ?? charReComp!.ChargeDuration!.Value;
+            chargeComp.EndTime = chargeTime ?? charReComp!.ChargeDuration!.Value + Timing.CurTime;
 
-            _appearance.SetData(uid, ChargeRechargeVisuals.VisualState, ChargeRechargeVisualState.Charging); //Dirties itself
-            Log.Debug("Charge");
+            Dirty(uid, chargeComp);
 
             var ev = new StartChargingEvent();
             RaiseLocalEvent(uid, ref ev);
+
+            UpdateAppearance(uid);
         }
     }
+
+    /// <summary>
+    /// Finish charging. Charging may have failed, and if so a reason should be provided
+    /// </summary>
     public void EndCharge(EntityUid uid, bool success = true, string? failReason = null)
     {
-        if (TryComp<ChargeRechargeComponent>(uid, out var charReComp) && HasComp<ChargingComponent>(uid))
-        {
-            RemComp<ChargingComponent>(uid); //stop charging
-            _appearance.SetData(uid, ChargeRechargeVisuals.VisualState, ChargeRechargeVisualState.On); //Dirties itself
+        RemComp<ChargingComponent>(uid); //stop charging
 
-            Log.Debug("End Charge");
-            var ev = new EndChargingEvent(success, failReason);
-            RaiseLocalEvent(uid, ref ev);
-        }
+        var ev = new EndChargingEvent(success, failReason);
+        RaiseLocalEvent(uid, ref ev);
+
+        UpdateAppearance(uid);
+
     }
-    public void StartRecharge(EntityUid uid)
+
+    /// <summary>
+    /// Initiate recharging. Set recharge time manually here or using <see cref="ChargeRechargeComponent"/>
+    /// </summary>
+    public void StartRecharge(EntityUid uid, TimeSpan? rechargeTime = null)
     {
-        if (TryComp<ChargeRechargeComponent>(uid, out var charReComp)) //can allow this to be requested even if charge already present as it'll just extend the recharge time
+        if (HasComp<ChargingComponent>(uid)) //end charge if recharge starts
         {
-            if (charReComp.RechargeDuration == null)
-                return;
+            EndCharge(uid, false, "charge-fail-halted");
+            return;
+        }
 
+        if (TryComp<ChargeRechargeComponent>(uid, out var charReComp) && charReComp.RechargeDuration != null || rechargeTime != null) //can allow this to be requested even if charge already present as it'll just extend the recharge time
+        {
             var rechargeComp = EnsureComp<RechargingComponent>(uid); //create component and set up its duration and end time
-            rechargeComp.Duration = charReComp.RechargeDuration!.Value;
-            rechargeComp.EndTime = charReComp.RechargeDuration!.Value + Timing.CurTime;
+            rechargeComp.Duration = rechargeTime ?? charReComp!.RechargeDuration!.Value;
+            rechargeComp.EndTime = rechargeTime ?? charReComp!.RechargeDuration!.Value + Timing.CurTime;
             Dirty(uid, rechargeComp);
-            _appearance.SetData(uid, ChargeRechargeVisuals.VisualState, ChargeRechargeVisualState.Recharging); //Dirties itself
 
-            Log.Debug("Recharge");
             var ev = new StartRechargingEvent();
             RaiseLocalEvent(uid, ref ev);
+
+            UpdateAppearance(uid);
         }
+
+        if (charReComp != null && charReComp.IsEnabled == false) // if we are disabled, immediately pause the recharging
+            PauseRecharge(uid);
     }
+
+    /// <summary>
+    /// Ends recharging. Usually meaning a system returns to idle
+    /// </summary>
+    /// <param name="uid"></param>
     public void EndRecharge(EntityUid uid)
     {
-        if (TryComp<ChargeRechargeComponent>(uid, out var charReComp) && HasComp<RechargingComponent>(uid))
-        {
-            RemCompDeferred<RechargingComponent>(uid); //stop recharging
-            _appearance.SetData(uid, ChargeRechargeVisuals.VisualState, ChargeRechargeVisualState.On); //Dirties itself
+        RemComp<RechargingComponent>(uid); //stop recharging
 
-            Log.Debug("End Recharge");
-            var ev = new EndRechargingEvent();
-            RaiseLocalEvent(uid, ref ev);
-        }
+        var ev = new EndRechargingEvent();
+        RaiseLocalEvent(uid, ref ev);
     }
+
+    /// <summary>
+    /// Pause recharging, this isn't a failiure state and recharging can be picked up again in the future.
+    /// </summary>
     public void PauseRecharge(EntityUid uid)
     {
-        if (HasComp<ChargeRechargeComponent>(uid) && TryComp<RechargingComponent>(uid, out var rechargeComp) && rechargeComp.Pause == false)
+        if (TryComp<RechargingComponent>(uid, out var rechargeComp) && rechargeComp.Pause == false)
         {
             rechargeComp.Pause = true;
             rechargeComp.PauseTime = rechargeComp.EndTime - Timing.CurTime;
             Dirty(uid, rechargeComp);
-            Log.Debug($"pause {rechargeComp.PauseTime}");
+
             var ev = new PauseRechargingEvent();
             RaiseLocalEvent(uid, ref ev);
+
+            UpdateAppearance(uid);
         }
     }
+
+    /// <summary>
+    /// Resume recharging
+    /// </summary>
     public void ResumeRecharge(EntityUid uid)
     {
-        if (HasComp<ChargeRechargeComponent>(uid) && TryComp<RechargingComponent>(uid, out var rechargeComp) && rechargeComp.Pause == true)
+        if (TryComp<RechargingComponent>(uid, out var rechargeComp) && rechargeComp.Pause == true)
         {
             rechargeComp.Pause = false;
             rechargeComp.EndTime = Timing.CurTime + rechargeComp.PauseTime;
             rechargeComp.PauseTime = TimeSpan.FromSeconds(0);
-            _appearance.SetData(uid, ChargeRechargeVisuals.VisualState, ChargeRechargeVisualState.Recharging); //Dirties itself
             Dirty(uid, rechargeComp);
-            Log.Debug($"unpause {rechargeComp.EndTime - Timing.CurTime}");
+
             var ev = new ResumeRechargingEvent();
             RaiseLocalEvent(uid, ref ev);
+
+            UpdateAppearance(uid);
         }
     }
+
+    /// <summary>
+    /// Disabling function, fails charging, pauses recharging
+    /// </summary>
 
     public void DisableCharge(EntityUid uid, string failReason)
     {
-        if (!HasComp<ChargeRechargeComponent>(uid))
-            return;
-
-        Log.Debug("Disabled");
+        if (TryComp<ChargeRechargeComponent>(uid, out var charReComp))
+        {
+            charReComp.IsEnabled = false;
+            Dirty(uid, charReComp);
+        }
 
         if (HasComp<ChargingComponent>(uid))
-        {
             EndCharge(uid, false, failReason);
-        }
 
         if (HasComp<RechargingComponent>(uid))
-        {
             PauseRecharge(uid);
-        }
 
-        _appearance.SetData(uid, ChargeRechargeVisuals.VisualState, ChargeRechargeVisualState.Off); //Dirties itself
+        UpdateAppearance(uid);
     }
 
+    /// <summary>
+    /// Enabling function, resumes recharging
+    /// </summary>
     public void EnableCharge(EntityUid uid)
     {
-        if (!HasComp<ChargeRechargeComponent>(uid))
-            return;
-
-        Log.Debug("Enabled");
+        if (TryComp<ChargeRechargeComponent>(uid, out var charReComp))
+        {
+            charReComp.IsEnabled = true;
+            Dirty(uid, charReComp);
+        }
 
         if (HasComp<RechargingComponent>(uid))
-        {
             ResumeRecharge(uid);
+        else
+            UpdateAppearance(uid);
+    }
+
+    #endregion
+    #region Examine
+    /// <summary>
+    /// Display that we are charging
+    /// </summary>
+    public void OnChargeExamined(Entity<ChargingComponent> ent, ref ExaminedEvent args)
+    {
+        var examine = "examine-charging";
+        if (TryComp<ChargeRechargeComponent>(ent, out var charReComp) && charReComp.ChargingString != null)
+            examine = charReComp.ChargingString;
+
+        args.PushMarkup(Loc.GetString(examine));
+
+    }
+
+    /// <summary>
+    /// Display that we are recharging
+    /// </summary>
+    public void OnRechargeExamined(Entity<RechargingComponent> ent, ref ExaminedEvent args)
+    {
+        if (ent.Comp.Pause == false)
+        {
+            var examine = "examine-recharging";
+            if (TryComp<ChargeRechargeComponent>(ent, out var charReComp) && charReComp.RechargingString != null)
+                examine = charReComp.RechargingString;
+            args.PushMarkup(Loc.GetString(examine));
         }
         else
         {
-            _appearance.SetData(uid, ChargeRechargeVisuals.VisualState, ChargeRechargeVisualState.On); //Dirties itself
+            var examine = "examine-recharging-paused";
+            if (TryComp<ChargeRechargeComponent>(ent, out var charReComp) && charReComp.PausedString != null)
+                examine = charReComp.PausedString;
+            args.PushMarkup(Loc.GetString(examine));
         }
     }
-
-    public void UpdateAppearance(Entity<ChargeRechargeComponent> ent)
+    #endregion
+    #region Helpers
+    /// <summary>
+    /// Visualiser updating function, called whenever a change in state occurs.
+    /// ChargeRechargeComponent required for handling being enabled/disabled
+    /// </summary>
+    public void UpdateAppearance(EntityUid uid)
     {
         ChargeRechargeVisualState state;
-        if (ent.Comp.Enabled == true) //check if powered, set to on state
+        if (!TryComp<ChargeRechargeComponent>(uid, out var charReComp) || charReComp.IsEnabled == true) //check if powered, set to on/off state
         {
             state = ChargeRechargeVisualState.On;
-            if (HasComp<ChargingComponent>(ent)) //override if charging
+            if (HasComp<ChargingComponent>(uid)) //override if charging
             {
                 state = ChargeRechargeVisualState.Charging;
             }
 
-            if (HasComp<RechargingComponent>(ent)) //override if recharging, this state takes highest priority
+            if (HasComp<RechargingComponent>(uid)) //override if recharging, this state takes highest priority
             {
                 state = ChargeRechargeVisualState.Recharging;
             }
@@ -186,25 +261,12 @@ public abstract partial class SharedChargeRechargeSystem : EntitySystem
             state = ChargeRechargeVisualState.Off;
         }
 
-        _appearance.SetData(ent.Owner, ChargeRechargeVisuals.VisualState, state); //Dirties itself
+        _appearance.SetData(uid, ChargeRechargeVisuals.VisualState, state); //Dirties itself
     }
 
-    public void OnExamined(Entity<ChargeRechargeComponent> ent, ref ExaminedEvent args)
-    {
-        if (HasComp<ChargingComponent>(ent) && ent.Comp.ChargingString != null)
-        {
-            args.PushMarkup(Loc.GetString(ent.Comp.ChargingString));
-        }
-
-        if (TryComp<RechargingComponent>(ent, out var rechargeComp) && ent.Comp.RechargingString != null && ent.Comp.PausedString != null)
-        {
-            if (rechargeComp.Pause == false)
-                args.PushMarkup(Loc.GetString(ent.Comp.RechargingString));
-            else
-                args.PushMarkup(Loc.GetString(ent.Comp.PausedString));
-        }
-    }
-
+    /// <summary>
+    /// Helper function, check if we're paused.
+    /// </summary>
     public bool? IsRechargePaused(EntityUid uid)
     {
         if (!TryComp<RechargingComponent>(uid, out var rechargeComp))
@@ -213,12 +275,17 @@ public abstract partial class SharedChargeRechargeSystem : EntitySystem
         return rechargeComp.Pause;
     }
 
+    /// <summary>
+    /// Helper function, check if we're enabled
+    /// </summary>
     public bool? IsChargingEnabled(EntityUid uid)
     {
         if (!TryComp<ChargeRechargeComponent>(uid, out var charReComp))
             return null;
 
-        return charReComp.Enabled;
+        return charReComp.IsEnabled;
     }
+
+    #endregion
 
 }
