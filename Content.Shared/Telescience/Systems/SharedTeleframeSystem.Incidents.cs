@@ -28,7 +28,7 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
             return;
 
         var rand = new RobustRandom(); //generate a new RobustRandom object with its own seed the Client and Server can agree on
-        rand.SetSeed(SharedRandomExtensions.HashCodeCombine((int)Timing.CurTick.Value, GetNetEntity(ent.Owner).Id));
+        rand.SetSeed(SharedRandomExtensions.HashCodeCombine((int)_timing.CurTick.Value, GetNetEntity(ent.Owner).Id));
 
         if (rand.NextFloat() < ent.Comp.IncidentTarget) //choose whether incident occurs at target or source
         {
@@ -83,7 +83,7 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
     private bool TryRollForIncident(Entity<TeleframeIncidentLiableComponent> ent, [NotNullWhen(true)] out float? severity)
     {
         var rand = new RobustRandom(); //generate a new RobustRandom object with its own seed the Client and Server can agree on
-        rand.SetSeed(SharedRandomExtensions.HashCodeCombine((int)Timing.CurTick.Value, GetNetEntity(ent.Owner).Id));
+        rand.SetSeed(SharedRandomExtensions.HashCodeCombine((int)_timing.CurTick.Value, GetNetEntity(ent.Owner).Id));
         var roll = rand.NextFloat();
 
         var chance = _emag.CheckFlag(ent.Owner, EmagType.Interaction) ? ent.Comp.EmagIncidentChance + ent.Comp.IncidentChance : ent.Comp.IncidentChance;

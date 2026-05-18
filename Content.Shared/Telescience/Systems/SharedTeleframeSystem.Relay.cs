@@ -1,6 +1,5 @@
 using Content.Shared.Telescience.Components;
 using Content.Shared.Telescience.Events;
-using Content.Shared.ChargeRecharge.Events;
 
 namespace Content.Shared.Telescience.Systems;
 
@@ -19,8 +18,8 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
     /// </summary>
     protected void RelayToConsole<T>(Entity<TeleframeComponent> ent, ref T args)
     {
-        if (ent.Comp.LinkedConsole is not { } console)
-            return;
+        if (ent.Comp.LinkedConsole is not { } console || !HasComp<TeleframeConsoleComponent>(console) || ent.Owner == console)
+            return; //do not sent if no linked console exists, the linked console does not have the relevent component, or the both components share the same entity
 
         var ev = new TeleframeToConsoleRelayEvent<T>(ent, args);
         RaiseLocalEvent(console, ref ev);
@@ -31,8 +30,8 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
     /// </summary>
     protected void RelayToFrame<T>(Entity<TeleframeConsoleComponent> ent, ref T args)
     {
-        if (ent.Comp.LinkedTeleframe is not { } frame)
-            return;
+        if (ent.Comp.LinkedTeleframe is not { } frame || !HasComp<TeleframeComponent>(frame) || ent.Owner == frame)
+            return; //do not sent if no linked console exists, the linked frame does not have the relevent component, or the both components share the same entity
 
         var ev = new TeleframeConsoleToFrameRelayEvent<T>(ent, args);
         RaiseLocalEvent(frame, ref ev);

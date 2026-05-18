@@ -47,11 +47,11 @@ public abstract partial class SharedChargeRechargeSystem : EntitySystem
     /// <summary>
     /// Initiate charging. Set charge time manually here or using <see cref="ChargeRechargeComponent"/>
     /// </summary>
-    public void StartCharge(EntityUid uid, TimeSpan? chargeTime = null)
+    public void StartCharge(EntityUid uid, TimeSpan? chargeTime = null, NetEntity? user = null)
     {
         if (HasComp<RechargingComponent>(uid) || TryComp<ChargeRechargeComponent>(uid, out var charReComp) && charReComp.IsEnabled == false)
         {
-            EndCharge(uid, false, "charge-fail-halted");
+            EndCharge(uid, false, "charge-fail-halted", user);
             return;
         }
 
@@ -63,7 +63,7 @@ public abstract partial class SharedChargeRechargeSystem : EntitySystem
 
             Dirty(uid, chargeComp);
 
-            var ev = new StartChargingEvent();
+            var ev = new StartChargingEvent(user);
             RaiseLocalEvent(uid, ref ev);
 
             UpdateAppearance(uid);
@@ -73,25 +73,27 @@ public abstract partial class SharedChargeRechargeSystem : EntitySystem
     /// <summary>
     /// Finish charging. Charging may have failed, and if so a reason should be provided
     /// </summary>
-    public void EndCharge(EntityUid uid, bool success = true, string? failReason = null)
+    public void EndCharge(EntityUid uid, bool success = true, string? failReason = null, NetEntity? user = null)
     {
         RemComp<ChargingComponent>(uid); //stop charging
 
-        var ev = new EndChargingEvent(success, failReason);
+        var ev = new EndChargingEvent(success, failReason, user);
         RaiseLocalEvent(uid, ref ev);
 
         UpdateAppearance(uid);
 
+        if (TryComp<ChargeRechargeComponent>(uid, out var charReComp) && charReComp.ImmediateRecharge == true)
+            StartRecharge(uid, null, user);
     }
 
     /// <summary>
     /// Initiate recharging. Set recharge time manually here or using <see cref="ChargeRechargeComponent"/>
     /// </summary>
-    public void StartRecharge(EntityUid uid, TimeSpan? rechargeTime = null)
+    public void StartRecharge(EntityUid uid, TimeSpan? rechargeTime = null, NetEntity? user = null)
     {
         if (HasComp<ChargingComponent>(uid)) //end charge if recharge starts
         {
-            EndCharge(uid, false, "charge-fail-halted");
+            EndCharge(uid, false, "charge-fail-halted", user);
             return;
         }
 
@@ -102,7 +104,7 @@ public abstract partial class SharedChargeRechargeSystem : EntitySystem
             rechargeComp.EndTime = rechargeTime ?? charReComp!.RechargeDuration!.Value + Timing.CurTime;
             Dirty(uid, rechargeComp);
 
-            var ev = new StartRechargingEvent();
+            var ev = new StartRechargingEvent(user);
             RaiseLocalEvent(uid, ref ev);
 
             UpdateAppearance(uid);
@@ -116,18 +118,18 @@ public abstract partial class SharedChargeRechargeSystem : EntitySystem
     /// Ends recharging. Usually meaning a system returns to idle
     /// </summary>
     /// <param name="uid"></param>
-    public void EndRecharge(EntityUid uid)
+    public void EndRecharge(EntityUid uid, NetEntity? user = null)
     {
         RemComp<RechargingComponent>(uid); //stop recharging
 
-        var ev = new EndRechargingEvent();
+        var ev = new EndRechargingEvent(user);
         RaiseLocalEvent(uid, ref ev);
     }
 
     /// <summary>
     /// Pause recharging, this isn't a failiure state and recharging can be picked up again in the future.
     /// </summary>
-    public void PauseRecharge(EntityUid uid)
+    public void PauseRecharge(EntityUid uid, NetEntity? user = null)
     {
         if (TryComp<RechargingComponent>(uid, out var rechargeComp) && rechargeComp.Pause == false)
         {
@@ -135,7 +137,7 @@ public abstract partial class SharedChargeRechargeSystem : EntitySystem
             rechargeComp.PauseTime = rechargeComp.EndTime - Timing.CurTime;
             Dirty(uid, rechargeComp);
 
-            var ev = new PauseRechargingEvent();
+            var ev = new PauseRechargingEvent(user);
             RaiseLocalEvent(uid, ref ev);
 
             UpdateAppearance(uid);

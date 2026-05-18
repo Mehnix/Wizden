@@ -1,4 +1,6 @@
 using Content.Shared.Telescience.Components;
+using Content.Shared.Telescience.Ui;
+using Robust.Shared.GameObjects;
 
 namespace Content.Shared.Telescience.Events;
 
@@ -13,6 +15,13 @@ public readonly record struct TeleframeToConsoleRelayEvent<T>(Entity<TeleframeCo
 /// </summary>
 [ByRefEvent]
 public readonly record struct TeleframeTeleportFailedEvent(string Reason, TeleframeActiveTeleportInfo? TeleportInfo);
+
+/// <summary>
+/// Event containing the BUI message from the console for delivery to the teleframe
+/// Can't just re-send the TeleframeActivateMessage as this will result in an infinite loop if console and frame are the same entity
+/// </summary>
+[ByRefEvent]
+public readonly record struct TeleframeInitiateEvent(TeleframeActivateMessage Msg);
 
 ///<summary>
 /// Event raised on the teleframe, console, and any upgrade modules when teleportation charging is successfully initiated
@@ -54,4 +63,4 @@ public record struct TeleframeUserIncidentEvent(float Score, float IncidentMult)
 /// Event raised on the teleframe and upgrades when it has finished recharging and may be used again
 /// </summary>
 [ByRefEvent]
-public readonly record struct TeleframeReadyEvent(EntityUid Teleframe);
+public readonly record struct TeleframeReadyEvent(EntityUid Teleframe, NetEntity? User);

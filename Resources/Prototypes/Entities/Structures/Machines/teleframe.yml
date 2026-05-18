@@ -101,7 +101,7 @@
     board: TeleframeScienceMachineCircuitboard
   - type: Teleframe
     teleportBeginEffect: [EffectGravityPulse]
-    teleportFinishEffect: [EffectFlashBluespace, EffectGravityPulse]
+    teleportFinishEffect: [EffectFlashBluespace]
     teleportFailEffect: [EffectTeslaSparks, EffectFlashBluespace]
     teleportModeEffects:
       Send: TeleportFromEffect
@@ -121,7 +121,6 @@
   components:
   - type: Teleframe
     teleportBeginEffect: [EffectGravityPulse]
-    teleportFinishEffect: [EffectGravityPulse]
     teleportFailEffect: [EffectFlashBluespace]
     teleportScatterRange: 0.5
     teleportModeEffects:
@@ -183,14 +182,14 @@
   description: This is beyond science.
   components:
   - type: Teleframe
+    teleportBeginEffect: [EffectGravityPulse] #so can these but they don't delete themselves automatically
+    teleportFinishEffect: [EffectFlashBluespace, EffectGravityPulse]
     teleportScatterRange: 0.25
     teleportRadius: 1
     teleportFailEffect: [EffectFlashBluespace]
     teleportModeEffects:
       Send: MobMothroach #these entities can be anything that doesn't despawn too quickly
       Receive: MobMothroach #they'll delete themselves after teleportation concludes
-    teleportBeginEffect: [EffectGravityPulse] #so can these but they don't delete themselves automatically
-    teleportFinishEffect: [EffectFlashBluespace, EffectGravityPulse]
   - type: ChargeRecharge
     chargeDuration: 5
     rechargeDuration: 5

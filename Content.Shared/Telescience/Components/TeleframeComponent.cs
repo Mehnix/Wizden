@@ -99,4 +99,4 @@ public sealed partial class TeleframeComponent : Component
 }
 
 [Serializable, NetSerializable]
-public readonly record struct TeleframeActiveTeleportInfo(TeleframeActivationMode Mode, NetEntity To, NetEntity From);
+public readonly record struct TeleframeActiveTeleportInfo(TeleframeActivationMode Mode, NetEntity To, NetEntity From, NetEntity? User);

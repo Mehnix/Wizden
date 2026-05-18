@@ -141,3 +141,52 @@
     slots:
       cell_slot:
         name: power-cell-slot-component-slot-name-default
+
+- type: entity
+  name: handheld teleframe
+  parent: [BaseHandheldComputer, BaseCentcommContraband]
+  id: HandHeldTeleframe
+  suffix: Admeme
+  description: A key to anywhere.
+  components:
+  - type: Item
+    sprite: Objects/Devices/signaller.rsi
+    size: Normal
+  - type: Sprite
+    sprite: Objects/Devices/signaller.rsi
+    state: advanced
+    layers:
+      - state: advanced
+  - type: Appearance
+  - type: TeleframeConsole
+    maxRange: 50000
+    announcementChannel: CentCom
+  - type: TeleframeConsoleRadio
+    announcementChannel: CentCom
+    speakIc: true
+  - type: ActivatableUI
+    key: enum.TeleframeConsoleUiKey.Key
+    inHandsOnly: true
+    singleUser: true
+  - type: UserInterface
+    interfaces:
+      enum.TeleframeConsoleUiKey.Key:
+        type: TeleframeConsoleBoundUserInterface
+  - type: Speech
+    speechVerb: Robotic
+  - type: StaticPrice
+    price: 20000
+  - type: ActiveRadio
+    channels:
+    - CentCom
+  - type: HandheldGPS
+  - type: Teleframe
+    teleportScatterRange: 0.25
+    teleportRadius: 0.45
+    teleportFailEffect: [EffectFlashBluespace]
+    teleportModeEffects:
+      Send: TeleportFromEffect
+      Receive: TeleportToEffect
+  - type: ChargeRecharge
+    chargeDuration: 0.5
+    rechargeDuration: 1

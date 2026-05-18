@@ -17,7 +17,9 @@ public sealed partial class ChargeRechargePowerSystem : SharedChargeRechargePowe
         SubscribeLocalEvent<ChargeRechargePowerComponent, PowerConsumerReceivedChanged>(ReceivedChanged);
         SubscribeLocalEvent<ChargeRechargePowerComponent, AnchorStateChangedEvent>(OnAnchorStateChanged);
         SubscribeLocalEvent<ChargeRechargePowerComponent, EmpPulseEvent>(OnEmpPulseStructure);
+
         SubscribeLocalEvent<ChargeRechargePowerComponent, StartChargingEvent>(OnStartChargingPower);
+        SubscribeLocalEvent<ChargeRechargePowerComponent, EndChargingEvent>(OnEndChargingPower);
         SubscribeLocalEvent<ChargeRechargePowerComponent, StartRechargingEvent>(OnStartRechargingPower);
         SubscribeLocalEvent<ChargeRechargePowerComponent, EndRechargingEvent>(OnEndRechargingPower);
     }
@@ -59,11 +61,11 @@ public sealed partial class ChargeRechargePowerSystem : SharedChargeRechargePowe
     }
 
     /// <summary>
-    /// Deals with teleframe structures being in the powered off state
+    /// Deals with structures being in the powered off state
     /// </summary>
     private void StructPowerOff(Entity<ChargeRechargePowerComponent, PowerConsumerComponent?> ent)
     {
-        if (!Resolve(ent, ref ent.Comp2)) //Stop here if no Teleframe or PowerConsumer component
+        if (!Resolve(ent, ref ent.Comp2)) //Stop here if no chargerecharge or PowerConsumer component
             return;
 
         if (ent.Comp2.ReceivedPower <= 0) //total blackout
@@ -78,7 +80,7 @@ public sealed partial class ChargeRechargePowerSystem : SharedChargeRechargePowe
     }
 
     /// <summary>
-    /// Deals with teleframe structures being in the powered on state
+    /// Deals with structures being in the powered on state
     /// </summary>
     private void StructPowerOn(Entity<ChargeRechargePowerComponent, PowerConsumerComponent?> ent)
     {
@@ -116,27 +118,30 @@ public sealed partial class ChargeRechargePowerSystem : SharedChargeRechargePowe
     }
 
     /// <summary>
-    /// Switch to active power when the teleframe starts charging
+    /// Switch to active power when the structure starts charging
     /// </summary>
     private void OnStartChargingPower(Entity<ChargeRechargePowerComponent> ent, ref StartChargingEvent args)
     {
-        if (TryComp<PowerConsumerComponent>(ent, out var powerConsumer))
-        {
-            powerConsumer.DrawRate = ent.Comp.PowerUseActive; // set to high power draw, it actually takes a while to build up due to high demand so this preps for recharge
-            CheckPower((ent.Owner, powerConsumer));
-        }
+        SetPower(ent.Owner, ent.Comp.PowerUseActive);
     }
 
     /// <summary>
-    /// Make sure the Teleframe is on active power for recharging
+    /// Switch to idle power when recharge finishes
+    /// </summary>
+    private void OnEndChargingPower(Entity<ChargeRechargePowerComponent> ent, ref EndChargingEvent args)
+    {
+        if (TryComp<ChargeRechargeComponent>(ent, out var charReComp) && charReComp.ImmediateRecharge == true)
+            return; //avoid power draw flicker if recharge is starting immediately
+
+        SetPower(ent.Owner, ent.Comp.PowerUseIdle);
+    }
+
+    /// <summary>
+    /// Make sure the structure is on active power for recharging
     /// </summary>
     private void OnStartRechargingPower(Entity<ChargeRechargePowerComponent> ent, ref StartRechargingEvent args)
     {
-        if (TryComp<PowerConsumerComponent>(ent, out var powerConsumer))
-        {
-            powerConsumer.DrawRate = ent.Comp.PowerUseActive; // confirm high power draw, should already be set, but we need to check power anyway so may as well do this too
-            CheckPower((ent.Owner, powerConsumer));
-        }
+        SetPower(ent.Owner, ent.Comp.PowerUseActive);
     }
 
     /// <summary>
@@ -144,10 +149,18 @@ public sealed partial class ChargeRechargePowerSystem : SharedChargeRechargePowe
     /// </summary>
     private void OnEndRechargingPower(Entity<ChargeRechargePowerComponent> ent, ref EndRechargingEvent args)
     {
-        if (TryComp<PowerConsumerComponent>(ent, out var powerConsumer))
+        SetPower(ent.Owner, ent.Comp.PowerUseIdle);
+    }
+
+    /// <summary>
+    /// Sets the power of the structure, then makes it re-assess its power situation
+    /// </summary>
+    private void SetPower(EntityUid uid, int power)
+    {
+        if (TryComp<PowerConsumerComponent>(uid, out var powerConsumer))
         {
-            powerConsumer.DrawRate = ent.Comp.PowerUseIdle; // recharge end so idle power
-            CheckPower((ent.Owner, powerConsumer));
+            powerConsumer.DrawRate = power; // recharge end so idle power
+            CheckPower((uid, powerConsumer));
         }
     }
 
