@@ -112,9 +112,6 @@
     interfaces:
       enum.TeleframeConsoleUiKey.Key:
         type: TeleframeConsoleBoundUserInterface
-  - type: ContainerContainer
-    containers:
-      board: !type:Container
   - type: Speech
     speechVerb: Robotic
   - type: PowerCellDraw
@@ -147,7 +144,7 @@
   parent: [BaseHandheldComputer, BaseCentcommContraband]
   id: HandHeldTeleframe
   suffix: Admeme
-  description: A key to anywhere.
+  description: A miniaturised teleframe for the highest of Central Command. A key to practically anywhere.
   components:
   - type: Item
     sprite: Objects/Devices/signaller.rsi
@@ -156,11 +153,8 @@
     sprite: Objects/Devices/signaller.rsi
     state: advanced
     layers:
-      - state: icon
-  - type: Appearance
-  - type: TeleframeConsole
+      - state: advanced
     maxRange: 50000
-    announcementChannel: CentCom
   - type: TeleframeConsoleRadio
     announcementChannel: CentCom
     speakIc: true
@@ -177,14 +171,11 @@
   - type: StaticPrice
     price: 20000
   - type: ActiveRadio
-    channels:
     - CentCom
   - type: HandheldGPS
   - type: Teleframe
     teleportScatterRange: 0.25
     teleportRadius: 0.45
-    teleportBeginEffect: [EffectGravityPulse]
-    teleportFinishEffect: [EffectGravityPulse]
     teleportFailEffect: [EffectFlashBluespace]
     teleportModeEffects:
       Send: TeleportFromEffect
@@ -196,7 +187,6 @@
 - type: entity
   name: bluespace depth charge
   parent: BaseItem
-  id: TeleportCharge
   description: A football-sized sensor device that can survive the rigors of teleportation and collect data on fractures in reality.
                It requires someone to return it to the science department afterwards for analysis, perhaps that could be you.
   components:
@@ -234,7 +224,7 @@
 - type: entity
   id: RealityFracture
   name: reality fracture
-  description: A malformed tear in the fabric in reality that failed to manifest as a true anomaly.
+  description: A malformed tear in the fabric of reality that failed to manifest as a true anomaly.
               Peering beyond the veil within its presence may yield scientific insights, or madness.
   components:
   - type: Transform
@@ -271,3 +261,4 @@
   - type: TelescienceFracture
     minHealthRoll: 15000
     maxHealthRoll: 30000
+

@@ -74,7 +74,7 @@
     damageContainer: StructuralInorganic
     damageModifierSet: StructuralMetallicStrong
   - type: CollideOnAnchor
-  - type: PowerConsumer #set power draw in TeleframeStructurePower component. See EmitterSystem for example.
+  - type: PowerConsumer #set power draw in ChargeRechargePower component. See EmitterSystem for example.
     voltage: Medium
   - type: NodeContainer
     examinable: true
@@ -93,7 +93,7 @@
 
 - type: entity
   id: TeleframeScience
-  parent: [BaseTeleframeStructure]
+  parent: [BaseTeleframeStructure, BaseScienceContraband]
   name: experimental teleframe core
   description: The core of an advanced device that rips holes in reality for near-instanteous travel. With time and material its capabilities can be expanded. Safety not guaranteed.
   components:
@@ -101,7 +101,7 @@
     board: TeleframeScienceMachineCircuitboard
   - type: Teleframe
     teleportBeginEffect: [EffectGravityPulse]
-    teleportFinishEffect: [EffectFlashBluespace, EffectGravityPulse]
+    teleportFinishEffect: [EffectFlashBluespace]
     teleportFailEffect: [EffectTeslaSparks, EffectFlashBluespace]
     teleportModeEffects:
       Send: TeleportFromEffect
@@ -112,16 +112,17 @@
     chargeDuration: 5
     rechargeDuration: 20
   - type: LightningTarget
+  - type: StaticPrice
+    price: 10000
 
 - type: entity
   id: TeleframeSyndicate
-  parent: [BaseTeleframeStructure]
+  parent: [BaseTeleframeStructure, BaseSyndicateContraband]
   name: CSTF-X infiltrator core
-  description: A modification of stolen Nanotrasen blueprints to prioritise reliability and power efficiency for covert infiltration. Often outfitted with advanced upgrades.
+  description: A modification of stolen Nanotrasen blueprints to prioritise reliability and power efficiency for covert infiltration.
   components:
   - type: Teleframe
     teleportBeginEffect: [EffectGravityPulse]
-    teleportFinishEffect: [EffectGravityPulse]
     teleportFailEffect: [EffectFlashBluespace]
     teleportScatterRange: 0.5
     teleportModeEffects:
@@ -147,12 +148,14 @@
     radius: 2
     energy: 1.5
     color: "#9c0000"
+  - type: StaticPrice
+    price: 15000 #steal it steal it steal it steal it
 
 - type: entity
   id: TeleframeCC
-  parent: [BaseTeleframeStructure]
+  parent: [BaseTeleframeStructure, BaseCentcommContraband]
   name: central command hyperframe core
-  description: A precise tool for the uppermost echelons of Central Command, allowing for rapid deployment and extraction of critical assets. Unfathomably Expensive.
+  description: A precise tool for the uppermost echelons of Central Command, allowing for rapid deployment and extraction of critical assets. Exceptionally Expensive.
   components:
   - type: Teleframe
     teleportScatterRange: 0.25
@@ -174,6 +177,8 @@
     - state: idle
       map: ["ChargeRechargeVisualState"]
       shader: unshaded
+  - type: StaticPrice
+    price: 50000 #steal it steal it steal it steal it
 
 - type: entity
   id: TeleframeMoff
@@ -183,14 +188,14 @@
   description: This is beyond science.
   components:
   - type: Teleframe
+    teleportBeginEffect: [EffectGravityPulse] #so can these but they don't delete themselves automatically
+    teleportFinishEffect: [EffectFlashBluespace, EffectGravityPulse]
     teleportScatterRange: 0.25
     teleportRadius: 1
     teleportFailEffect: [EffectFlashBluespace]
     teleportModeEffects:
       Send: MobMothroach #these entities can be anything that doesn't despawn too quickly
       Receive: MobMothroach #they'll delete themselves after teleportation concludes
-    teleportBeginEffect: [EffectGravityPulse] #so can these but they don't delete themselves automatically
-    teleportFinishEffect: [EffectFlashBluespace, EffectGravityPulse]
   - type: ChargeRecharge
     chargeDuration: 5
     rechargeDuration: 5

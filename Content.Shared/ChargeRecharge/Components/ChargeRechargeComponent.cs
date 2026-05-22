@@ -23,9 +23,10 @@ public sealed partial class ChargeRechargeComponent : Component
     public TimeSpan? RechargeDuration = null;
 
     /// <summary>
-    /// whether charging/recharging may occur
+    /// Does the system immediate start recharging after charge finishes
     /// </summary>
-    public bool IsEnabled = true;
+    [DataField, ViewVariables]
+    public bool ImmediateRecharge = true;
 
     /// <summary>
     /// Examine text
@@ -36,6 +37,13 @@ public sealed partial class ChargeRechargeComponent : Component
     public string? RechargingString = "examine-recharging";
     [DataField]
     public string? PausedString = "examine-recharging-paused";
+
+
+    /// <summary>
+    /// whether charging/recharging may occur
+    /// </summary>
+    [ViewVariables]
+    public bool IsEnabled = true;
 
 }
 

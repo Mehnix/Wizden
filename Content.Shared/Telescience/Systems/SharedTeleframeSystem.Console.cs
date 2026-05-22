@@ -12,6 +12,7 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
     {
         base.Initialize();
 
+        SubscribeLocalEvent<TeleframeConsoleComponent, MapInitEvent>(OnConsoleMapInit);
         SubscribeLocalEvent<TeleframeConsoleComponent, NewLinkEvent>(OnNewLink);
         SubscribeLocalEvent<TeleframeConsoleComponent, PortDisconnectedEvent>(OnPortDisconnected);
         SubscribeLocalEvent<TeleframeConsoleComponent, GotEmaggedEvent>(OnConsoleEmagged);
@@ -20,6 +21,22 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
 
         SubscribeLocalEvent<TeleframeConsoleComponent, BoundUIOpenedEvent>(OnUiOpen);
         SubscribeLocalEvent<TeleframeConsoleComponent, BoundUIClosedEvent>(OnUiClosed);
+    }
+
+    #region Linking
+
+    /// <summary>
+    /// Links a Teleframe console to itself if it is also a Teleframe
+    /// </summary>
+    private void OnConsoleMapInit(Entity<TeleframeConsoleComponent> ent, ref MapInitEvent args)
+    {
+        if (TryComp<TeleframeComponent>(ent, out var teleComp)) //are we a teleframe? If so, link to ourselves
+        {
+            ent.Comp.LinkedTeleframe = ent.Owner;
+            teleComp.LinkedConsole = ent.Owner;
+            Dirty(ent);
+            Dirty(ent.Owner, teleComp);
+        }
     }
 
     /// <summary>
@@ -55,12 +72,16 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
         }
     }
 
+    #endregion
+    #region Relays
+
     /// <summary>
     /// Play a sound from the console to indicate it is ready for use again
     /// </summary>
     private void OnReady(Entity<TeleframeConsoleComponent> ent, ref TeleframeToConsoleRelayEvent<TeleframeReadyEvent> args)
     {
-        Audio.PlayPvs(ent.Comp.TeleportRechargedSound, ent.Owner);
+        Log.Debug($"{ToPrettyString(GetEntity(args.Args.User))}");
+        _audio.PlayPredicted(ent.Comp.TeleportRechargedSound, ent.Owner, GetEntity(args.Args.User));
     }
 
     /// <summary>
@@ -73,6 +94,8 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
     {
         // Something Something just a week away
     }
+
+    #endregion
 
     /// <summary>
     /// Adds the emag flag
@@ -88,12 +111,14 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
         args.Handled = true;
     }
 
+    #region UI
+
     /// <summary>
     /// on opening UI add beacons to pvs override list so client can see them outside of view range
     /// </summary>
     private void OnUiOpen(Entity<TeleframeConsoleComponent> ent, ref BoundUIOpenedEvent args)
     {
-        if (!Timing.IsFirstTimePredicted) //prevent it getting spammed
+        if (!_timing.IsFirstTimePredicted) //prevent it getting spammed
             return;
 
         if (!args.UiKey.Equals(TeleframeConsoleUiKey.Key))
@@ -121,7 +146,7 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
     /// </summary>
     private void OnUiClosed(Entity<TeleframeConsoleComponent> ent, ref BoundUIClosedEvent args)
     {
-        if (!Timing.IsFirstTimePredicted) //prevent it getting spammed
+        if (_timing.IsFirstTimePredicted) //prevent it getting spammed
             return;
 
         if (!args.UiKey.Equals(TeleframeConsoleUiKey.Key))
@@ -143,4 +168,6 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
 
         Dirty(ent);
     }
+
+    #endregion
 }

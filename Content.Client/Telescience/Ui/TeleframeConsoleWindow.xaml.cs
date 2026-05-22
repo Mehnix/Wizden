@@ -137,9 +137,9 @@ public sealed partial class TeleframeConsoleWindow : FancyWindow
         TeleframeActivateMessage msg;
 
         if (_currentCoords is { } coords) //if we used coordinates, collate the X/Y MapCoordinates and go somewhere on the current map
-            msg = new TeleframeActivateMessage(new MapCoordinates(coords.X, coords.Y, _coords!.Value.MapId), Loc.GetString("teleporter-target-custom"), mode, NetEntity.Invalid);
+            msg = new TeleframeActivateMessage(new MapCoordinates(coords.X, coords.Y, _coords!.Value.MapId), Loc.GetString("teleporter-target-custom"), mode, NetEntity.Invalid, _entMan.GetNetEntity(_user));
         else if (_currentBeacon is { } beacon) //if we used beacons, get the map coordinates of the beacon, its name, and attach the entity itself for easier predictive teleportation
-            msg = new TeleframeActivateMessage(_transform.GetMapCoordinates(_entMan.GetEntity(beacon.TelePoint)), beacon.Location, mode, beacon.TelePoint);
+            msg = new TeleframeActivateMessage(_transform.GetMapCoordinates(_entMan.GetEntity(beacon.TelePoint)), beacon.Location, mode, beacon.TelePoint, _entMan.GetNetEntity(_user));
         else
             return;
 
