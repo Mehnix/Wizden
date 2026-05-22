@@ -185,7 +185,6 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
         foreach (var tp in entities) //for each entity in list of detected entities
         {
             var tpEnt = Transform(tp); //get transform
-            var tpToEnt = Transform(tpTo);
 
             var rand = new RobustRandom(); //generate a new RobustRandom object with its own seed the Client and Server can agree on
             rand.SetSeed(SharedRandomExtensions.HashCodeCombine((int)_timing.CurTick.Value, GetNetEntity(tp).Id));
@@ -206,7 +205,7 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
             var tpEv = new TeleframeUserTeleportedEvent(ent.Owner, args.TeleportInfo); //raise teleport event on teleported entity so it knows it was just teleported
             RaiseLocalEvent(tp, ref tpEv);
 
-            teleported.Add(tp);
+            teleported.Add(tp); //add entity to list of teleported entities
         }
 
         if (ent.Comp.TeleportFinishEffect != null)
@@ -251,7 +250,7 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
                 Dirty(teleTo, teleToComp);
             }
 
-            PredictedQueueDel(teleFrom); //deliberately unpredicted so that the teleport entity dissapears when everyone other than the client is moved rather than after the client is
+            PredictedQueueDel(teleFrom); //prediction looks a bit strange for the client as these will dissapear before everyone other than the initiating player is teleported
             PredictedQueueDel(teleTo);
         }
 
@@ -423,7 +422,7 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
     /// <returns>validity , fail reason if there is one</returns>
     public (bool, string?) CheckTeleportation(Entity<TeleframeComponent> ent)
     {
-        if (_net.IsClient) //can't trust the client to know this, entities could be anywhere. Client can simply assume truth and be told otherwise by the server.
+        if (_net.IsClient) //can't trust the client to know this, entities could be anywhere. Client can simply assume success and be told otherwise by the server.
             return (true, null);
 
         if (ent.Comp.ActiveTeleportInfo == null || ent.Comp.ActiveTeleportInfo is not { } teleInfo || !Exists(GetEntity(teleInfo.From)) || !Exists(GetEntity(teleInfo.To))) //is active teleport info null, is the teleport info empty, do either teleport entity not exist

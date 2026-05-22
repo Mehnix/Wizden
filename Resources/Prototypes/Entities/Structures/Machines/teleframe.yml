@@ -74,7 +74,7 @@
     damageContainer: StructuralInorganic
     damageModifierSet: StructuralMetallicStrong
   - type: CollideOnAnchor
-  - type: PowerConsumer #set power draw in TeleframeStructurePower component. See EmitterSystem for example.
+  - type: PowerConsumer #set power draw in ChargeRechargePower component. See EmitterSystem for example.
     voltage: Medium
   - type: NodeContainer
     examinable: true
@@ -93,7 +93,7 @@
 
 - type: entity
   id: TeleframeScience
-  parent: [BaseTeleframeStructure]
+  parent: [BaseTeleframeStructure, BaseScienceContraband]
   name: experimental teleframe core
   description: The core of an advanced device that rips holes in reality for near-instanteous travel. With time and material its capabilities can be expanded. Safety not guaranteed.
   components:
@@ -112,12 +112,14 @@
     chargeDuration: 5
     rechargeDuration: 20
   - type: LightningTarget
+  - type: StaticPrice
+    price: 10000
 
 - type: entity
   id: TeleframeSyndicate
-  parent: [BaseTeleframeStructure]
+  parent: [BaseTeleframeStructure, BaseSyndicateContraband]
   name: CSTF-X infiltrator core
-  description: A modification of stolen Nanotrasen blueprints to prioritise reliability and power efficiency for covert infiltration. Often outfitted with advanced upgrades.
+  description: A modification of stolen Nanotrasen blueprints to prioritise reliability and power efficiency for covert infiltration.
   components:
   - type: Teleframe
     teleportBeginEffect: [EffectGravityPulse]
@@ -146,12 +148,14 @@
     radius: 2
     energy: 1.5
     color: "#9c0000"
+  - type: StaticPrice
+    price: 15000 #steal it steal it steal it steal it
 
 - type: entity
   id: TeleframeCC
-  parent: [BaseTeleframeStructure]
+  parent: [BaseTeleframeStructure, BaseCentcommContraband]
   name: central command hyperframe core
-  description: A precise tool for the uppermost echelons of Central Command, allowing for rapid deployment and extraction of critical assets. Unfathomably Expensive.
+  description: A precise tool for the uppermost echelons of Central Command, allowing for rapid deployment and extraction of critical assets. Exceptionally Expensive.
   components:
   - type: Teleframe
     teleportScatterRange: 0.25
@@ -173,6 +177,8 @@
     - state: idle
       map: ["ChargeRechargeVisualState"]
       shader: unshaded
+  - type: StaticPrice
+    price: 50000 #steal it steal it steal it steal it
 
 - type: entity
   id: TeleframeMoff

@@ -112,9 +112,6 @@
     interfaces:
       enum.TeleframeConsoleUiKey.Key:
         type: TeleframeConsoleBoundUserInterface
-  - type: ContainerContainer
-    containers:
-      board: !type:Container
   - type: Speech
     speechVerb: Robotic
   - type: PowerCellDraw
@@ -147,7 +144,7 @@
   parent: [BaseHandheldComputer, BaseCentcommContraband]
   id: HandHeldTeleframe
   suffix: Admeme
-  description: A key to anywhere.
+  description: A miniaturised teleframe for the highest of Central Command. A key to practically anywhere.
   components:
   - type: Item
     sprite: Objects/Devices/signaller.rsi
@@ -175,7 +172,7 @@
   - type: Speech
     speechVerb: Robotic
   - type: StaticPrice
-    price: 20000
+    price: 30000 #steal it steal it steal it steal it
   - type: ActiveRadio
     channels:
     - CentCom
