@@ -11,22 +11,16 @@ namespace Content.Shared.Telescience.Components;
 public sealed partial class TelescienceFractureComponent : Component
 {
     /// <summary>
-    /// Maximum amount of HP (science points) that can rolled for
+    /// Maximum amount of science points that can rolled for
     /// </summary>
     [DataField]
-    public int MaxHealthRoll = 30000;
+    public int MaxScienceRoll = 30000;
 
     /// <summary>
     /// Minimum amount of HP (science points) that can be rolled for
     /// </summary>
     [DataField]
-    public int MinHealthRoll = 15000;
-
-    /// <summary>
-    /// Amount of HP regenerated per second if not at max HP.
-    /// </summary>
-    [DataField]
-    public int HealthRegen = 10;
+    public int MinScienceRoll = 15000;
 
     /// <summary>
     /// science points gradiant, damage = MaxHealth * x/distance+x
@@ -37,14 +31,14 @@ public sealed partial class TelescienceFractureComponent : Component
     //##################################
 
     /// <summary>
-    /// The distortion's rolled max HP
+    /// The distortion's maximum extractable science
     /// </summary>
     [ViewVariables, AutoNetworkedField]
-    public int MaxHealth = 1000;
+    public int MaxScience = 1000;
 
     /// <summary>
-    /// The distortion's current HP
+    /// The distortion's current extractable science
     /// </summary>
     [ViewVariables, AutoNetworkedField]
-    public int Health = 1000;
+    public int CurrentScience = 1000;
 }

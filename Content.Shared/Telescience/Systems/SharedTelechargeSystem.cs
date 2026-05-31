@@ -79,8 +79,8 @@ public abstract partial class SharedTelechargeSystem : EntitySystem
                 var scanEv = new TelechargeScanEvent(ent.Owner, distance, incidentMult);
                 RaiseLocalEvent(target, ref scanEv); //send a scan event, they can then send back how much science the telecharge gets.
             }
-            //telecharge-range-scan = [num] Distortion reactions detected within [range] metres. Data collected for retrieval.
-            var message = Loc.GetString("telecharge-range-scan", ("num", inScanRange.Count), ("range", ent.Comp.ScanRange)); //send a message
+            //telecharge-range-scan = [num] Distortion reactions detected within [range] metres, closest [distance] metres away. Data collected for retrieval.
+            var message = Loc.GetString("telecharge-range-scan", ("num", inScanRange.Count), ("range", ent.Comp.ScanRange), ("distance", closeDistance!.Value)); //send a message
             SendRadioMessage(ent, message);
             Dirty(ent);
             return;
