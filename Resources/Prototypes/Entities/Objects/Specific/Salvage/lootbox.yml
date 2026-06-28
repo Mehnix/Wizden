@@ -1,0 +1,131 @@
+#Anomalous Objects function like one-time artifacts, with randomly generated triggers leading to a loot producing effect
+- type: entity
+  id: BaseAnomalousObject
+  parent: [BaseArtifact]
+  name: anomalous object
+  abstract: true
+  components:
+  - type: Transform
+    noRot: true
+  - type: XenoArtifact
+    IsGenerationRequired: false #no node gragh to help you, figure out how to open it.
+    nodeCount:
+      min: 1
+      max: 1
+    segmentSize:
+      min: 1
+      max: 1
+    nodesPerSegmentLayer:
+      min: 1
+      max: 1
+    scatterPerLayer:
+      min: 0
+      max: 0
+    unlockStateDuration: 0 #we don't need to wait for multiple triggers as there won't be any
+    unlockStateRefactory: 10
+    unlockBeginMsg: null
+    unlockSuccessMsg: null
+    unlockFailureMsg: artifact-activation-fail
+    forceActivationSoundSpecifier: null
+
+
+#Like regular crates however they can be destroyed, unlike them, the items inside are only generated once the trigger is met, if destroyed prior, you get nothing!
+- type: entity
+  id: CrateBaseLootbox # One-time artifacts, that stop being artifacts once you've triggered them
+  parent: [BaseAnomalousObject, BaseStructureDynamic, BasePaperLabelableVisualized]
+  name: lock box
+  suffix: lootbox
+  description: "An old secure lock box with an obtuse opening method. Anything could be inside, if you open it properly that is."
+  components:
+  - type: Sprite
+    drawdepth: SmallObjects
+    sprite: Structures/Storage/Crates/lockbox.rsi
+    layers:
+    - state: base
+    - state: closed
+      map: ["enum.StorageVisualLayers.Door"]
+    - state: welded
+      visible: false
+      map: ["enum.WeldableLayers.BaseWelded"]
+    - state: locked
+      map: ["enum.LockVisualLayers.Lock"]
+      shader: unshaded
+    - state: paper
+      sprite: Structures/Storage/Crates/labels.rsi
+      offset: "-0.46875,0.03125"
+      map: ["enum.PaperLabelVisuals.Layer"]
+  - type: GenericVisualizer
+    visuals:
+      enum.PaperLabelVisuals.HasLabel:
+        enum.PaperLabelVisuals.Layer:
+          True: { visible: true }
+          False: { visible: false }
+      enum.PaperLabelVisuals.LabelType:
+        enum.PaperLabelVisuals.Layer:
+          Paper: { state: paper }
+          Bounty: { state: bounty }
+          CaptainsPaper: { state: captains_paper }
+          Invoice: { state: invoice }
+  - type: Fixtures
+    fixtures:
+      fix1:
+        shape:
+          !type:PhysShapeAabb
+          bounds: "-0.3,-0.4,0.3,0.19"
+        density: 50
+        mask:
+        - CrateMask #this is so they can go under plastic flaps
+        layer:
+        - MachineLayer
+  - type: Damageable
+    damageModifierSet: StructuralMetallic
+  - type: Injurable
+    damageContainer: StructuralInorganic
+  - type: Destructible
+    thresholds:
+    - trigger:
+        !type:DamageTrigger
+        damage: 75
+      behaviors:
+      - !type:DoActsBehavior
+        acts: ["Destruction"]
+      - !type:PlaySoundBehavior
+        sound:
+          collection: MetalBreak
+      - !type:ExplodeBehavior
+  - type: LockVisuals
+  - type: AccessReader
+  - type: EntityStorageVisuals
+    stateDoorOpen: open
+    stateDoorClosed: closed
+  - type: ContainerContainer
+    containers:
+      entity_storage: !type:Container
+      paper_label: !type:ContainerSlot
+      node-container: !type:Container
+        showEnts: False
+        occludes: True
+        ents: []
+  - type: Reflect
+    reflects:
+    - Energy
+    reflectProb: 0.2
+    spread: 90
+  - type: RequireProjectileTarget
+  - type: XenoArtifact
+    unlockActivationSuccessfulSound: /Audio/Machines/door_lock_off.ogg
+    unlockActivationFailedSound: /Audio/Machines/airlock_deny.ogg
+    unlockSuccessMsg: lootbox-unlock-end-success
+    allowArtifexium: false
+    effectsTable: !type:GroupSelector
+      children:
+      - !type:NestedSelector
+        tableId: LootboxEffectsTableBasic
+        weight: 1
+    triggerWeights: LootboxTriggersBasic
+  - type: Explosive
+    explosionType: Default #does about 50-60 damage with 1 tile radius if you're standing right on top of it
+    maxIntensity: 5
+    intensitySlope: 2
+    totalIntensity: 7.5
+    canCreateVacuum: false

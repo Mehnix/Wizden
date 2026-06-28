@@ -73,9 +73,25 @@ xenoarch-trigger-tip-magnet = Magnetic waves
 xenoarch-trigger-examine-wrenching = There's a loose bit spinning around.
 xenoarch-trigger-examine-prying = There's a panel coming up from the surface.
 xenoarch-trigger-examine-screwing = There's a raised section with a small inset on it.
-xenoarch-trigger-examine-pulsing = An exposed diode pokes out of the artifact's surface.
+xenoarch-trigger-examine-pulsing = An exposed diode pokes out of the surface.
 xenoarch-trigger-examine-timer = Carvings and scratches cover the surface... You can just barely make out a number: [italic]{$time}[/italic]
+xenoarch-trigger-examine-music = There's a set of thrumming forks inset into it.
+xenoarch-trigger-examine-temp = There seems to be a bank of radiators protruding out from it.
+xenoarch-trigger-examine-no-oxygen = Some of the active components are brittle and tarnished.
+xenoarch-trigger-examine-liquid = There's a small drain hole that you could pour something into.
+xenoarch-trigger-examine-gas = There looks to be a small inflow fan covered by a filter.
+xenoarch-trigger-examine-radiation = There are several protrusions of plasma glass, connected to strange wiring.
+xenoarch-trigger-examine-pressure = A set of actuated plates look to be protecting parts from the external environment.
+xenoarch-trigger-examine-brute-damage = It looks in need of percussive maintenance.
+xenoarch-trigger-examine-examine = You feel a strong craving for acknowledgement coming from it.
+xenoarch-trigger-examine-blood = There's a small drain hole that you could pour something into. The scent of iron wafts from inside it.
+xenoarch-trigger-examine-throw = It looks suprisingly aerodynamic.
+xenoarch-trigger-examine-death = There's a small morbid-looking lock in the shape of an alien skull.
+xenoarch-trigger-examine-magnet = Loose iron filings are sticking to its surface.
 
 ### Effects hints
 xenoarch-effect-puddle = Produces puddle of following reagents: {$reagent}
 xenoarch-effect-foam = Produces foam of following reagents: {$reagent}
+
+lootbox-unlock-end-success = the lock clicks open!
+lootbox-trigger-examine-brute-damage = The lock looks old and damaged, a single heavy hit could break it off.
