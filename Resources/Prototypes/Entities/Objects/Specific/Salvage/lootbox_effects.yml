@@ -1,0 +1,28 @@
+- type: entityTable
+  id: LootboxEffectsTableBasic
+  table: !type:GroupSelector
+    children:
+    - id: LootboxGeneral
+
+- type: entity
+  id: LootboxGeneral
+  parent: BaseOneTimeXenoArtifactEffect
+  description: Contains Valuable items
+  components:
+  - type: XAEApplyComponents
+    applyIfAlreadyHave: false
+    refreshOnReactivate: false
+    components:
+    - type: EntityStorage
+    - type: PlaceableSurface
+    - type: Weldable
+    - type: ResistLocker
+    - type: Lock
+      locked: false
+    - type: EntityTableContainerFill #fill the crate up with the loot
+      containers:
+        entity_storage: !type:NestedSelector
+          tableId: AllPlushiesTable
+          rolls: !type:ConstantNumberSelector
+            value: 10
+  - type: XAERemoveArtifact #we're done now so kill it

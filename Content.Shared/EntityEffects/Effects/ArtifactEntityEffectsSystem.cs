@@ -35,6 +35,9 @@ public sealed partial class ArtifactUnlockEntityEffectSystem : EntityEffectSyste
 
     protected override void Effect(Entity<XenoArtifactComponent> entity, ref EntityEffectEvent<ArtifactUnlock> args)
     {
+        if (entity.Comp.AllowArtifexium == false)
+            return;
+
         if (EnsureComp<XenoArtifactUnlockingComponent>(entity, out var unlocking))
         {
             if (unlocking.ArtifexiumApplied)

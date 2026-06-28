@@ -1,0 +1,21 @@
+- type: weightedRandomXenoArchTrigger
+  id: LootboxTriggersBasic #lootbox triggers should require the player to DO something to it. Avoid accidental openings.
+  weights:
+    TriggerScrewing: 1
+    TriggerPrying: 1
+    TriggerWrenching: 1
+    TriggerPulsing: 1
+    TriggerBruteDamageMinor: 1
+    TriggerWater: 1
+    TriggerBlood: 1
+    TriggerDeath: 0.5 #exception as the lootbox demanding a sacrifice is funny
+
+- type: xenoArchTrigger
+  id: TriggerBruteDamageMinor
+  tip: xenoarch-trigger-tip-brute-damage #uses metallic structure damage set so stuff like crowbars will do nothing
+  components:
+  - type: XATDamageThresholdReached
+    groupsNeeded:
+      Brute: 5
+  - type: XATExaminableText
+    examineText: lootbox-trigger-examine-brute-damage

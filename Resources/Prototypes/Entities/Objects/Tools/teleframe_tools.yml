@@ -291,9 +291,39 @@
       types:
         Radiation: 10
 
+#Anomalous Objects function like one-time artifacts, with randomly generated triggers leading to a loot producing effect
+- type: entity
+  id: BaseAnomalousObject
+  parent: [BaseArtifact]
+  name: anomalous object
+  abstract: true
+  components:
+  - type: Transform
+    noRot: true
+  - type: XenoArtifact
+    IsGenerationRequired: false #no node gragh to help you, figure out how to open it.
+    nodeCount:
+      min: 1
+      max: 1
+    segmentSize:
+      min: 1
+      max: 1
+    nodesPerSegmentLayer:
+      min: 1
+      max: 1
+    scatterPerLayer:
+      min: 0
+      max: 0
+    unlockStateDuration: 0 #we don't need to wait for multiple triggers as there won't be any
+    unlockStateRefactory: 10
+    unlockBeginMsg: null
+    unlockSuccessMsg: null
+    unlockFailureMsg: artifact-activation-fail
+    forceActivationSoundSpecifier: null
+
 - type: entity
   id: BaseAnomalousShard
-  parent: BaseXenoArtifactItem
+  parent: [BaseAnomalousObject, BaseItem]
   name: anomalous shard
   description: A shard of an anomalous object, still retaining some ability to channel strange effects.
   components:
@@ -310,12 +340,14 @@
     scatterPerLayer:
       min: 0
       max: 0
+    unlockStateDuration: 1
+    unlockStateRefactory: 1
     effectsTable: !type:GroupSelector
       children:
       - !type:NestedSelector
         tableId: AnomalousShardEffectsTable
         weight: 1
-    triggerWeights: AnomalousShardTriggers
+    triggerWeights: AnomalousObjectTriggersBasic
   - type: Item
     size: Normal
 
@@ -323,20 +355,44 @@
   id: AnomalousShardEffectsTable
   table: !type:GroupSelector
     children:
+    - id: XenoArtifactEffectUniversalIntercom
+    - id: XenoArtifactStorage
+    - id: XenoArtifactSpeedUp
+    - id: XenoArtifactDrill
+    - id: XenoArtifactOmnitool
+    - id: XenoArtifactThrowThingsAround
     - id: XenoArtifactGun
-
-- type: weightedRandomXenoArchTrigger
-  id: AnomalousShardTriggers
-  weights:
-    TriggerExamine: 1
+    - id: XenoArtifactKnock
+    - id: XenoArtifactChargeBattery
+    - id: XenoArtifactMagnet
+    - id: XenoArtifactRareMaterialSpawn
+    - id: XenoArtifactShatterWindows
+    - id: XenoArtifactFoamGood
+    - id: XenoArtifactFoamDangerous
+    - id: XenoArtifactPuddleRare
+    - id: XenoArtifactAnomalySpawn
+    - id: XenoArtifactIgnite
+    - id: XenoArtifactTeleport
+    - id: XenoArtifactEmp
+    - id: XenoArtifactPortal
+    - id: XenoArtifactShuffle
+    - id: XenoArtifactHealAll
+    - id: XenoArtifactBoom
+    - id: XenoArtifactEffectCreationGasPlasma
+    - id: XenoArtifactEffectCreationGasTritium
+    - id: XenoArtifactEffectCreationGasAmmonia
+    - id: XenoArtifactEffectCreationGasFrezon
+    - id: XenoArtifactEffectCreationGasNitrousOxide
 
 - type: entity
   id: ShardSpawner
   components:
-    - type: EntityTableSpawner
-      deleteSpawnerAfterSpawn: false
-      table: !type:GroupSelector
-        children:
-        - id: BaseAnomalousShard
-          amount: !type:RangeNumberSelector
-            range: 1, 5
+  - type: EntityTableSpawner
+    deleteSpawnerAfterSpawn: false
+    table: !type:GroupSelector
+      children:
+      - id: BaseAnomalousShard
+        amount: !type:RangeNumberSelector
+          range: 1, 5
+
+
