@@ -23,6 +23,7 @@
     effectsTable: !type:NestedSelector
       tableId: XenoArtifactEffectsDefaultTable
   - type: Damageable
+  - type: Injurable
   - type: Actions
   - type: ContainerContainer
     containers:
