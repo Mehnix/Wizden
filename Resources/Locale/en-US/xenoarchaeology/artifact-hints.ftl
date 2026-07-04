@@ -68,14 +68,56 @@ xenoarch-trigger-tip-blood = Blood
 xenoarch-trigger-tip-throw = Being thrown
 xenoarch-trigger-tip-death = Death
 xenoarch-trigger-tip-magnet = Magnetic waves
+xenoarch-trigger-tip-coin = Coin Operated
+xenoarch-trigger-tip-techdisk = Technological Exchange
+xenoarch-trigger-tip-pizza = Pizza Intake
+xenoarch-trigger-tip-cake = Cake Intake
+xenoarch-trigger-tip-bread = Bread Intake
+xenoarch-trigger-tip-fruit = Fruit Intake
+xenoarch-trigger-tip-vegetable = Vegetable Intake
+xenoarch-trigger-tip-cotton = Cotton-Food Intake
+xenoarch-trigger-tip-particle = Singularity-Affecting Particles
+xenoarch-trigger-tip-anomparticle = Anomaly-Affecting Particles
+xenoarch-trigger-tip-flash = Sudden Luminance
+xenoarch-trigger-tip-defib = Defibrillation
+
 
 ### Description hints
 xenoarch-trigger-examine-wrenching = There's a loose bit spinning around.
 xenoarch-trigger-examine-prying = There's a panel coming up from the surface.
 xenoarch-trigger-examine-screwing = There's a raised section with a small inset on it.
-xenoarch-trigger-examine-pulsing = An exposed diode pokes out of the artifact's surface.
+xenoarch-trigger-examine-pulsing = An exposed diode pokes out of the surface.
 xenoarch-trigger-examine-timer = Carvings and scratches cover the surface... You can just barely make out a number: [italic]{$time}[/italic]
+xenoarch-trigger-examine-music = There's a set of thrumming forks inset into it.
+xenoarch-trigger-examine-temp = There seems to be a bank of radiators protruding out from it.
+xenoarch-trigger-examine-no-oxygen = Some of the active components are brittle and tarnished.
+xenoarch-trigger-examine-liquid = There's a small drain hole that you could pour something into.
+xenoarch-trigger-examine-gas = There looks to be a small inflow fan covered by a filter.
+xenoarch-trigger-examine-radiation = There are several protrusions of plasma glass, connected to strange wiring.
+xenoarch-trigger-examine-pressure = A set of actuated plates look to be protecting parts from the external environment.
+xenoarch-trigger-examine-brute-damage = It looks in need of percussive maintenance.
+xenoarch-trigger-examine-examine = You feel a strong craving for acknowledgement coming from it.
+xenoarch-trigger-examine-blood = There's a small drain hole that you could pour something into. The scent of iron wafts from inside it.
+xenoarch-trigger-examine-throw = It looks suprisingly aerodynamic.
+xenoarch-trigger-examine-death = There's a small morbid-looking lock in the shape of an alien skull.
+xenoarch-trigger-examine-magnet = Loose iron filings are sticking to its surface.
+xenoarch-trigger-examine-coin = It has a slot you could slide a coin into.
+xenoarch-trigger-examine-techdisk = It has a slot that would fit a small floppy disk
+xenoarch-trigger-examine-pizza = A tiny mouth on its surface demands pizza
+xenoarch-trigger-examine-cake = A tiny mouth on its surface demands cake
+xenoarch-trigger-examine-bread = A tiny mouth on its surface demands baked goods
+xenoarch-trigger-examine-fruit = A tiny mouth on its surface demands fruit
+xenoarch-trigger-examine-vegetable = A tiny mouth on its surface demands vegetables
+xenoarch-trigger-examine-cotton = A tiny mouth on its surface demands cotton
+xenoarch-trigger-examine-particle = There is a locking mechanism with a symbol of a singularity on it
+xenoarch-trigger-examine-anomparticle = A tiny anomaly core can be made out on its front
+xenoarch-trigger-examine-flash = A set of photosensors look to be tuned for a sudden flash
+xenoarch-trigger-examine-defib = A mechanical heart pulses arrhythmically on its surface
+
 
 ### Effects hints
 xenoarch-effect-puddle = Produces puddle of following reagents: {$reagent}
 xenoarch-effect-foam = Produces foam of following reagents: {$reagent}
+
+lootbox-unlock-end-success = the lock clicks open!
+lootbox-trigger-examine-brute-damage = The lock looks old and damaged, a single heavy hit could break it off.

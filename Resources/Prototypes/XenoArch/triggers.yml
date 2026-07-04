@@ -35,6 +35,8 @@
   - type: XATCompNearby
     requireComponentWithName: ActiveInstrument
     radius: 2
+  - type: XATExaminableText
+    examineText: xenoarch-trigger-examine-music
 
 - type: xenoArchTrigger
   id: TriggerHeat
@@ -51,6 +53,8 @@
 #    requiredTool: Welding
 #    delay: 5
 #    fuel: 10
+  - type: XATExaminableText
+    examineText: xenoarch-trigger-examine-temp
 
 - type: xenoArchTrigger
   id: TriggerCold
@@ -62,6 +66,8 @@
   - type: XATDamageThresholdReached
     typesNeeded:
       Cold: 20
+  - type: XATExaminableText
+    examineText: xenoarch-trigger-examine-temp
 
 - type: xenoArchTrigger
   id: TriggerNoOxygen
@@ -71,6 +77,8 @@
     targetGas: Oxygen
     moles: 10
     shouldBePresent: false
+  - type: XATExaminableText
+    examineText: xenoarch-trigger-examine-no-oxygen
 
 - type: xenoArchTrigger
   id: TriggerWater
@@ -81,6 +89,8 @@
   - type: XATReactive
     reagents:
     - Water
+  - type: XATExaminableText
+    examineText: xenoarch-trigger-examine-liquid
 
 - type: xenoArchTrigger
   id: TriggerCO2
@@ -91,6 +101,8 @@
   - type: XATReactive
     reagents:
     - CarbonDioxide
+  - type: XATExaminableText
+    examineText: xenoarch-trigger-examine-gas
 
 - type: xenoArchTrigger
   id: TriggerPlasma
@@ -101,6 +113,8 @@
   - type: XATReactive
     reagents:
     - Plasma
+  - type: XATExaminableText
+    examineText: xenoarch-trigger-examine-gas
 
 - type: xenoArchTrigger
   id: TriggerTritium
@@ -111,6 +125,8 @@
   - type: XATReactive
     reagents:
     - Tritium
+  - type: XATExaminableText
+    examineText: xenoarch-trigger-examine-gas
 
 - type: xenoArchTrigger
   id: TriggerAmmonia
@@ -121,6 +137,8 @@
   - type: XATReactive
     reagents:
     - Ammonia
+  - type: XATExaminableText
+    examineText: xenoarch-trigger-examine-gas
 
 - type: xenoArchTrigger
   id: TriggerN2O
@@ -131,6 +149,8 @@
   - type: XATReactive
     reagents:
     - NitrousOxide
+  - type: XATExaminableText
+    examineText: xenoarch-trigger-examine-gas
 
 - type: xenoArchTrigger
   id: TriggerFrezon
@@ -141,6 +161,8 @@
   - type: XATReactive
     reagents:
     - Frezon
+  - type: XATExaminableText
+    examineText: xenoarch-trigger-examine-gas
 
 - type: xenoArchTrigger
   id: TriggerRadiation
@@ -150,6 +172,8 @@
     typesNeeded:
       Radiation: 20
   # TODO: legendary microwave trigger
+  - type: XATExaminableText
+    examineText: xenoarch-trigger-examine-radiation
 
 - type: xenoArchTrigger
   id: TriggerPressureHigh
@@ -157,6 +181,8 @@
   components:
   - type: XATPressure
     maxPressureThreshold: 385
+  - type: XATExaminableText
+    examineText: xenoarch-trigger-examine-pressure
 
 - type: xenoArchTrigger
   id: TriggerPressureLow
@@ -164,12 +190,16 @@
   components:
   - type: XATPressure
     minPressureThreshold: 50
+  - type: XATExaminableText
+    examineText: xenoarch-trigger-examine-pressure
 
 - type: xenoArchTrigger
   id: TriggerExamine
   tip: xenoarch-trigger-tip-examine
   components:
   - type: XATExamine
+  - type: XATExaminableText
+    examineText: xenoarch-trigger-examine-examine
 
 - type: xenoArchTrigger
   id: TriggerBruteDamage
@@ -178,12 +208,16 @@
   - type: XATDamageThresholdReached
     groupsNeeded:
       Brute: 20
+  - type: XATExaminableText
+    examineText: xenoarch-trigger-examine-brute-damage
 
 - type: xenoArchTrigger
   id: TriggerInteraction
   tip: xenoarch-trigger-tip-interaction
   components:
   - type: XATInteraction
+  - type: XATExaminableText
+    examineText: xenoarch-trigger-examine-examine
 
 - type: xenoArchTrigger
   id: TriggerWrenching
@@ -244,6 +278,8 @@
     - ZombieBlood
     - Sap
     - SulfurBlood
+  - type: XATExaminableText
+    examineText: xenoarch-trigger-examine-blood
 
 - type: xenoArchTrigger
   id: TriggerThrow
@@ -253,15 +289,21 @@
     - Item
   components:
   - type: XATItemLand
+  - type: XATExaminableText
+    examineText: xenoarch-trigger-examine-throw
 
 - type: xenoArchTrigger
   id: TriggerDeath
   tip: xenoarch-trigger-tip-death
   components:
   - type: XATDeath
+  - type: XATExaminableText
+    examineText: xenoarch-trigger-examine-death
 
 - type: xenoArchTrigger
   id: TriggerMagnet
   tip: xenoarch-trigger-tip-magnet
   components:
   - type: XATMagnet
+  - type: XATExaminableText
+    examineText: xenoarch-trigger-examine-magnet

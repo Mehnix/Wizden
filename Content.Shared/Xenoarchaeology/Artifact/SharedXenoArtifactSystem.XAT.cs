@@ -9,6 +9,7 @@ using Content.Shared.Throwing;
 using Content.Shared.Weapons.Melee.Events;
 using Content.Shared.Xenoarchaeology.Artifact.Components;
 using Content.Shared.Xenoarchaeology.Artifact.XAT.Components;
+using Robust.Shared.Physics.Events;
 
 namespace Content.Shared.Xenoarchaeology.Artifact;
 
@@ -24,6 +25,7 @@ public abstract partial class SharedXenoArtifactSystem
         XATRelayLocalEvent<InteractHandEvent>();
         XATRelayLocalEvent<ReactionEntityEvent>();
         XATRelayLocalEvent<LandEvent>();
+        XATRelayLocalEvent<StartCollideEvent>();
 
         // special case this one because we need to order the messages
         SubscribeLocalEvent<XenoArtifactComponent, ExaminedEvent>(OnExamined);
@@ -70,8 +72,8 @@ public abstract partial class SharedXenoArtifactSystem
             unlockingComp.EndTime = _timing.CurTime + ent.Comp.UnlockStateDuration;
             Log.Debug($"{ToPrettyString(ent)} entered unlocking state");
 
-            if (_net.IsServer)
-                _popup.PopupEntity(Loc.GetString("artifact-unlock-state-begin"), ent);
+            if (_net.IsServer && ent.Comp.UnlockBeginMsg != null)
+                _popup.PopupEntity(Loc.GetString(ent.Comp.UnlockBeginMsg), ent);
             Dirty(ent);
         }
         else if (node != null)

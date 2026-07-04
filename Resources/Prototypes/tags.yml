@@ -343,6 +343,9 @@
   id: CluwneHorn # ConstructionGraph: JonkBot
 
 - type: Tag
+  id: Coin # Artifact/Lootbox Trigger Whitelist
+
+- type: Tag
   id: Cola  # Storage whitelist: DrinkCanPack. ItemCounter: DrinkCanPack
 
 - type: Tag

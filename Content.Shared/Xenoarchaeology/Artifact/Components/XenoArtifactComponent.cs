@@ -162,6 +162,44 @@ public sealed partial class XenoArtifactComponent : Component
     };
 
     /// <summary>
+    /// The sound that plays when an artifact finishes unlocking successfully (with node unlocked).
+    /// </summary>
+    [DataField]
+    public SoundSpecifier? UnlockActivationSuccessfulSound = new SoundCollectionSpecifier("ArtifactUnlockingActivationSuccess")
+    {
+        Params = new()
+        {
+            Variation = 0.1f,
+            Volume = 3f
+        }
+    };
+
+    /// <summary>
+    /// The sound that plays when artifact finishes unlocking non-successfully.
+    /// </summary>
+    [DataField]
+    public SoundSpecifier? UnlockActivationFailedSound = new SoundCollectionSpecifier("ArtifactUnlockActivationFailure")
+    {
+        Params = new()
+        {
+            Variation = 0.1f
+        }
+    };
+
+    [DataField]
+    public string? UnlockSuccessMsg = "artifact-unlock-state-end-success";
+    [DataField]
+    public string? UnlockFailureMsg = "artifact-unlock-state-end-failure";
+    [DataField]
+    public string? UnlockBeginMsg = "artifact-unlock-state-begin";
+
+    /// <summary>
+    /// Whether the ArtifactUnlock EntityEffect can be used to unlock nodes.
+    /// </summary>
+    [DataField]
+    public bool AllowArtifexium = true;
+
+    /// <summary>
     /// Action that allows the artifact to self activate.
     /// </summary>
     [DataField]
