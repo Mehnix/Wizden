@@ -193,6 +193,9 @@ public sealed partial class XenoArtifactComponent : Component
     [DataField]
     public string? UnlockBeginMsg = "artifact-unlock-state-begin";
 
+    [DataField]
+    public string? UnlockContinueMsg = "artifact-unlock-state-continue";
+
     /// <summary>
     /// Whether the ArtifactUnlock EntityEffect can be used to unlock nodes.
     /// </summary>

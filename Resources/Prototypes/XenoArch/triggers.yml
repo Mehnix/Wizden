@@ -5,6 +5,7 @@
     TriggerHeat: 1
     TriggerCold: 0.5
     TriggerNoOxygen: 1
+    TriggerNoNitrogen: 0.5
     TriggerWater: 1
     TriggerCO2: 0.5
     TriggerPlasma: 0.5
@@ -17,16 +18,41 @@
     TriggerPressureLow: 1
     TriggerExamine: 1
     TriggerBruteDamage: 1
+    TriggerBurnDamage: 1
     #TriggerInteraction: 1 #this one interferes with activating artifact AND brute dmg!
     TriggerWrenching: 0.5
     TriggerPrying: 0.5
     TriggerScrewing: 0.5
     TriggerPulsing: 0.5
+    TriggerWelding: 0.5
+    TriggerSlicing: 0.5
+    TriggerCutting: 0.5
+    TriggerHonking: 0.5
     TriggerTimer: 0.25
     TriggerBlood: 1
     TriggerThrow: 1
     TriggerDeath: 1
     TriggerMagnet: 1
+    TriggerConsumeMoney: 0.5
+    TriggerConsumeTechdisk: 0.5
+    TriggerConsumePizza: 0.5
+    TriggerConsumeCake: 0.5
+    TriggerConsumeProduce: 1
+    TriggerInteractStamp: 1
+    TriggerInteractDefib: 1
+    TriggerInteractScanning: 0.5
+    TriggerFlash: 1
+    TriggerAttackParticleEngine: 0.25
+    TriggerAttackParticleAnomaly: 1
+    TriggerAttackStaminaDamage: 1
+    TriggerReactiveDrinkEasy: 1
+    TriggerReactiveDrinkHard: 0.5
+    TriggerReactiveReagentEasy: 1
+    TriggerReactiveReagentHard: 0.5
+    TriggerReactiveReagentObscure: 0.5
+    TriggerEmoteDistress: 1
+    TriggerEmoteHumour: 1
+    TriggerAccessCommand: 0.5
 
 - type: xenoArchTrigger
   id: TriggerMusic
@@ -35,8 +61,6 @@
   - type: XATCompNearby
     requireComponentWithName: ActiveInstrument
     radius: 2
-  - type: XATExaminableText
-    examineText: xenoarch-trigger-examine-music
 
 - type: xenoArchTrigger
   id: TriggerHeat
@@ -53,8 +77,6 @@
 #    requiredTool: Welding
 #    delay: 5
 #    fuel: 10
-  - type: XATExaminableText
-    examineText: xenoarch-trigger-examine-temp
 
 - type: xenoArchTrigger
   id: TriggerCold
@@ -66,8 +88,6 @@
   - type: XATDamageThresholdReached
     typesNeeded:
       Cold: 20
-  - type: XATExaminableText
-    examineText: xenoarch-trigger-examine-temp
 
 - type: xenoArchTrigger
   id: TriggerNoOxygen
@@ -77,8 +97,15 @@
     targetGas: Oxygen
     moles: 10
     shouldBePresent: false
-  - type: XATExaminableText
-    examineText: xenoarch-trigger-examine-no-oxygen
+
+- type: xenoArchTrigger
+  id: TriggerNoNitrogen
+  tip: xenoarch-trigger-tip-no-nitrogen
+  components:
+  - type: XATGas
+    targetGas: Nitrogen
+    moles: 10
+    shouldBePresent: false
 
 - type: xenoArchTrigger
   id: TriggerWater
@@ -89,8 +116,6 @@
   - type: XATReactive
     reagents:
     - Water
-  - type: XATExaminableText
-    examineText: xenoarch-trigger-examine-liquid
 
 - type: xenoArchTrigger
   id: TriggerCO2
@@ -101,8 +126,6 @@
   - type: XATReactive
     reagents:
     - CarbonDioxide
-  - type: XATExaminableText
-    examineText: xenoarch-trigger-examine-gas
 
 - type: xenoArchTrigger
   id: TriggerPlasma
@@ -113,8 +136,6 @@
   - type: XATReactive
     reagents:
     - Plasma
-  - type: XATExaminableText
-    examineText: xenoarch-trigger-examine-gas
 
 - type: xenoArchTrigger
   id: TriggerTritium
@@ -125,8 +146,6 @@
   - type: XATReactive
     reagents:
     - Tritium
-  - type: XATExaminableText
-    examineText: xenoarch-trigger-examine-gas
 
 - type: xenoArchTrigger
   id: TriggerAmmonia
@@ -137,8 +156,6 @@
   - type: XATReactive
     reagents:
     - Ammonia
-  - type: XATExaminableText
-    examineText: xenoarch-trigger-examine-gas
 
 - type: xenoArchTrigger
   id: TriggerN2O
@@ -149,8 +166,6 @@
   - type: XATReactive
     reagents:
     - NitrousOxide
-  - type: XATExaminableText
-    examineText: xenoarch-trigger-examine-gas
 
 - type: xenoArchTrigger
   id: TriggerFrezon
@@ -161,8 +176,6 @@
   - type: XATReactive
     reagents:
     - Frezon
-  - type: XATExaminableText
-    examineText: xenoarch-trigger-examine-gas
 
 - type: xenoArchTrigger
   id: TriggerRadiation
@@ -172,8 +185,6 @@
     typesNeeded:
       Radiation: 20
   # TODO: legendary microwave trigger
-  - type: XATExaminableText
-    examineText: xenoarch-trigger-examine-radiation
 
 - type: xenoArchTrigger
   id: TriggerPressureHigh
@@ -181,8 +192,6 @@
   components:
   - type: XATPressure
     maxPressureThreshold: 385
-  - type: XATExaminableText
-    examineText: xenoarch-trigger-examine-pressure
 
 - type: xenoArchTrigger
   id: TriggerPressureLow
@@ -190,16 +199,12 @@
   components:
   - type: XATPressure
     minPressureThreshold: 50
-  - type: XATExaminableText
-    examineText: xenoarch-trigger-examine-pressure
 
 - type: xenoArchTrigger
   id: TriggerExamine
   tip: xenoarch-trigger-tip-examine
   components:
   - type: XATExamine
-  - type: XATExaminableText
-    examineText: xenoarch-trigger-examine-examine
 
 - type: xenoArchTrigger
   id: TriggerBruteDamage
@@ -208,16 +213,20 @@
   - type: XATDamageThresholdReached
     groupsNeeded:
       Brute: 20
-  - type: XATExaminableText
-    examineText: xenoarch-trigger-examine-brute-damage
+
+- type: xenoArchTrigger
+  id: TriggerBurnDamage
+  tip: xenoarch-trigger-tip-burn-damage
+  components:
+  - type: XATDamageThresholdReached
+    groupsNeeded:
+      Burn: 20
 
 - type: xenoArchTrigger
   id: TriggerInteraction
   tip: xenoarch-trigger-tip-interaction
   components:
   - type: XATInteraction
-  - type: XATExaminableText
-    examineText: xenoarch-trigger-examine-examine
 
 - type: xenoArchTrigger
   id: TriggerWrenching
@@ -256,6 +265,48 @@
     examineText: xenoarch-trigger-examine-pulsing
 
 - type: xenoArchTrigger
+  id: TriggerWelding
+  tip: xenoarch-trigger-tip-welding
+  components:
+  - type: XATToolUse
+    requiredTool: Welding
+  - type: XATExaminableText
+    examineText: xenoarch-trigger-examine-welding
+
+- type: xenoArchTrigger
+  id: TriggerSlicing
+  tip: xenoarch-trigger-tip-slicing
+  components:
+  - type: XATToolUse
+    requiredTool: Slicing
+  - type: XATDamageThresholdReached
+    typesNeeded:
+      Slash: 20
+  - type: XATExaminableText
+    examineText: xenoarch-trigger-examine-slicing
+
+- type: xenoArchTrigger
+  id: TriggerCutting
+  tip: xenoarch-trigger-tip-cutting
+  components:
+  - type: XATToolUse
+    requiredTool: Cutting
+  - type: XATExaminableText
+    examineText: xenoarch-trigger-examine-cutting
+
+- type: xenoArchTrigger
+  id: TriggerHonking
+  tip: xenoarch-trigger-tip-honking
+  components:
+  - type: XATToolUse
+    requiredTool: Honking
+  - type: XATEmote
+    emotes:
+    - Honk
+  - type: XATExaminableText
+    examineText: xenoarch-trigger-examine-honking
+
+- type: xenoArchTrigger
   id: TriggerTimer
   tip: xenoarch-trigger-tip-timer
   components:
@@ -278,8 +329,6 @@
     - ZombieBlood
     - Sap
     - SulfurBlood
-  - type: XATExaminableText
-    examineText: xenoarch-trigger-examine-blood
 
 - type: xenoArchTrigger
   id: TriggerThrow
@@ -289,21 +338,337 @@
     - Item
   components:
   - type: XATItemLand
-  - type: XATExaminableText
-    examineText: xenoarch-trigger-examine-throw
 
 - type: xenoArchTrigger
   id: TriggerDeath
   tip: xenoarch-trigger-tip-death
   components:
   - type: XATDeath
-  - type: XATExaminableText
-    examineText: xenoarch-trigger-examine-death
 
 - type: xenoArchTrigger
   id: TriggerMagnet
   tip: xenoarch-trigger-tip-magnet
   components:
   - type: XATMagnet
-  - type: XATExaminableText
-    examineText: xenoarch-trigger-examine-magnet
+
+- type: xenoArchTrigger
+  id: TriggerConsumeTechdisk
+  tip: xenoarch-trigger-tip-techdisk
+  components:
+  - type: XATInteractWith
+    destroyAfter: true
+    interactionTime: 1.5
+    successTriggerSound: /Audio/Machines/machine_vend.ogg
+    whitelist:
+      components:
+      - TechnologyDisk
+
+- type: xenoArchTrigger
+  id: TriggerConsumeMoney
+  tip: xenoarch-trigger-tip-money
+  components:
+  - type: XATInteractWith
+    interactionCount:
+      min: 100
+      max: 200
+    destroyAfter: true
+    interactionTime: 1.5
+    successTriggerSound: /Audio/Machines/machine_vend.ogg
+    whitelist:
+      components:
+      - Cash
+
+- type: xenoArchTrigger
+  id: TriggerConsumePizza
+  tip: xenoarch-trigger-tip-pizza
+  components:
+  - type: XATInteractWith
+    destroyAfter: true
+    interactionTime: 1.5
+    successTriggerSound:
+      collection: eating
+      params:
+        volume: 5
+    whitelist:
+      tags:
+      - Pizza
+
+- type: xenoArchTrigger
+  id: TriggerConsumeCake
+  tip: xenoarch-trigger-tip-cake
+  components:
+  - type: XATInteractWith
+    destroyAfter: true
+    interactionTime: 1.5
+    successTriggerSound:
+      collection: eating
+      params:
+        volume: 5
+    whitelist:
+      tags:
+      - Cake
+
+- type: xenoArchTrigger
+  id: TriggerConsumeProduce
+  tip: xenoarch-trigger-tip-produce
+  components:
+  - type: XATInteractWith
+    destroyAfter: true
+    interactionTime: 1.5
+    successTriggerSound:
+      collection: eating
+      params:
+        volume: 5
+    whitelist:
+      tags:
+      - Fruit
+      - Vegetable
+      - CottonBoll
+      - Ambrosia
+      - Wheat
+      - Mushroom
+      - Flower
+
+- type: xenoArchTrigger
+  id: TriggerInteractStamp
+  tip: xenoarch-trigger-tip-stamp
+  components:
+  - type: XATInteractWith
+    interactionTime: 0.5
+    successTriggerSound:
+      path: /Audio/Items/Stamp/thick_stamp_sub.ogg
+      params:
+        volume: -2
+        maxDistance: 5
+    whitelist:
+      components:
+      - Stamp
+
+- type: xenoArchTrigger
+  id: TriggerInteractDefib
+  tip: xenoarch-trigger-tip-defib
+  components:
+  - type: XATInteractWith
+    startTriggerSound: /Audio/Items/Defib/defib_charge.ogg
+    successTriggerSound: /Audio/Items/Defib/defib_zap.ogg
+    interactionTime: 3
+    whitelist:
+      components:
+      - Defibrillator
+
+- type: xenoArchTrigger
+  id: TriggerInteractScanning
+  tip: xenoarch-trigger-tip-scanning
+  components:
+  - type: XATInteractWith
+    successTriggerSound: /Audio/Items/Medical/healthscanner.ogg
+    interactionTime: 1.5
+    whitelist:
+      components: # Node scanner doesn't work due to interaction priorities.
+      - AnomalyScanner
+      - ForensicScanner
+      - TrayScanner
+      - RadarConsole # Mass Scanner
+
+- type: xenoArchTrigger
+  id: TriggerFlash
+  tip: xenoarch-trigger-tip-flash
+  components:
+  - type: XATFlash
+
+- type: xenoArchTrigger
+  id: TriggerAttackParticleEngine
+  tip: xenoarch-trigger-tip-particle
+  components:
+  - type: XATInteractAttack
+    whitelist:
+      components:
+      - ParticleProjectile
+
+- type: xenoArchTrigger
+  id: TriggerAttackParticleAnomaly
+  tip: xenoarch-trigger-tip-anomparticle
+  components:
+  - type: XATInteractAttack
+    whitelist:
+      components:
+      - AnomalousParticle
+
+- type: xenoArchTrigger
+  id: TriggerAttackStaminaDamage
+  tip: xenoarch-trigger-tip-stamina-damage
+  components:
+  - type: XATInteractAttack
+    whitelist:
+      components:
+      - StaminaDamageOnCollide
+      - StaminaDamageOnHit
+
+- type: xenoArchTrigger
+  id: TriggerReactiveDrinkEasy
+  tip: xenoarch-trigger-reactive
+  components:
+  - type: XATReactiveSpecific
+    reagents: # Drinks available round start
+    - Ale
+    - Beer
+    - CoffeeLiqueur
+    - Cognac
+    - EnergyDrink
+    - Gin
+    - Gildlager
+    - JuiceLemon
+    - JuiceOrange
+    - JuicePineapple
+    - JuiceTomato
+    - Milk
+    - Rum
+    - Sake
+    - SodaWater
+    - Tequila
+    - Vodka
+    - Whiskey
+    - Wine
+
+- type: xenoArchTrigger
+  id: TriggerReactiveDrinkHard
+  tip: xenoarch-trigger-reactive
+  components:
+  - type: XATReactiveSpecific
+    reagents: #list of drinks someone that hasn't played bartender before could reasonably guess is a drink
+    - AlliesCocktail #drinks also shouldn't be *too* hard to make
+    - CogChamp
+    - BlackRussian
+    - BloodyMary
+    - CoconutRum
+    - CubaLibre
+    - GargleBlaster
+    - GinTonic
+    - Grog
+    - LongIslandIcedTea
+    - ManlyDorf
+    - Margarita
+    - Martini
+    - Moonshine
+    - PinaColada
+    - VodkaRedBool
+    - WhiskeyCola
+    - WhiteRussian
+    - ArnoldPalmer
+    - CafeLatte
+    - CreamOfCoconut
+    - HotCocoa #requires botany assistance
+    - IceCream
+    - IcedCoffee
+    - IcedGreenTea
+    - IcedTea
+    - OrangeLimeSoda
+    - Lemonade
+    - SoyLatte
+    - Pilk
+
+- type: xenoArchTrigger
+  id: TriggerReactiveReagentEasy
+  tip: xenoarch-trigger-reactive
+  components:
+  - type: XATReactiveSpecific
+    reagents: #things medical probably already has
+    - Arithrazine
+    - Dylovene
+    - Bicaridine
+    - Cryoxadone
+    - Dermaline
+    - Dexalin
+    - Inaprovaline
+    - Tricordrazine
+    - Saline
+    - Lacerinol
+    - Puncturase
+    - Bruizine
+    - Arcryox
+    - PotassiumIodide
+    - Charcoal
+
+- type: xenoArchTrigger
+  id: TriggerReactiveReagentHard
+  tip: xenoarch-trigger-reactive
+  components:
+  - type: XATReactiveSpecific
+    reagents: #things medical probably hasn't made already, not neccisarily hard for them to make
+    - Cryptobiolin #good reagents
+    - Doxarubixadone
+    - Ethylredoxrazine
+    - Haloperidol
+    - Lipozine
+    - Mannitol
+    - SpaceDrugs
+    - Synaptizine
+    - TranexamicAcid
+    - Phalanximine
+    - Psicodine
+    - Oculine
+    - Bleach  #evil reagents
+    - ChloralHydrate
+    - ChlorineTrifluoride
+    - HeartbreakerToxin
+    - Hemorrhinol
+    - Impedrezene
+    - Licoxide
+    - Lipolicide
+    - MindbreakerToxin
+    - Napalm
+    - Razorium
+    - Thermite
+    - UnstableMutagen
+
+- type: xenoArchTrigger
+  id: TriggerReactiveReagentObscure
+  tip: xenoarch-trigger-reactive
+  components:
+  - type: XATReactiveSpecific
+    reagents: #uncommon reagents (but still not super annoying to make)
+    - Ash #many of these can be acquired without assistance from a chemist
+    - Carpetium
+    - Fiber
+    - JuiceThatMakesYouWeh
+    - Lye
+    - Nutriment
+    - PestKiller
+    - SpaceLube
+    - SpaceGlue
+    - SpaceCleaner
+    - Sugar
+    - TableSalt
+    - Vitamin
+    - WeedKiller
+    - WeldingFuel
+
+- type: xenoArchTrigger
+  id: TriggerEmoteDistress
+  tip: xenoarch-trigger-distress
+  components:
+  - type: XATEmote #no deathgasp to avoid mixing with death trigger
+    emotes:
+    - Scream
+    - Gasp
+    - Crying
+    - Whine
+
+- type: xenoArchTrigger
+  id: TriggerEmoteHumour
+  tip: xenoarch-trigger-humour
+  components:
+  - type: XATEmote
+    emotes:
+    - Laugh
+    - Clap
+
+- type: xenoArchTrigger
+  id: TriggerAccessCommand
+  tip: xenoarch-trigger-access-command
+  components:
+  - type: XATAccess
+    accessSound: "/Audio/Machines/beep.ogg"
+  - type: AccessReader
+    access: [["Command"]]
+    loggingDisabled: true

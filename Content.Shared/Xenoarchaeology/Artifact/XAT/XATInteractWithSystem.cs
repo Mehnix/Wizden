@@ -1,10 +1,16 @@
+using Content.Shared.DoAfter;
 using Content.Shared.Interaction;
-using Content.Shared.Weapons.Melee.Events;
+using Content.Shared.Item.ItemToggle;
+using Content.Shared.Popups;
+using Content.Shared.PowerCell;
+using Content.Shared.Stacks;
 using Content.Shared.Xenoarchaeology.Artifact.Components;
 using Content.Shared.Xenoarchaeology.Artifact.XAT.Components;
 using Content.Shared.Whitelist;
 using Robust.Shared.Audio.Systems;
-using Robust.Shared.Physics.Events;
+using Robust.Shared.Random;
+using Robust.Shared.Timing;
+
 
 namespace Content.Shared.Xenoarchaeology.Artifact.XAT;
 
@@ -13,73 +19,107 @@ namespace Content.Shared.Xenoarchaeology.Artifact.XAT;
 /// </summary>
 public sealed partial class XATInteractWithSystem : BaseXATSystem<XATInteractWithComponent>
 {
-    [Dependency] private EntityWhitelistSystem _whitelistSystem = default!;
     [Dependency] private SharedAudioSystem _audio = default!;
+    [Dependency] private SharedDoAfterSystem _doAfter = default!;
+    [Dependency] private SharedPopupSystem _popup = default!;
+    [Dependency] private PowerCellSystem _powerCell = default!;
+    [Dependency] private IRobustRandom _random = default!;
+    [Dependency] private SharedStackSystem _stack = default!;
+    [Dependency] private IGameTiming _timing = default!;
+    [Dependency] private ItemToggleSystem _toggle = default!;
+    [Dependency] private EntityWhitelistSystem _whitelistSystem = default!;
+
     /// <inheritdoc/>
     public override void Initialize()
     {
         base.Initialize();
 
-        XATSubscribeDirectEvent<AttackedEvent>(OnAttacked);
-        XATSubscribeDirectEvent<InteractUsingEvent>(OnInteractHand);
-        XATSubscribeDirectEvent<StartCollideEvent>(OnStartCollide);
+        SubscribeLocalEvent<XATInteractWithComponent, MapInitEvent>(OnMapInit);
+        XATSubscribeDirectEvent<InteractUsingEvent>(OnInteractUsing);
+        XATSubscribeDirectEvent<XATInteractWithDoAfterEvent>(OnInteractWithComplete);
     }
 
-    /// <summary>
-    /// Trigger the node if the entity used to attack matches the whitelist
-    /// </summary>
-    private void OnAttacked(Entity<XenoArtifactComponent> artifact, Entity<XATInteractWithComponent, XenoArtifactNodeComponent> node, ref AttackedEvent args)
+    private void OnMapInit(Entity<XATInteractWithComponent> ent, ref MapInitEvent args)
     {
-        Log.Debug("Attacked");
-        if (CheckEntity(artifact.Owner, args.Used, node.Comp1))
-            Trigger(artifact, node);
+        ent.Comp.MaxCount = ent.Comp.InteractionCount.Next(_random); //randomly decide count to decrement
+        ent.Comp.Count = ent.Comp.MaxCount; //define count amount
+        Dirty(ent);
+        Log.Debug($"{ent.Comp.MaxCount}");
     }
-
     /// <summary>
     /// Trigger the node if the entity used in interaction matches the whitelist
     /// </summary>
-    private void OnInteractHand(Entity<XenoArtifactComponent> artifact, Entity<XATInteractWithComponent, XenoArtifactNodeComponent> node, ref InteractUsingEvent args)
+    private void OnInteractUsing(Entity<XenoArtifactComponent> artifact, Entity<XATInteractWithComponent, XenoArtifactNodeComponent> node, ref InteractUsingEvent args)
     {
         if (args.Handled)
             return;
 
         args.Handled = true;
-        Log.Debug("Interacted");
 
-        if (CheckEntity(artifact.Owner, args.Used, node.Comp1))
-            Trigger(artifact, node);
+        if (!_whitelistSystem.IsWhitelistPassOrNull(node.Comp1.Whitelist, args.Used)) //must be on the whitelist
+            return;
+
+        if (!_toggle.IsActivated(args.Used)) //if the item can be toggled on, it should be
+            return;
+
+        if (!_powerCell.HasActivatableCharge(args.Used, user: args.User, predicted: true)) //if the item can be powered, it should be
+            return;
+
+        _audio.PlayPredicted(node.Comp1.StartTriggerSound, artifact.Owner, artifact.Owner);
+        _doAfter.TryStartDoAfter(
+            new DoAfterArgs(EntityManager, args.User, node.Comp1.InteractionTime, new XATInteractWithDoAfterEvent(GetNetEntity(node)),
+            artifact.Owner, artifact.Owner, args.Used)
+            {
+                NeedHand = true,
+                BreakOnMove = true
+            });
     }
 
     /// <summary>
-    /// Trigger the node if the colliding entity matches the whitelist
+    /// Check our nodes match and nothing was cancelled. Then trigger.
+    /// If the item is destroyed on use, destroy it (considering stacks)
+    /// If there needs to be multiple, count towards it (considering stacks)
     /// </summary>
-    private void OnStartCollide(Entity<XenoArtifactComponent> artifact, Entity<XATInteractWithComponent, XenoArtifactNodeComponent> node, ref StartCollideEvent args)
+    private void OnInteractWithComplete(Entity<XenoArtifactComponent> artifact, Entity<XATInteractWithComponent, XenoArtifactNodeComponent> node, ref XATInteractWithDoAfterEvent args)
     {
-        Log.Debug("Collided");
+        if (args.Cancelled)
+            return;
 
-        if (CheckEntity(artifact.Owner, args.OtherEntity, node.Comp1))
-            Trigger(artifact, node);
-    }
+        if (GetEntity(args.Node) != node.Owner)
+            return;
 
-    /// <summary>
-    /// Check whitelist match and delete entity if appropriate
-    /// </summary>
-    private bool CheckEntity(EntityUid interacted, EntityUid interacter, XATInteractWithComponent comp)
-    {
-        if (_whitelistSystem.IsWhitelistPassOrNull(comp.Whitelist, interacter))
+        if (args.Used == null || !_powerCell.TryUseActivatableCharge(args.Used.Value, user: args.User)) //try to use charge if we can
+            return;
+
+        _audio.PlayPredicted(node.Comp1.SuccessTriggerSound, artifact.Owner, artifact.Owner); //play on the artifact as the interacter may be deleted
+
+        var amount = _stack.GetCount(args.Used.Value); //count how much we're interacting with, gets 1 if not a stack
+
+        if (node.Comp1.DestroyAfter == true) // artifact consumes the item
         {
-            if (comp.TriggerSound != null)
-                _audio.PlayPredicted(comp.TriggerSound, interacted, interacted); //play on the artifact as the interacter may be deleted
-
-            if (comp.DestroyAfter == true)
-                PredictedQueueDel(interacter);
-
-            return true;
+            if (HasComp<StackComponent>(args.Used) && amount > node.Comp1.Count) //_stack.ReduceCount doesn't effect non-stack items
+                _stack.ReduceCount(args.Used.Value, node.Comp1.Count);
+            else
+                PredictedQueueDel(args.Used);
         }
+
+        if (amount < node.Comp1.Count)
+            node.Comp1.Count -= amount;
         else
+            node.Comp1.Count = 0;
+
+        Dirty(node);
+        if (node.Comp1.Count > 0)
         {
-            return false;
+            _popup.PopupPredicted(Loc.GetString("interact-actifact-more"), artifact.Owner, args.User);
+            return; // insufficient, still need to add more!
         }
 
+
+        Trigger(artifact, node);
+        node.Comp1.Count = node.Comp1.MaxCount; //reset after successful trigger, required amount is always the same.
+        Dirty(node);
+
+        args.Handled = true;
     }
 }

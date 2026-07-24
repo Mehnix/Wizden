@@ -1,0 +1,30 @@
+#Anomalous Objects function like one-node artifacts, with randomly generated triggers leading to a single effect
+- type: entity
+  id: BaseAnomalousObject
+  parent: [BaseArtifact]
+  name: anomalous object
+  description: A strange device from time unknown. Something interesting might happen if you can figure out how it works.
+  abstract: true
+  components:
+  - type: Transform
+    noRot: true
+  - type: XenoArtifact
+    IsGenerationRequired: false #no node graph to help you, figure out how to open it from the description.
+    nodeCount:
+      min: 1
+      max: 1
+    segmentSize:
+      min: 1
+      max: 1
+    nodesPerSegmentLayer:
+      min: 1
+      max: 1
+    scatterPerLayer:
+      min: 0
+      max: 0
+    unlockStateDuration: 0 #we don't need to wait for multiple triggers as there won't be any
+    unlockStateRefactory: 1
+    unlockBeginMsg: null
+    unlockSuccessMsg: null
+    unlockFailureMsg: artifact-activation-fail
+    forceActivationSoundSpecifier: null

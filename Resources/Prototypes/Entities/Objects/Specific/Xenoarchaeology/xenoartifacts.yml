@@ -1,5 +1,5 @@
 - type: entity
-  id: BaseArtifact
+  id: BaseArtifact #the base for any entity with a random set of triggers and effects
   name: artifact
   description: A strange artifact from time unknown. Looks like a good time.
   abstract: true
@@ -38,6 +38,10 @@
       Flammable: [Touch]
       Extinguish: [Touch]
       Acidic: [Touch]
+  - type: StatusEffects
+    allowed:
+    - Adrenaline # the
+
 
 - type: entity
   id: BaseXenoArtifact

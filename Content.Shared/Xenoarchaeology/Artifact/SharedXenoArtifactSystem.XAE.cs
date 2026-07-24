@@ -25,6 +25,7 @@ public abstract partial class SharedXenoArtifactSystem
         if (args.Handled)
             return;
 
+        RelayEventToNodes(ent, ref args);
         args.Handled = TryActivateXenoArtifact(ent, args.User, args.User, Transform(args.User).Coordinates);
     }
 
@@ -33,6 +34,7 @@ public abstract partial class SharedXenoArtifactSystem
         if (args.Handled || !args.CanReach)
             return;
 
+        RelayEventToNodes(ent, ref args);
         args.Handled = TryActivateXenoArtifact(ent, args.User, args.Target, args.ClickLocation);
     }
 
@@ -41,6 +43,7 @@ public abstract partial class SharedXenoArtifactSystem
         if (args.Handled || !args.Complex)
             return;
 
+        RelayEventToNodes(ent, ref args);
         args.Handled = TryActivateXenoArtifact(ent, args.User, args.Target, Transform(args.Target).Coordinates);
     }
 

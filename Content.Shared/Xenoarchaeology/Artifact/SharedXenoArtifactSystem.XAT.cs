@@ -1,8 +1,8 @@
 using System.Linq;
 using Content.Shared.Chemistry;
-using Content.Shared.Damage;
 using Content.Shared.Damage.Systems;
 using Content.Shared.Examine;
+using Content.Shared.Flash;
 using Content.Shared.Interaction;
 using Content.Shared.Movement.Pulling.Events;
 using Content.Shared.Throwing;
@@ -26,6 +26,8 @@ public abstract partial class SharedXenoArtifactSystem
         XATRelayLocalEvent<ReactionEntityEvent>();
         XATRelayLocalEvent<LandEvent>();
         XATRelayLocalEvent<StartCollideEvent>();
+        XATRelayLocalEvent<XATInteractWithDoAfterEvent>();
+        XATRelayLocalEvent<FlashAttemptEvent>();
 
         // special case this one because we need to order the messages
         SubscribeLocalEvent<XenoArtifactComponent, ExaminedEvent>(OnExamined);
@@ -44,7 +46,6 @@ public abstract partial class SharedXenoArtifactSystem
             RelayEventToNodes(ent, ref args);
         }
     }
-
     protected void RelayEventToNodes<T>(Entity<XenoArtifactComponent> ent, ref T args) where T : notnull
     {
         var ev = new XenoArchNodeRelayedEvent<T>(ent, args);
@@ -89,6 +90,9 @@ public abstract partial class SharedXenoArtifactSystem
                )
                 // we add time on each new trigger, if it is not going to fail us
                 unlockingComp.EndTime += ent.Comp.UnlockStateIncrementPerNode;
+
+            if (_net.IsServer && ent.Comp.UnlockContinueMsg != null)
+                _popup.PopupEntity(Loc.GetString(ent.Comp.UnlockContinueMsg), ent);
         }
 
         if (node != null && unlockingComp.TriggeredNodeIndexes.Add(GetIndex(ent, node.Value)))

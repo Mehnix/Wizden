@@ -1,7 +1,7 @@
 - type: weightedRandomXenoArchTrigger
   id: LootboxTriggersBasic #lootbox triggers should require the player to DO something to it. Avoid accidental openings.
   weights:
-    TriggerInteractParticle: 1000
+    TriggerConsumeMoney: 1000
     TriggerScrewing: 1
     TriggerPrying: 1
     TriggerWrenching: 1
@@ -22,149 +22,36 @@
     examineText: xenoarch-trigger-examine-brute-damage
 
 - type: xenoArchTrigger #interact and destroy interacting object
-  id: TriggerInteractCoin
+  id: TriggerConsumeCoin
   tip: xenoarch-trigger-tip-coin
   components:
   - type: XATInteractWith
     destroyAfter: true
-    triggerSound: /Audio/Items/pistol_magin.ogg
+    interactionTime: 1
+    successTriggerSound: /Audio/Machines/machine_vend.ogg
     whitelist:
       tags:
       - Coin
   - type: XATExaminableText
     examineText: xenoarch-trigger-examine-coin
 
-- type: xenoArchTrigger
-  id: TriggerInteractTechdisk
-  parent: TriggerInteractCoin
-  tip: xenoarch-trigger-tip-techdisk
+- type: xenoArchTrigger #interact with appropriate access
+  id: TriggerInteractAccess
+  tip: xenoarch-trigger-tip-access
   components:
-  - type: XATInteractWith
-    whitelist:
-      tags:
-      - TechnologyDisk
-  - type: XATExaminableText
-    examineText: xenoarch-trigger-examine-techdisk
+  - type: XATAccess
+  - type: AccessReader
+    access: [["Bar"]]
+    loggingDisabled: true
 
-- type: xenoArchTrigger
-  id: TriggerInteractPizza
-  parent: TriggerInteractCoin
-  tip: xenoarch-trigger-tip-pizza
+- type: xenoArchTrigger #interact with specific reagent
+  id: TriggerInteractReagentSpecific
+  tip: xenoarch-trigger-tip-access
   components:
-  - type: XATInteractWith
-    destroyAfter: true
-    triggerSound:
-      collection: eating
-      params:
-        volume: 5
-    whitelist:
-      tags:
-      - Pizza
-  - type: XATExaminableText
-    examineText: xenoarch-trigger-examine-pizza
-
-- type: xenoArchTrigger
-  id: TriggerInteractCake
-  parent: TriggerInteractPizza
-  tip: xenoarch-trigger-tip-cake
-  components:
-  - type: XATInteractWith
-    whitelist:
-      tags:
-      - Cake
-  - type: XATExaminableText
-    examineText: xenoarch-trigger-examine-cake
-
-- type: xenoArchTrigger
-  id: TriggerInteractBread
-  parent: TriggerInteractPizza
-  tip: xenoarch-trigger-tip-bread
-  components:
-  - type: XATInteractWith
-    whitelist:
-      tags:
-      - Bread
-  - type: XATExaminableText
-    examineText: xenoarch-trigger-examine-bread
-
-- type: xenoArchTrigger
-  id: TriggerInteractFruit
-  parent: TriggerInteractPizza
-  tip: xenoarch-trigger-tip-fruit
-  components:
-  - type: XATInteractWith
-    whitelist:
-      tags:
-      - Fruit
-  - type: XATExaminableText
-    examineText: xenoarch-trigger-examine-fruit
-
-- type: xenoArchTrigger
-  id: TriggerInteractVegetable
-  parent: TriggerInteractPizza
-  tip: xenoarch-trigger-tip-vegetable
-  components:
-  - type: XATInteractWith
-    whitelist:
-      tags:
-      - Vegetable
-  - type: XATExaminableText
-    examineText: xenoarch-trigger-examine-vegetable
-
-- type: xenoArchTrigger
-  id: TriggerInteractCotton
-  parent: TriggerInteractPizza
-  tip: xenoarch-trigger-tip-cotton
-  components:
-  - type: XATInteractWith
-    whitelist:
-      tags:
-      - Cotton
-  - type: XATExaminableText
-    examineText: xenoarch-trigger-examine-cotton
-
-- type: xenoArchTrigger #collide without destroying
-  id: TriggerInteractParticle
-  tip: xenoarch-trigger-tip-particle
-  components:
-  - type: XATInteractWith
-    whitelist:
-      components:
-      - ParticleProjectile
-  - type: XATExaminableText
-    examineText: xenoarch-trigger-examine-particle
-
-- type: xenoArchTrigger #interact without destroying
-  id: TriggerInteractAnomParticle
-  tip: xenoarch-trigger-tip-anomparticle
-  components:
-  - type: XATInteractWith
-    whitelist:
-      components:
-      - AnomalousParticle
-  - type: XATExaminableText
-    examineText: xenoarch-trigger-examine-anomparticle
-
-- type: xenoArchTrigger #interact only by attacking
-  id: TriggerInteractFlash
-  tip: xenoarch-trigger-tip-flash
-  components:
-  - type: XATInteractWith
-    triggerSound: null
-    whitelist:
-      components:
-      - Flash
-  - type: XATExaminableText
-    examineText: xenoarch-trigger-examine-flash
-
-- type: xenoArchTrigger
-  id: TriggerInteractDefib
-  tip: xenoarch-trigger-tip-defib
-  components:
-  - type: XATInteractWith
-    triggerSound: null
-    whitelist:
-      components:
-      - Defibrillator
-  - type: XATExaminableText
-    examineText: xenoarch-trigger-examine-defib
+  - type: XATReactiveSpecific
+    reagents:
+    - Water
+    - Blood
+    - Cognizine
+    - CogChamp
+    - Omnizine
