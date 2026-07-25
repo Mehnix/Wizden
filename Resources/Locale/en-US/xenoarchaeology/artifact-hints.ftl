@@ -109,6 +109,3 @@ xenoarch-trigger-examine-reagent-specific-scan = There's a small drain hole coat
 ### Effects hints
 xenoarch-effect-puddle = Produces puddle of following reagents: {$reagent}
 xenoarch-effect-foam = Produces foam of following reagents: {$reagent}
-
-lootbox-unlock-end-success = the lock clicks open!
-lootbox-trigger-examine-brute-damage = The lock looks old and damaged, a single heavy hit could break it off.
