@@ -31,7 +31,7 @@ public sealed partial class XenoArtifactUnlockingComponent : Component
     /// The sound that plays when an artifact finishes unlocking successfully (with node unlocked).
     /// </summary>
     [DataField]
-    public SoundSpecifier? UnlockActivationSuccessfulSound = new SoundCollectionSpecifier("ArtifactUnlockingActivationSuccess")
+    public SoundSpecifier UnlockActivationSuccessfulSound = new SoundCollectionSpecifier("ArtifactUnlockingActivationSuccess")
     {
         Params = new()
         {

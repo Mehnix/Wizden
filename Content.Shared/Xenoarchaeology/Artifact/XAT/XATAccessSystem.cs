@@ -22,16 +22,16 @@ public sealed partial class XATAccessSystem : BaseXATSystem<XATAccessComponent>
     public override void Initialize()
     {
         base.Initialize();
+        XATSubscribeDirectEvent<InteractUsingEvent>(OnInteractUsing);
         XATSubscribeDirectEvent<ActivateInWorldEvent>(OnActivateWorld);
-        XATSubscribeDirectEvent<UseInHandEvent>(OnActivateHand);
         XATSubscribeDirectEvent<GotEmaggedEvent>(OnNodeEmagged);
         XATSubscribeDirectEvent<ExaminedEvent>(OnExamine);
 
         SubscribeLocalEvent<XenoArtifactComponent, GotEmaggedEvent>(OnEmagged);
     }
 
-    private void OnActivateHand(Entity<XenoArtifactComponent> artifact, Entity<XATAccessComponent, XenoArtifactNodeComponent> node, ref UseInHandEvent args)
-    {
+    private void OnActivateWorld(Entity<XenoArtifactComponent> artifact, Entity<XATAccessComponent, XenoArtifactNodeComponent> node, ref ActivateInWorldEvent args)
+    {     //this will only work if there are no active nodes as activating the artifact overrides this, just here for completeness
         if (CheckAccess(args.User, node.Owner))
         {
             Trigger(artifact, node);
@@ -39,9 +39,8 @@ public sealed partial class XATAccessSystem : BaseXATSystem<XATAccessComponent>
         }
         else
             _audio.PlayPredicted(node.Comp1.DeniedSound, artifact.Owner, args.User);
-
     }
-    private void OnActivateWorld(Entity<XenoArtifactComponent> artifact, Entity<XATAccessComponent, XenoArtifactNodeComponent> node, ref ActivateInWorldEvent args)
+    private void OnInteractUsing(Entity<XenoArtifactComponent> artifact, Entity<XATAccessComponent, XenoArtifactNodeComponent> node, ref InteractUsingEvent args)
     {
         if (CheckAccess(args.User, node.Owner))
         {

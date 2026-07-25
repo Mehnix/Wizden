@@ -14,7 +14,7 @@ public sealed partial class XATEmoteComponent : Component
     /// Range within which artifact going to listen to emote event
     /// </summary>
     [DataField, AutoNetworkedField]
-    public float Range = 5;
+    public float Range = 10;
 
     [DataField, AutoNetworkedField]
     public List<ProtoId<EmotePrototype>> Emotes;

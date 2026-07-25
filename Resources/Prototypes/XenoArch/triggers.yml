@@ -35,8 +35,8 @@
     TriggerMagnet: 1
     TriggerConsumeMoney: 0.5
     TriggerConsumeTechdisk: 0.5
-    TriggerConsumePizza: 0.5
-    TriggerConsumeCake: 0.5
+    TriggerConsumeCarbs: 1
+    TriggerConsumeMeat: 1
     TriggerConsumeProduce: 1
     TriggerInteractStamp: 1
     TriggerInteractDefib: 1
@@ -52,7 +52,7 @@
     TriggerReactiveReagentObscure: 0.5
     TriggerEmoteDistress: 1
     TriggerEmoteHumour: 1
-    TriggerAccessCommand: 0.5
+    TriggerAccessCommand: 1000
 
 - type: xenoArchTrigger
   id: TriggerMusic
@@ -379,8 +379,8 @@
       - Cash
 
 - type: xenoArchTrigger
-  id: TriggerConsumePizza
-  tip: xenoarch-trigger-tip-pizza
+  id: TriggerConsumeCarbs
+  tip: xenoarch-trigger-tip-carbs
   components:
   - type: XATInteractWith
     destroyAfter: true
@@ -391,11 +391,16 @@
         volume: 5
     whitelist:
       tags:
+      - Bread
+      - Cake
+      - DonkPocket
+      - Donut
+      - Pie
       - Pizza
 
 - type: xenoArchTrigger
-  id: TriggerConsumeCake
-  tip: xenoarch-trigger-tip-cake
+  id: TriggerConsumeMeat
+  tip: xenoarch-trigger-tip-meat
   components:
   - type: XATInteractWith
     destroyAfter: true
@@ -406,7 +411,11 @@
         volume: 5
     whitelist:
       tags:
-      - Cake
+      - Meat
+  - type: XATReactive
+    reagents:
+    - Protein
+    - UncookedAnimalProteins
 
 - type: xenoArchTrigger
   id: TriggerConsumeProduce
@@ -425,9 +434,7 @@
       - Vegetable
       - CottonBoll
       - Ambrosia
-      - Wheat
       - Mushroom
-      - Flower
 
 - type: xenoArchTrigger
   id: TriggerInteractStamp

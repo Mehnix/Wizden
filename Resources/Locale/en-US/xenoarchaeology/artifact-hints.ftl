@@ -76,9 +76,8 @@ xenoarch-trigger-tip-death = Death
 xenoarch-trigger-tip-magnet = Magnetic waves
 xenoarch-trigger-tip-money = Bribery
 xenoarch-trigger-tip-techdisk = Technological Knowledge Intake
-xenoarch-trigger-tip-pizza = Pizza Intake
-xenoarch-trigger-tip-cake = Cake Intake
-xenoarch-trigger-tip-bread = Bread Intake
+xenoarch-trigger-tip-carbs = Carbohydrate Intake
+xenoarch-trigger-tip-meat = Meat Intake
 xenoarch-trigger-tip-produce = Healthy Produce Intake
 xenoarch-trigger-tip-stamp = Bureaucratic Approval
 xenoarch-trigger-tip-defib = Defibrillation
@@ -88,7 +87,7 @@ xenoarch-trigger-tip-anomparticle = Anomaly-Affecting Particles
 xenoarch-trigger-tip-stamina-damage = Organic Exhaustion
 xenoarch-trigger-tip-flash = Sudden Luminance
 xenoarch-trigger-distress = Emotional Distress
-xenoarch-trigger-humour = Amusement
+xenoarch-trigger-humour = Emotional Jubilation
 xenoarch-trigger-reactive-specific = {CAPITALIZE({$reagent})}
 xenoarch-trigger-access-command = Executive Access Override
 
@@ -97,10 +96,10 @@ xenoarch-trigger-examine-wrenching = There's a loose bit spinning around.
 xenoarch-trigger-examine-prying = There's a panel coming up from the surface.
 xenoarch-trigger-examine-screwing = There's a raised section with a small inset on it.
 xenoarch-trigger-examine-pulsing = An exposed diode pokes out of the surface.
-xenoarch-trigger-examine-welding = Some mechanical sections look in need of repairs
-xenoarch-trigger-examine-slicing = A meaty protrusion is interfering with some function
-xenoarch-trigger-examine-cutting = A hair-like material seems to have grown out of a port on the side
-xenoarch-trigger-examine-honking = There appears to be a concerning lack of honk
+xenoarch-trigger-examine-welding = Some mechanical sections look in need of repairs.
+xenoarch-trigger-examine-slicing = A malformed growth is interfering with some function and needs to be severed.
+xenoarch-trigger-examine-cutting = A hair-like material seems to have grown out of a port on the side.
+xenoarch-trigger-examine-honking = There appears to be a concerning lack of honk.
 xenoarch-trigger-examine-timer = Carvings and scratches cover the surface... You can just barely make out a number: [italic]{$time}[/italic]
 
 xenoarch-trigger-examine-reagent-specific = There's a small drain hole coated in a [color={$color}]{$description}[/color] substance. {$flavor}
