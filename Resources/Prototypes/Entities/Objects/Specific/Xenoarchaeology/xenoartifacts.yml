@@ -53,6 +53,8 @@
   - type: StatusEffect
     allowedFlags:
     - Flashed
+  - type: FlashImmunity #silly workaround that lets you flash an artifact for a trigger but not effect a player-controlled artifact (which has no eyes to be flashed by!)
+    showInExamine: false
 
 - type: entity
   parent: BaseAction

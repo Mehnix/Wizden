@@ -45,6 +45,7 @@
     TriggerAttackParticleEngine: 0.25
     TriggerAttackParticleAnomaly: 1
     TriggerAttackStaminaDamage: 1
+    TriggerAttackLaser: 1
     TriggerReactiveDrinkEasy: 1
     TriggerReactiveDrinkHard: 0.5
     TriggerReactiveReagentEasy: 1
@@ -52,7 +53,7 @@
     TriggerReactiveReagentObscure: 0.5
     TriggerEmoteDistress: 1
     TriggerEmoteHumour: 1
-    TriggerAccessCommand: 1000
+    TriggerAccessCommand: 0.5
 
 - type: xenoArchTrigger
   id: TriggerMusic
@@ -471,11 +472,8 @@
     successTriggerSound: /Audio/Items/Medical/healthscanner.ogg
     interactionTime: 1.5
     whitelist:
-      components: # Node scanner doesn't work due to interaction priorities.
-      - AnomalyScanner
+      components:
       - ForensicScanner
-      - TrayScanner
-      - RadarConsole # Mass Scanner
 
 - type: xenoArchTrigger
   id: TriggerFlash
@@ -510,6 +508,17 @@
       components:
       - StaminaDamageOnCollide
       - StaminaDamageOnHit
+
+- type: xenoArchTrigger
+  id: TriggerAttackLaser
+  tip: xenoarch-trigger-tip-laser
+  components:
+  - type: XATInteractAttack
+    whitelist:
+      components:
+      - HitscanBasicDamage
+      tags:
+      - EmitterBolt
 
 - type: xenoArchTrigger
   id: TriggerReactiveDrinkEasy
@@ -679,3 +688,4 @@
   - type: AccessReader
     access: [["Command"]]
     loggingDisabled: true
+

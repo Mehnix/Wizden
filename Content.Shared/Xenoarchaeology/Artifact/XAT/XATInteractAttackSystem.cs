@@ -1,8 +1,11 @@
 using Content.Shared.Weapons.Melee.Events;
+using Content.Shared.Weapons.Ranged.Events;
+using Content.Shared.Weapons.Ranged.Components;
 using Content.Shared.Whitelist;
 using Content.Shared.Xenoarchaeology.Artifact.Components;
 using Content.Shared.Xenoarchaeology.Artifact.XAT.Components;
 using Robust.Shared.Physics.Events;
+
 
 namespace Content.Shared.Xenoarchaeology.Artifact.XAT;
 
@@ -19,6 +22,7 @@ public sealed partial class XATInteractAttackSystem : BaseXATSystem<XATInteractA
 
         XATSubscribeDirectEvent<StartCollideEvent>(OnStartCollide);
         XATSubscribeDirectEvent<AttackedEvent>(OnAttacked);
+        XATSubscribeDirectEvent<HitScanReflectAttemptEvent>(OnHitscan);
     }
 
     /// <summary>
@@ -36,6 +40,18 @@ public sealed partial class XATInteractAttackSystem : BaseXATSystem<XATInteractA
     private void OnStartCollide(Entity<XenoArtifactComponent> artifact, Entity<XATInteractAttackComponent, XenoArtifactNodeComponent> node, ref StartCollideEvent args)
     {
         if (_whitelistSystem.IsWhitelistPassOrNull(node.Comp1.Whitelist, args.OtherEntity))
+            Trigger(artifact, node);
+    }
+
+    /// <summary>
+    /// Trigger the node if the colliding entity matches the whitelist
+    /// </summary>
+    private void OnHitscan(Entity<XenoArtifactComponent> artifact, Entity<XATInteractAttackComponent, XenoArtifactNodeComponent> node, ref HitScanReflectAttemptEvent args)
+    {
+        if (!TryComp<BatteryAmmoProviderComponent>(args.SourceItem, out var batteryComp))
+            return;
+
+        if (_whitelistSystem.IsWhitelistPassOrNull(node.Comp1.Whitelist, batteryComp.Prototype))
             Trigger(artifact, node);
     }
 }
