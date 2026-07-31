@@ -1,0 +1,71 @@
+{
+  "version": 1,
+  "license": "CC-BY-NC-SA-3.0",
+  "copyright": "Made by Mehnix, based off of Artifact Fragments (goonstation commit https://github.com/goonstation/goonstation/commit/8c9738746d1222a80dddff25af1bceda58bbccac created by Flaborized)",
+  "size": {
+    "x": 32,
+    "y": 32
+  },
+  "states": [
+    {
+      "name": "shard01"
+    },
+    {
+      "name": "shard02"
+    },
+    {
+      "name": "shard03"
+    },
+    {
+      "name": "shard04"
+    },
+    {
+      "name": "shard05"
+    },
+    {
+      "name": "shard06"
+    },
+    {
+      "name": "shard07"
+    },
+    {
+      "name": "shard08"
+    },
+    {
+      "name": "shard09"
+    },
+    {
+      "name": "shard10"
+    },
+    {
+      "name": "shard11"
+    },
+    {
+      "name": "shard12"
+    },
+    {
+      "name": "shard13"
+    },
+    {
+      "name": "shard14"
+    },
+    {
+      "name": "shard15"
+    },
+    {
+      "name": "shard16"
+    },
+    {
+      "name": "shard17"
+    },
+    {
+      "name": "shard18"
+    },
+    {
+      "name": "shard19"
+    },
+    {
+      "name": "shard20"
+    }
+  ]
+}

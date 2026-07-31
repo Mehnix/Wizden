@@ -1,0 +1,103 @@
+- type: entity
+  parent: [BaseItem, BaseXenoArtifact]
+  id: AnomalousShard
+  name: anomalous shard
+  description: A shard of a greater whole, still possessing a fraction of ancient power.
+  components:
+  - type: Sprite
+    scale: 0.75, 0.75
+    sprite: Objects/Specific/Xenoarchaeology/anomalous_shards.rsi
+    layers:
+    - state: shard01
+      map: [ "enum.ArtifactsVisualLayers.Base" ]
+    - state: artifact-activation
+      sprite: Objects/Specific/Xenoarchaeology/xeno_artifacts.rsi
+      map: [ "enum.ArtifactsVisualLayers.UnlockingEffect" ]
+      visible: false
+    - state: artifact-activation
+      sprite: Objects/Specific/Xenoarchaeology/xeno_artifacts.rsi
+      map: [ "enum.ArtifactsVisualLayers.ActivationEffect" ]
+      visible: false
+  - type: RandomSprite
+    available:
+    - enum.ArtifactsVisualLayers.Base:
+        shard01: ""
+        shard02: ""
+        shard03: ""
+        shard04: ""
+        shard05: ""
+        shard06: ""
+        shard07: ""
+        shard08: ""
+        shard09: ""
+        shard10: ""
+        shard11: ""
+        shard12: ""
+        shard13: ""
+        shard14: ""
+        shard15: ""
+        shard16: ""
+        shard17: ""
+        shard18: ""
+        shard19: ""
+        shard20: ""
+  - type: Physics
+    bodyType: KinematicController
+  - type: CollisionWake
+    enabled: false
+  - type: Fixtures
+    fixtures:
+      fix1:
+        shape:
+          !type:PhysShapeAabb
+          bounds: "-0.15,-0.15,0.15,0.15"
+        density: 10
+        mask:
+        - ItemMask
+        layer:
+        - Opaque
+        restitution: 0.2
+        friction: 0.1
+  - type: Extractable
+    juiceSolution:
+      reagents:
+      - ReagentId: Artifexium
+        Quantity: 10
+  - type: Item
+    size: Normal
+  - type: XenoArtifact
+    nodeCount:
+      min: 1
+      max: 1
+    segmentSize:
+      min: 1
+      max: 1
+    nodesPerSegmentLayer:
+      min: 1
+      max: 1
+    scatterPerLayer:
+      min: 0
+      max: 0
+    unlockStateDuration: 4
+    unlockStateRefractory: 1
+
+- type: entity
+  parent: AnomalousShard
+  id: AnomalousShardEmpty
+  suffix: Empty
+  components:
+  - type: XenoArtifact
+    nodeCount:
+      min: 0
+      max: 0
+    segmentSize:
+      min: 1
+      max: 1
+    nodesPerSegmentLayer:
+      min: 1
+      max: 1
+    scatterPerLayer:
+      min: 0
+      max: 0
+    unlockStateDuration: 0
+    unlockStateRefractory: 1
