@@ -2,6 +2,26 @@
 # These entities exist to make a (funny) sound and not much else
 
 ## Bike horns
+- type: entity
+  parent: BaseItem
+  id: TestHorn
+  name: test horn
+  description: A horn off of a bicycle. asdasdasd
+  components:
+  - type: Sprite
+    sprite: Objects/Fun/bikehorn.rsi
+    state: icon
+  - type: UseDelay
+    delay: 0.5
+  - type: Vocal
+    emoteSounds: MaleHuman
+  - type: BodyEmotes
+    soundsId: GeneralBodyEmotes
+  - type: Emoting
+  - type: EmitEmoteOnUse
+    emote: Honk
+  - type: EmitEmoteOnActivate
+    emote: Scream
 
 - type: entity
   parent: BaseItem
