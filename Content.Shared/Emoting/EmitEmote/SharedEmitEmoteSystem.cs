@@ -18,7 +18,6 @@ public abstract partial class SharedEmitEmoteSystem : EntitySystem
 
     protected void TryEmitEmote(EntityUid uid, BaseEmitEmoteComponent comp, string? nameOverride = null)
     {
-        Log.Debug("honk");
         if (comp.ShowInChat)
             _chat.TryEmoteWithChat(uid, comp.Emote, ChatTransmitRange.GhostRangeLimit, forceEmote: comp.Force, nameOverride: nameOverride);
         else
@@ -27,15 +26,19 @@ public abstract partial class SharedEmitEmoteSystem : EntitySystem
 
     private void OnEmitEmoteOnUseInHand(EntityUid uid, EmitEmoteOnUseComponent comp, UseInHandEvent args)
     {
-        Log.Debug("start");
-        // as we're holding the item, claim ownership over it's emotes.
+        // as we're holding the item, claim ownership over its emotes.
         var name = Loc.GetString("emit-emote-owner", ("owner", Identity.Name(args.User, EntityManager)), ("entity", Identity.Name(uid, EntityManager)));
         TryEmitEmote(args.User, comp, name);
+
+        if (comp.Handle)
+            args.Handled = true;
     }
 
     private void OnEmitEmoteOnActivateInWorld(EntityUid uid, EmitEmoteOnActivateComponent comp, ActivateInWorldEvent args)
     {
-        Log.Debug("start");
-        TryEmitEmote(args.User, comp);
+        TryEmitEmote(uid, comp);
+
+        if (comp.Handle)
+            args.Handled = true;
     }
 }

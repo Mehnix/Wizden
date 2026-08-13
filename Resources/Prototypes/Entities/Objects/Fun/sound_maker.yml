@@ -6,7 +6,7 @@
   parent: BaseItem
   id: TestHorn
   name: test horn
-  description: A horn off of a bicycle. asdasdasd
+  description: honk emote
   components:
   - type: Sprite
     sprite: Objects/Fun/bikehorn.rsi
@@ -15,13 +15,11 @@
     delay: 0.5
   - type: Vocal
     emoteSounds: MaleHuman
-  - type: BodyEmotes
-    soundsId: GeneralBodyEmotes
   - type: Emoting
   - type: EmitEmoteOnUse
     emote: Honk
   - type: EmitEmoteOnActivate
-    emote: Scream
+    emote: Honk
 
 - type: entity
   parent: BaseItem
@@ -46,6 +44,8 @@
       collection: BikeHorn
       params:
         variation: 0.125
+  - type: EmitEmoteOnUse
+    emote: Honk
   - type: EmitSoundOnLand
     sound: *SoundBikeHorn
   - type: EmitSoundOnTrigger

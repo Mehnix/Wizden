@@ -1,1 +1,1 @@
-emit-emote-owner = { CAPITALIZE(THE($owner)) }'s {$entity}
+emit-emote-owner = { CAPITALIZE($owner) }'s {$entity}
