@@ -190,7 +190,7 @@
       - !type:DoActsBehavior
         acts: [ "Destruction" ]
   - type: IconSmooth
-    key: meatwalls
+    key: walls
     base: meat
 
 - type: entity
@@ -1027,7 +1027,7 @@
         sound:
           collection: WoodDestroy
   - type: IconSmooth
-    key: webs
+    key: walls
     base: wall
   - type: Construction
     graph: WebStructures
@@ -1221,7 +1221,7 @@
       - !type:DoActsBehavior
         acts: [ "Destruction" ]
   - type: IconSmooth
-    key: cards
+    key: walls
     base: card
   - type: Occluder
   - type: BlockWeather
