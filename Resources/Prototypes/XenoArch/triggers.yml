@@ -433,3 +433,13 @@
       - LaserProjectile
       tags:
       - EmitterBolt
+
+- type: xenoArchTrigger
+  id: TriggerAccessCommand
+  tip: xenoarch-trigger-access-command
+  components:
+  - type: XATAccess
+    accessSound: "/Audio/Machines/beep.ogg"
+  - type: AccessReader #required for processing accesses
+    access: [["Command"]]
+    loggingDisabled: true
