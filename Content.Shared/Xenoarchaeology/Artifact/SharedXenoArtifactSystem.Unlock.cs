@@ -84,13 +84,14 @@ public abstract partial class SharedXenoArtifactSystem
         else
         {
             unlockAttemptResultMsg = artifactComponent.UnlockFailureMsg;
-            soundEffect = unlockingComponent.UnlockActivationFailedSound;
+            soundEffect = artifactComponent.UnlockActivationFailedSound;
         }
 
         if (_net.IsServer)
         {
             if (unlockAttemptResultMsg != null)
                 _popup.PopupEntity(Loc.GetString(unlockAttemptResultMsg), ent);
+
             _audio.PlayPvs(soundEffect, ent.Owner);
         }
 

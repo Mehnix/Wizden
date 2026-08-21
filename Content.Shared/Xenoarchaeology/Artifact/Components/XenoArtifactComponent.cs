@@ -186,13 +186,6 @@ public sealed partial class XenoArtifactComponent : Component
         }
     };
 
-    [DataField]
-    public string? UnlockSuccessMsg = "artifact-unlock-state-end-success";
-    [DataField]
-    public string? UnlockFailureMsg = "artifact-unlock-state-end-failure";
-    [DataField]
-    public string? UnlockBeginMsg = "artifact-unlock-state-begin";
-
     /// <summary>
     /// Whether the ArtifactUnlock EntityEffect can be used to unlock nodes.
     /// </summary>
