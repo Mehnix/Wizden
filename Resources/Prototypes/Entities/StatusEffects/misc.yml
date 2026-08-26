@@ -72,6 +72,22 @@
   components:
   - type: PressureImmunityStatusEffect
 
+# Makes the creature able to pass through walls.
+- type: entity
+  parent: MobStatusEffectBase
+  id: StatusEffectPhasing
+  name: phasing
+  components:
+  - type: PhasingStatusEffect
+
+# Allows the creature to ignore gravity.
+- type: entity
+  parent: MobStatusEffectBase
+  id: StatusEffectFloating
+  name: floating
+  components:
+  - type: FloatingStatusEffect
+
 # Prevents speaking and vocal emotes.
 - type: entity
   abstract: true

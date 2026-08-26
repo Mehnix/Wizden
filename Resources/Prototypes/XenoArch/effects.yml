@@ -1353,3 +1353,14 @@
   - type: XAECreateGas
     gases:
       CarbonDioxide: 300
+
+- type: entity
+  parent: BaseXenoArtifactEffect
+  id: XenoArtifactEffectStatusPhasing
+  description: Matter Phasing
+  components:
+  - type: XAEApplyStatusEffect
+    effects:
+    - StatusEffectPhasing
+    - StatusEffectFloating
+    artifactDuration: 30
