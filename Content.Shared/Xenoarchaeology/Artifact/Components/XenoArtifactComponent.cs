@@ -187,12 +187,6 @@ public sealed partial class XenoArtifactComponent : Component
     };
 
     /// <summary>
-    /// Whether the ArtifactUnlock EntityEffect can be used to unlock nodes.
-    /// </summary>
-    [DataField]
-    public bool AllowArtifexium = true;
-
-    /// <summary>
     /// Action that allows the artifact to self activate.
     /// </summary>
     [DataField]

@@ -60,6 +60,9 @@
   - type: MovementSpeedModifier
     baseWalkSpeed: 0.25
     baseSprintSpeed: 0.5
+  - type: Tag
+    tags:
+    - XenoArtifact
 
 - type: entity
   parent: BaseAction

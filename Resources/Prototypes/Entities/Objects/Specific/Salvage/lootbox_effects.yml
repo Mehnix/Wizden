@@ -7,22 +7,145 @@
 - type: entity
   id: LootboxGeneral
   parent: BaseOneTimeXenoArtifactEffect
-  description: Contains Valuable items
+  description: Becomes a lootbox
   components:
   - type: XAEApplyComponents
     applyIfAlreadyHave: false
     refreshOnReactivate: false
     components:
-    - type: EntityStorage
-    - type: PlaceableSurface
     - type: Weldable
-    - type: ResistLocker
     - type: Lock
       locked: false
+    - type: EntityStorage
     - type: EntityTableContainerFill #fill the crate up with the loot
       containers:
-        entity_storage: !type:NestedSelector
-          tableId: AllPlushiesTable
-          rolls: !type:ConstantNumberSelector
-            value: 10
+        entity_storage: !type:AllSelector
+          children:
+          - !type:NestedSelector
+            tableId: LootboxTableBasic
+            rolls: 3,5
+          - !type:NestedSelector
+            tableId: LootboxTableUseless
   - type: XAERemoveArtifact #we're done now so kill it
+
+#- type: entity
+#  id: LootboxEffectBasic
+#  parent: BaseOneTimeXenoArtifactEffect
+#  description: Contains valuable items
+#  components:
+
+
+#- type: entity
+#  id: LootboxEffectUseless
+#  parent: BaseOneTimeXenoArtifactEffect
+#  description: Contains not-so-valuable items
+#  components:
+#  - type: EntityTableContainerFill #fill the crate up with the loot
+#    containers:
+#      entity_storage: !type:NestedSelector
+#        tableId: LootboxTableUseless
+
+- type: entityTable
+  id: LootboxResultBasic
+  table: !type:GroupSelector
+    children:
+    - id: LootboxEffectConvert
+
+- type: entityTable
+  id: LootboxTableBasic #the meat of the lootbox, should be consistently worth the effort with occasional bangers
+  table: !type:GroupSelector
+    children:
+    - !type:NestedSelector
+      tableId: FillSmugglerBackpack
+    - !type:NestedSelector
+      tableId: SalvageScrapHighValue
+      rolls: 2, 4
+    - !type:NestedSelector
+      tableId: RandomAllHighValueConstructionMaterialsTable
+    - !type:NestedSelector
+      tableId: RandomAllHighValueMaterialsTable
+    - !type:NestedSelector
+      tableId: SalvageTreasureSpawnerValuable
+    - !type:NestedSelector
+      tableId: LotteryCashEntityTable
+      rolls: 1, 2
+
+- type: entityTable
+  id: LootboxTableUseless #the potatos of the lootbox, not strictly all useless, but clearly secondary.
+  table: !type:GroupSelector
+    children:
+    - !type:NestedSelector
+      tableId: MaintFluffTable
+      rolls: 3, 5
+    - !type:NestedSelector
+      tableId: AllToysTable
+      rolls: 1, 2
+    - !type:NestedSelector
+      tableId: AllPlushiesTable
+      rolls: 1, 2
+    - !type:NestedSelector
+      tableId: LotterySwagEntityTable
+      weight: 0.25
+    - !type:NestedSelector
+      tableId: RandomInstrumentTable
+    - !type:NestedSelector
+      tableId: RandomAllAlcoholTable
+      rolls: 1, 2
+    - !type:NestedSelector
+      tableId: TreasureCoinPile # these really don't sell for much in the grand scheme of things.
+      rolls: 3, 5
+    - !type:NestedSelector
+      tableId: SmallCritterEntityTable
+    - id: MysteryFigureBox
+      amount: !type:RangeNumberSelector
+        range: 1, 2
+
+#- type: entityTable
+#  id: LootboxTableEngineering
+#  table: !type:GroupSelector
+#    children:
+#
+#- type: entityTable
+#  id: LootboxTableSecurity
+#  table: !type:GroupSelector
+#    children:#
+#
+#- type: entityTable
+#  id: LootboxTableMedical
+#  table: !type:GroupSelector
+#    children:
+#
+#- type: entityTable
+#  id: LootboxTableService
+#  table: !type:GroupSelector
+#    children:
+#
+#- type: entityTable
+#  id: LootboxTableScience
+#  table: !type:GroupSelector
+#    children:
+#
+#- type: entityTable
+#  id: LootboxTableCargo
+#  table: !type:GroupSelector
+#    children:
+#
+#- type: entityTable
+#  id: LootboxTableNaughty
+#  table: !type:GroupSelector
+#    children:
+
+
+
+# useless
+
+#naughty
+#ChemicalSynthesisKit
+#ClothingBackpackChameleonFillAgent
+#Gatfruitseeds
+#SyndieMaintLoot
+#SyndieMaintLoot
+#HappyHonkToyUnsafeEntityTable
+
+#Sec
+#BoxDetonator
