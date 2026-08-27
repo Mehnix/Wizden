@@ -1360,7 +1360,7 @@
   description: Matter Phasing
   components:
   - type: XAEApplyStatusEffect
+    artifactDuration: 120
     effects:
-    - StatusEffectPhasing
     - StatusEffectFloating
-    artifactDuration: 30
+    - StatusEffectPhasing

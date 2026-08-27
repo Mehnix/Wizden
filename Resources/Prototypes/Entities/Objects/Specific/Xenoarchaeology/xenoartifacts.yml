@@ -33,6 +33,7 @@
   - type: MovementSpeedModifier
     baseWalkSpeed: 0.25
     baseSprintSpeed: 0.5
+    weightlessModifier: 1
   - type: UseDelay
   - type: StealTarget
     stealGroup: XenoArtifact
@@ -56,6 +57,7 @@
     baseCritThreshold: 1000
     decay: 1000
     cooldown: 0.1
+  - type: FloatingVisuals
 
 - type: entity
   parent: BaseAction

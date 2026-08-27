@@ -70,7 +70,7 @@ public sealed partial class StatusEffectsSystem
         SubscribeLocalEvent<StatusEffectContainerComponent, CatchAttemptEvent>(RefRelayStatusEffectEvent);
         SubscribeLocalEvent<StatusEffectContainerComponent, SelfBeforeGunShotEvent>(RelayStatusEffectEvent);
 
-        SubscribeLocalEvent<StatusEffectContainerComponent, GravityChangedEvent>(RefRelayStatusEffectEvent);
+        SubscribeLocalEvent<StatusEffectContainerComponent, IsWeightlessEvent>(RefRelayStatusEffectEvent);
         SubscribeLocalEvent<StatusEffectContainerComponent, CollisionLayerChangeEvent>(RefRelayStatusEffectEvent);
     }
 
@@ -123,4 +123,15 @@ public sealed partial class StatusEffectsSystem
 /// Event wrapper for relayed events.
 /// </summary>
 [ByRefEvent]
-public record struct StatusEffectRelayedEvent<TEvent>(TEvent Args, EntityUid AppliedTo);
+public sealed class StatusEffectRelayedEvent<TEvent> : EntityEventArgs
+{
+    public TEvent Args;
+
+    public EntityUid AppliedTo;
+
+    public StatusEffectRelayedEvent(TEvent args, EntityUid appliedto)
+    {
+        Args = args;
+        AppliedTo = appliedto;
+    }
+}

@@ -74,7 +74,7 @@
 
 # Makes the creature able to pass through walls.
 - type: entity
-  parent: MobStatusEffectBase
+  parent: StatusEffectBase
   id: StatusEffectPhasing
   name: phasing
   components:
@@ -82,7 +82,7 @@
 
 # Allows the creature to ignore gravity.
 - type: entity
-  parent: MobStatusEffectBase
+  parent: StatusEffectBase
   id: StatusEffectFloating
   name: floating
   components:

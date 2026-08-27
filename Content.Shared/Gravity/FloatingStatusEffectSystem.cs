@@ -24,8 +24,12 @@ public sealed partial class FloatingStatusEffectSystem : EntitySystem
     }
 
     [SubscribeLocalEvent]
-    private void OnRefreshFloatingStatus(Entity<FloatingStatusEffectComponent> ent, ref StatusEffectRelayedEvent<GravityChangedEvent> args)
+    private void OnRefreshFloatingStatus(Entity<FloatingStatusEffectComponent> ent, ref StatusEffectRelayedEvent<IsWeightlessEvent> args)
     {
-        _gravity.RefreshWeightless(args.AppliedTo, true);
+        if (args.Args.Handled)
+            return;
+
+        args.Args.Handled = true;
+        args.Args.IsWeightless = true;
     }
 }

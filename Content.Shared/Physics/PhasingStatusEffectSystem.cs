@@ -17,11 +17,9 @@ public sealed partial class PhasingStatusEffectSystem : EntitySystem
     [SubscribeLocalEvent]
     private void OnPhasingStatusApplied(Entity<PhasingStatusEffectComponent> ent, ref StatusEffectAppliedEvent args)
     {
-        Log.Debug("effected");
         if (!TryComp<FixturesComponent>(args.Target, out var fixtures))
             return;
 
-        Log.Debug("Bazinga");
         foreach (var fixture in fixtures.Fixtures.Values)
             _physics.SetHard(args.Target, fixture, false, fixtures);
     }

@@ -9,13 +9,12 @@ namespace Content.Shared.Xenoarchaeology.Artifact.XAE;
 /// </summary>
 public sealed partial class XAEApplyStatusEffectSystem : BaseXAESystem<XAEApplyStatusEffectComponent>
 {
-    private const LookupFlags RangeFlags = LookupFlags.Approximate | LookupFlags.Dynamic;
+    private const LookupFlags RangeFlags = LookupFlags.Approximate | LookupFlags.Dynamic | LookupFlags.Sundries;
     [Dependency] private EntityLookupSystem _lookup = default!;
     [Dependency] private StatusEffectsSystem _status = default!;
 
     protected override void OnActivated(Entity<XAEApplyStatusEffectComponent> ent, ref XenoArtifactNodeActivatedEvent args)
     {
-        Log.Debug("run");
         AddStatus(ent.Comp.Effects, args.Artifact, ent.Comp.ArtifactDuration); //status effect system cancels zero time duration for us. No need to do it here.
 
         if (ent.Comp.Range > 0)
@@ -41,7 +40,6 @@ public sealed partial class XAEApplyStatusEffectSystem : BaseXAESystem<XAEApplyS
 
     private void AddStatus(List<EntProtoId> effects, EntityUid target, TimeSpan duration)
     {
-        Log.Debug(ToPrettyString(target));
         foreach (var effect in effects)
             _status.TryAddStatusEffectDuration(target, effect, duration);
     }
