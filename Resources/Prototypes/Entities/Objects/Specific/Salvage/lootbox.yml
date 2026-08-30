@@ -31,10 +31,10 @@
 
 #Like regular crates however they can be destroyed, unlike them, the items inside are only generated once the trigger is met, if destroyed prior, you get nothing!
 - type: entity
-  id: CrateBaseLootbox # One-time artifacts, that stop being artifacts once you've triggered them
+  id: CrateLootboxBasic # One-time artifacts, that stop being artifacts once you've triggered them
   parent: [BaseAnomalousObject, BaseStructureDynamic, BasePaperLabelableVisualized]
   name: lock box
-  suffix: lootbox
+  suffix: Lootbox
   description: "An old secure lock box with an obtuse opening method. Anything could be inside, if you open it properly that is."
   components:
   - type: Sprite
@@ -123,8 +123,7 @@
     effectsTable: !type:GroupSelector
       children:
       - !type:NestedSelector
-        tableId: LootboxEffectsTableBasic
-        weight: 1
+        tableId: LootboxEffectTableBasic
     triggerWeights: LootboxTriggersBasic
   - type: Explosive
     explosionType: Default #does about 50-60 damage with 1 tile radius if you're standing right on top of it
@@ -132,3 +131,172 @@
     intensitySlope: 2
     totalIntensity: 7.5
     canCreateVacuum: false
+
+- type: entity
+  id: CrateLootboxEngineering # One-time artifacts, that stop being artifacts once you've triggered them
+  parent: CrateLootboxBasic
+  name: engineering lock box
+  components:
+  - type: Sprite
+    drawdepth: SmallObjects
+    sprite: Structures/Storage/Crates/lockbox.rsi
+    layers:
+    - state: base
+    - state: overlay
+      color: "#ad8c27"
+    - state: closed
+      map: ["enum.StorageVisualLayers.Door"]
+    - state: overlay-closed
+      color: "#ad8c27"
+      map: [ lid_overlay ]
+    - state: welded
+      visible: false
+      map: ["enum.WeldableLayers.BaseWelded"]
+    - state: locked
+      map: ["enum.LockVisualLayers.Lock"]
+      shader: unshaded
+    - state: paper
+      sprite: Structures/Storage/Crates/labels.rsi
+      offset: "-0.46875,0.03125"
+      map: ["enum.PaperLabelVisuals.Layer"]
+  - type: OverrideSell
+    overrideAccount: Engineering
+  - type: XenoArtifact
+    effectsTable: !type:GroupSelector
+      children:
+      - !type:NestedSelector
+        tableId: LootboxEffectTableEngineering
+
+- type: entity
+  id: CrateLootboxSecurity # One-time artifacts, that stop being artifacts once you've triggered them
+  parent: CrateLootboxBasic
+  name: security lock box
+  components:
+  - type: Sprite
+    drawdepth: SmallObjects
+    sprite: Structures/Storage/Crates/lockbox.rsi
+    layers:
+    - state: base
+    - state: overlay
+      color: "#c12d30"
+    - state: closed
+      map: ["enum.StorageVisualLayers.Door"]
+    - state: overlay-closed
+      color: "#c12d30"
+      map: [ lid_overlay ]
+    - state: welded
+      visible: false
+      map: ["enum.WeldableLayers.BaseWelded"]
+    - state: locked
+      map: ["enum.LockVisualLayers.Lock"]
+      shader: unshaded
+    - state: paper
+      sprite: Structures/Storage/Crates/labels.rsi
+      offset: "-0.46875,0.03125"
+      map: ["enum.PaperLabelVisuals.Layer"]
+  - type: OverrideSell
+    overrideAccount: Security
+  - type: XenoArtifact
+    effectsTable: !type:GroupSelector
+      children:
+      - !type:NestedSelector
+        tableId: LootboxEffectTableSecurity
+
+- type: entity
+  id: CrateLootboxMedical # One-time artifacts, that stop being artifacts once you've triggered them
+  parent: CrateLootboxBasic
+  name: medical lock box
+  components:
+  - type: Sprite
+    layers:
+    - state: base
+    - state: overlay
+      color: "#92c7e8"
+    - state: closed
+      map: ["enum.StorageVisualLayers.Door"]
+    - state: overlay-closed
+      color: "#92c7e8"
+      map: [ lid_overlay ]
+    - state: welded
+      visible: false
+      map: ["enum.WeldableLayers.BaseWelded"]
+    - state: locked
+      map: ["enum.LockVisualLayers.Lock"]
+      shader: unshaded
+    - state: paper
+      sprite: Structures/Storage/Crates/labels.rsi
+      offset: "-0.46875,0.03125"
+      map: ["enum.PaperLabelVisuals.Layer"]
+  - type: OverrideSell
+    overrideAccount: Medical
+  - type: XenoArtifact
+    effectsTable: !type:GroupSelector
+      children:
+      - !type:NestedSelector
+        tableId: LootboxEffectTableMedical
+
+- type: entity
+  id: CrateLootboxScience # One-time artifacts, that stop being artifacts once you've triggered them
+  parent: CrateLootboxBasic
+  name: science lock box
+  components:
+  - type: Sprite
+    layers:
+    - state: base
+    - state: overlay
+      color: "#ba4bf0"
+    - state: closed
+      map: ["enum.StorageVisualLayers.Door"]
+    - state: overlay-closed
+      color: "#ba4bf0"
+      map: [ lid_overlay ]
+    - state: welded
+      visible: false
+      map: ["enum.WeldableLayers.BaseWelded"]
+    - state: locked
+      map: ["enum.LockVisualLayers.Lock"]
+      shader: unshaded
+    - state: paper
+      sprite: Structures/Storage/Crates/labels.rsi
+      offset: "-0.46875,0.03125"
+      map: ["enum.PaperLabelVisuals.Layer"]
+  - type: OverrideSell
+    overrideAccount: Science
+  - type: XenoArtifact
+    effectsTable: !type:GroupSelector
+      children:
+      - !type:NestedSelector
+        tableId: LootboxEffectTableScience
+
+- type: entity
+  id: CrateLootboxService # One-time artifacts, that stop being artifacts once you've triggered them
+  parent: CrateLootboxBasic
+  name: service lock box
+  components:
+  - type: Sprite
+    layers:
+    - state: base
+    - state: overlay
+      color: "#53b723"
+    - state: closed
+      map: ["enum.StorageVisualLayers.Door"]
+    - state: overlay-closed
+      color: "#53b723"
+      map: [ lid_overlay ]
+    - state: welded
+      visible: false
+      map: ["enum.WeldableLayers.BaseWelded"]
+    - state: locked
+      map: ["enum.LockVisualLayers.Lock"]
+      shader: unshaded
+    - state: paper
+      sprite: Structures/Storage/Crates/labels.rsi
+      offset: "-0.46875,0.03125"
+      map: ["enum.PaperLabelVisuals.Layer"]
+  - type: OverrideSell
+    overrideAccount: Service
+  - type: XenoArtifact
+    effectsTable: !type:GroupSelector
+      children:
+      - !type:NestedSelector
+        tableId: LootboxEffectTableService
