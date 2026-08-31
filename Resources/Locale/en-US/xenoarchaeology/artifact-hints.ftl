@@ -104,6 +104,3 @@ xenoarch-trigger-examine-magnet = Loose iron filings are sticking to its surface
 ### Effects hints
 xenoarch-effect-puddle = Produces puddle of following reagents: {$reagent}
 xenoarch-effect-foam = Produces foam of following reagents: {$reagent}
-
-lootbox-unlock-end-success = the lock clicks open!
-lootbox-trigger-examine-brute-damage = The lock looks old and damaged, a single heavy hit could break it off.

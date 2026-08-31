@@ -1,22 +1,314 @@
 - type: weightedRandomXenoArchTrigger
   id: LootboxTriggersBasic #lootbox triggers should require the player to DO something to it. Avoid accidental openings.
   weights:
-    TriggerScrewing: 1
+    TriggerScrewing: 1 #these ones already have a description so can just use them as is
     TriggerPrying: 1
     TriggerWrenching: 1
     TriggerPulsing: 1
-    TriggerBruteDamageMinor: 1
-    TriggerWater: 1
-    TriggerBlood: 1
-    TriggerDeath: 0.5 #exception as the lootbox demanding a sacrifice is funny
+    LootboxTriggerWater: 1
+    LootboxTriggerBlood: 1
+    LootboxTriggerBruteDamageMinor: 1
+    LootboxTriggerInteractStamp: 1
+    LootboxTriggerDeath: 0.2 #exception as the lootbox demanding a sacrifice is funny
+
+- type: weightedRandomXenoArchTrigger
+  id: LootboxTriggersEngineering
+  weights:
+    #LootboxTriggerAccessCE: 1
+    LootboxTriggerHeat: 1
+    LootboxTrigerPressureHigh: 1
+    LootboxTriggerPlasma: 1
+    LootboxTriggerTritium: 0.5
+    LootboxTriggerShock: 1
+    LootboxTriggerAttackParticleEngine: 1
+
+- type: weightedRandomXenoArchTrigger
+  id: LootboxTriggersSecurity
+  weights:
+    #LootboxTriggerAccessHOS: 1
+    LootboxTriggerInteractCuffs: 1
+    LootboxTriggerAttackStaminaDamage: 1
+    LootboxTriggerAttackLaser: 1
+
+- type: weightedRandomXenoArchTrigger
+  id: LootboxTriggersMedical
+  weights:
+    #LootboxTriggerAccessCMO: 1
+    LootboxTriggerBlood: 1
+    LootboxTriggerShock: 1
+    LootboxTriggerInteractTopical: 1
+    #TriggerReactiveReagentEasy: 1 # reagent triggers have their own description. (requires reagent trigger PR)
+    #TriggerReactiveReagentHard: 1
+    #TriggerReagentSpecificObscure: 1
+
+- type: weightedRandomXenoArchTrigger
+  id: LootboxTriggersScience
+  weights: #science are already good at artifact triggers so they get some of the rest too
+    #LootboxTriggerAccessRD: 1
+    LootboxTriggerBlood: 1
+    LootboxTriggerPlasma: 1
+    LootboxTriggerHeat: 1
+    LootboxTriggerPressureHigh: 1
+    LootboxTriggerInteractScan: 1
+    LootboxTriggerConsumeKnowledge: 1
+    LootboxTriggerConsumeCarbs: 1
+    LootboxTriggerAttackParticleAnomaly: 1
+    LootboxTriggerAttackLaser: 1
+    #TriggerReagentSpecificObscure: 1 # reagent triggers have their own description.
+
+- type: weightedRandomXenoArchTrigger
+  id: LootboxTriggersService
+  weights:
+    #LootboxTriggerAccessHOP: 1
+    LootboxTriggerConsumeCarbs: 1
+    LootboxTriggerConsumeFruit: 0.5
+    LootboxTriggerConsumeVeg: 0.5
+    LootboxTriggerConsumeMushroom: 0.5
+    LootboxTriggerConsumeMeat: 1
+    LootboxTriggerAttackPie: 1
+    #TriggerReactiveDrinkEasy: 1 # reagent triggers have their own description.
+    #TriggerReactiveDrinkHard: 1
+
+# A lot of parented triggers that add examinable text
+# examinable text is needed for the trigger as you can't and shouldn't scan the lootbox at an artifact analyzer.
+# examinable text on the base arti triggers themselves doesn't add anything useful as it'll just stack them all for each activateble node. Just ends up being confusing.
 
 - type: xenoArchTrigger
-  id: TriggerBruteDamageMinor
-  tip: xenoarch-trigger-tip-brute-damage #uses metallic structure damage set so stuff like crowbars will do nothing
+  id: LootboxTriggerBruteDamageMinor
+  tip: xenoarch-trigger-tip-brute-damage #uses metallic structure damage set so stuff like crowbars will do nothing, hit it with something that does structure damage.
   components:
   - type: XATDamageThresholdReached
     groupsNeeded:
       Brute: 5
   - type: XATExaminableText
     examineText: lootbox-trigger-examine-brute-damage
+
+- type: xenoArchTrigger
+  id: LootboxTriggerWater
+  parent: TriggerWater
+  tip: xenoarch-trigger-tip-water
+  components:
+  - type: XATExaminableText
+    examineText: lootbox-trigger-examine-water
+
+- type: xenoArchTrigger
+  id: LootboxTriggerBlood
+  parent: TriggerBlood
+  tip: xenoarch-trigger-tip-blood
+  components:
+  - type: XATExaminableText
+    examineText: lootbox-trigger-examine-blood
+
+- type: xenoArchTrigger
+  id: LootboxTriggerDeath
+  parent: TriggerDeath
+  tip: xenoarch-trigger-tip-death
+  components:
+  - type: XATExaminableText
+    examineText: lootbox-trigger-examine-death
+
+- type: xenoArchTrigger
+  id: LootboxTriggerHeat
+  parent: TriggerHeat
+  components:
+  - type: XATExaminableText
+    examineText: lootbox-trigger-examine-heat
+
+- type: xenoArchTrigger
+  id: LootboxTriggerPressureHigh
+  parent: TriggerPressureHigh
+  components:
+  - type: XATExaminableText
+    examineText: lootbox-trigger-examine-pressure-high
+
+- type: xenoArchTrigger
+  id: LootboxTriggerPlasma
+  parent: TriggerPlasma
+  components:
+  - type: XATExaminableText
+    examineText: lootbox-trigger-examine-plasma
+
+- type: xenoArchTrigger
+  id: LootboxTriggerTritium
+  parent: TriggerTritium
+  components:
+  - type: XATExaminableText
+    examineText: lootbox-trigger-examine-tritium
+
+- type: xenoArchTrigger
+  id: LootboxTriggerInteractShock
+  parent: TriggerInteractShock
+  components:
+  - type: XATExaminableText
+    examineText: lootbox-trigger-examine-shock
+
+- type: xenoArchTrigger
+  id: LootboxTriggerInteractCuffs
+  components:
+  - type: XATInteractWith
+    interactionTime: 2
+    startTriggerSound:
+      path: /Audio/Items/Handcuffs/cuff_start.ogg
+    successTriggerSound:
+      path: /Audio/Items/Handcuffs/cuff_end.ogg
+    whitelist:
+      tags:
+      - Handcuffs
+  - type: XATExaminableText
+    examineText: lootbox-trigger-examine-cuffs
+
+- type: xenoArchTrigger
+  id: LootboxTriggerInteractTopical
+  components:
+  - type: XATInteractWith
+    interactionTime: 5
+    startTriggerSound:
+      path: /Audio/Items/Medical/brutepack_begin.ogg
+    successTriggerSound:
+      path: /Audio/Items/Medical/brutepack_end.ogg
+    whitelist:
+      tags:
+      - Gauze
+      - Tourniquet
+      - Bloodpack
+  - type: XATExaminableText
+    examineText: lootbox-trigger-examine-topical
+
+- type: xenoArchTrigger
+  id: LootboxTriggerInteractScan
+  components:
+  - type: XATInteractWith
+    interactionTime: 5
+    successTriggerSound:
+      path: /Audio/Items/beep.ogg
+    whitelist:
+      components:
+      - AnomalyScanner
+  - type: XATExaminableText
+    examineText: lootbox-trigger-examine-topical
+
+- type: xenoArchTrigger
+  id: LootboxTriggerInteractStamp
+  parent: TriggerInteractStamp
+  components:
+  - type: XATExaminableText
+    examineText: lootbox-trigger-examine-stamp
+
+- type: xenoArchTrigger
+  id: LootboxTriggerConsumeKnowledge
+  parent: TriggerConsumeKnowledge
+  components:
+  - type: XATExaminableText
+    examineText: lootbox-trigger-examine-knowledge
+
+- type: xenoArchTrigger
+  id: LootboxTriggerConsumeCarbs
+  parent: TriggerConsumeCarbs
+  components:
+  - type: XATExaminableText
+    examineText: lootbox-trigger-examine-carbs
+
+- type: xenoArchTrigger
+  id: LootboxTriggerConsumeMeat
+  parent: TriggerConsumeMeat
+  components:
+  - type: XATExaminableText
+    examineText: lootbox-trigger-examine-meat
+
+- type: xenoArchTrigger
+  id: LootboxTriggerConsumeFruit
+  parent: TriggerConsumeProduce
+  components:
+  - type: XATInteractWith
+    whitelist:
+      tags:
+      - Fruit
+  - type: XATExaminableText
+    examineText: lootbox-trigger-examine-fruit
+
+- type: xenoArchTrigger
+  id: LootboxTriggerConsumeMushroom
+  parent: TriggerConsumeProduce
+  components:
+  - type: XATInteractWith
+    whitelist:
+      tags:
+      - Mushroom
+  - type: XATExaminableText
+    examineText: lootbox-trigger-examine-mushroom
+
+- type: xenoArchTrigger
+  id: LootboxTriggerAttackParticleEngine
+  parent: TriggerAttackParticleEngine
+  components:
+  - type: XATExaminableText
+    examineText: lootbox-trigger-examine-particle-engine
+
+- type: xenoArchTrigger
+  id: LootboxTriggerAttackParticleAnomaly
+  parent: TriggerAttackParticleAnomaly
+  components:
+  - type: XATExaminableText
+    examineText: lootbox-trigger-examine-particle-anomaly
+
+- type: xenoArchTrigger
+  id: LootboxTriggerAttackStaminaDamage
+  parent: TriggerAttackStaminaDamage
+  components:
+  - type: XATExaminableText
+    examineText: lootbox-trigger-examine-stamina-damage
+
+- type: xenoArchTrigger
+  id: LootboxTriggerAttackLaser
+  parent: TriggerAttackLaser
+  components:
+  - type: XATExaminableText
+    examineText: lootbox-trigger-examine-laser
+
+- type: xenoArchTrigger
+  id: LootboxTriggerAttackPie
+  components:
+  - type: XATInteractAttack
+    whitelist:
+      components:
+      - CreamPie
+  - type: XATExaminableText
+    examineText: lootbox-trigger-examine-pie
+
+#- type: xenoArchTrigger  # requires access trigger PR
+#  id: LootboxTriggerAccessCE # description not needed as it shows access requirements
+#  components:
+#  - type: XATAccess
+#    accessSound: "/Audio/Machines/beep.ogg"
+#  - type: AccessReader
+#    access: [["ChiefEngineer"]]
+#    loggingDisabled: true
+#
+#- type: xenoArchTrigger
+#  id: LootboxTriggerAccessHOS
+#  parent: LootboxTriggerAccessCE
+#  components:
+#  - type: AccessReader
+#    access: [["HeadOfSecurity"]]
+#
+#- type: xenoArchTrigger
+#  id: LootboxTriggerAccessRD
+#  parent: LootboxTriggerAccessCE
+#  components:
+#  - type: AccessReader
+#    access: [["ResearchDirector"]]
+#
+#- type: xenoArchTrigger
+#  id: LootboxTriggerAccessCMO
+#  parent: LootboxTriggerAccessCE
+#  components:
+#  - type: AccessReader
+#    access: [["ChiefMedicalOfficer"]]
+#
+#- type: xenoArchTrigger
+#  id: LootboxTriggerAccessHOP
+#  parent: LootboxTriggerAccessCE
+#  components:
+#  - type: AccessReader
+#    access: [["HeadOfPersonnel"]]
 
