@@ -72,7 +72,7 @@
 # examinable text is needed for lootbox triggers as you can't and shouldn't scan the lootbox at an artifact analyzer.
 # examinable text on the base arti triggers themselves doesn't add anything useful as it'll just stack them all for each activateble node. Just ends up being confusing.
 
-- type: xenoArchTrigger
+- type: entity
   id: LootboxTriggerBruteDamageMinor
   tip: xenoarch-trigger-tip-brute-damage #uses metallic structure damage set so stuff like crowbars will do nothing, hit it with something that does structure damage.
   components:
@@ -82,7 +82,7 @@
   - type: XATExaminableText
     examineText: lootbox-trigger-examine-brute-damage
 
-- type: xenoArchTrigger
+- type: entity
   id: LootboxTriggerWater
   parent: TriggerWater
   tip: xenoarch-trigger-tip-water
@@ -90,7 +90,7 @@
   - type: XATExaminableText
     examineText: lootbox-trigger-examine-water
 
-- type: xenoArchTrigger
+- type: entity
   id: LootboxTriggerBlood
   parent: TriggerBlood
   tip: xenoarch-trigger-tip-blood
@@ -98,7 +98,7 @@
   - type: XATExaminableText
     examineText: lootbox-trigger-examine-blood
 
-- type: xenoArchTrigger
+- type: entity
   id: LootboxTriggerDeath
   parent: TriggerDeath
   tip: xenoarch-trigger-tip-death
@@ -106,42 +106,42 @@
   - type: XATExaminableText
     examineText: lootbox-trigger-examine-death
 
-- type: xenoArchTrigger
+- type: entity
   id: LootboxTriggerHeat
   parent: TriggerHeat
   components:
   - type: XATExaminableText
     examineText: lootbox-trigger-examine-heat
 
-- type: xenoArchTrigger
+- type: entity
   id: LootboxTriggerPressureHigh
   parent: TriggerPressureHigh
   components:
   - type: XATExaminableText
     examineText: lootbox-trigger-examine-pressure-high
 
-- type: xenoArchTrigger
+- type: entity
   id: LootboxTriggerPlasma
   parent: TriggerPlasma
   components:
   - type: XATExaminableText
     examineText: lootbox-trigger-examine-plasma
 
-- type: xenoArchTrigger
+- type: entity
   id: LootboxTriggerTritium
   parent: TriggerTritium
   components:
   - type: XATExaminableText
     examineText: lootbox-trigger-examine-tritium
 
-- type: xenoArchTrigger
+- type: entity
   id: LootboxTriggerInteractShock
   parent: TriggerInteractShock
   components:
   - type: XATExaminableText
     examineText: lootbox-trigger-examine-shock
 
-- type: xenoArchTrigger
+- type: entity
   id: LootboxTriggerInteractCuffs
   components:
   - type: XATInteractWith
@@ -156,7 +156,7 @@
   - type: XATExaminableText
     examineText: lootbox-trigger-examine-cuffs
 
-- type: xenoArchTrigger
+- type: entity
   id: LootboxTriggerInteractTopical
   components:
   - type: XATInteractWith
@@ -173,7 +173,7 @@
   - type: XATExaminableText
     examineText: lootbox-trigger-examine-topical
 
-- type: xenoArchTrigger
+- type: entity
   id: LootboxTriggerInteractScan
   components:
   - type: XATInteractWith
@@ -186,35 +186,35 @@
   - type: XATExaminableText
     examineText: lootbox-trigger-examine-topical
 
-- type: xenoArchTrigger
+- type: entity
   id: LootboxTriggerInteractStamp
   parent: TriggerInteractStamp
   components:
   - type: XATExaminableText
     examineText: lootbox-trigger-examine-stamp
 
-- type: xenoArchTrigger
+- type: entity
   id: LootboxTriggerConsumeKnowledge
   parent: TriggerConsumeKnowledge
   components:
   - type: XATExaminableText
     examineText: lootbox-trigger-examine-knowledge
 
-- type: xenoArchTrigger
+- type: entity
   id: LootboxTriggerConsumeCarbs
   parent: TriggerConsumeCarbs
   components:
   - type: XATExaminableText
     examineText: lootbox-trigger-examine-carbs
 
-- type: xenoArchTrigger
+- type: entity
   id: LootboxTriggerConsumeMeat
   parent: TriggerConsumeMeat
   components:
   - type: XATExaminableText
     examineText: lootbox-trigger-examine-meat
 
-- type: xenoArchTrigger
+- type: entity
   id: LootboxTriggerConsumeFruit
   parent: TriggerConsumeProduce
   components:
@@ -225,7 +225,7 @@
   - type: XATExaminableText
     examineText: lootbox-trigger-examine-fruit
 
-- type: xenoArchTrigger
+- type: entity
   id: LootboxTriggerConsumeMushroom
   parent: TriggerConsumeProduce
   components:
@@ -236,35 +236,35 @@
   - type: XATExaminableText
     examineText: lootbox-trigger-examine-mushroom
 
-- type: xenoArchTrigger
+- type: entity
   id: LootboxTriggerAttackParticleEngine
   parent: TriggerAttackParticleEngine
   components:
   - type: XATExaminableText
     examineText: lootbox-trigger-examine-particle-engine
 
-- type: xenoArchTrigger
+- type: entity
   id: LootboxTriggerAttackParticleAnomaly
   parent: TriggerAttackParticleAnomaly
   components:
   - type: XATExaminableText
     examineText: lootbox-trigger-examine-particle-anomaly
 
-- type: xenoArchTrigger
+- type: entity
   id: LootboxTriggerAttackStaminaDamage
   parent: TriggerAttackStaminaDamage
   components:
   - type: XATExaminableText
     examineText: lootbox-trigger-examine-stamina-damage
 
-- type: xenoArchTrigger
+- type: entity
   id: LootboxTriggerAttackLaser
   parent: TriggerAttackLaser
   components:
   - type: XATExaminableText
     examineText: lootbox-trigger-examine-laser
 
-- type: xenoArchTrigger
+- type: entity
   id: LootboxTriggerAttackPie
   components:
   - type: XATInteractAttack
@@ -274,7 +274,7 @@
   - type: XATExaminableText
     examineText: lootbox-trigger-examine-pie
 
-#- type: xenoArchTrigger  # requires access trigger PR
+#- type: entity  # requires access trigger PR
 #  id: LootboxTriggerAccessCE # description not needed as it shows access requirements
 #  components:
 #  - type: XATAccess
@@ -283,28 +283,28 @@
 #    access: [["ChiefEngineer"]]
 #    loggingDisabled: true
 #
-#- type: xenoArchTrigger
+#- type: entity
 #  id: LootboxTriggerAccessHOS
 #  parent: LootboxTriggerAccessCE
 #  components:
 #  - type: AccessReader
 #    access: [["HeadOfSecurity"]]
 #
-#- type: xenoArchTrigger
+#- type: entity
 #  id: LootboxTriggerAccessRD
 #  parent: LootboxTriggerAccessCE
 #  components:
 #  - type: AccessReader
 #    access: [["ResearchDirector"]]
 #
-#- type: xenoArchTrigger
+#- type: entity
 #  id: LootboxTriggerAccessCMO
 #  parent: LootboxTriggerAccessCE
 #  components:
 #  - type: AccessReader
 #    access: [["ChiefMedicalOfficer"]]
 #
-#- type: xenoArchTrigger
+#- type: entity
 #  id: LootboxTriggerAccessHOP
 #  parent: LootboxTriggerAccessCE
 #  components:
