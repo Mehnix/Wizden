@@ -16,10 +16,10 @@
   weights:
     #LootboxTriggerAccessCE: 1
     LootboxTriggerHeat: 1
-    LootboxTrigerPressureHigh: 1
+    LootboxTriggerPressureHigh: 1
     LootboxTriggerPlasma: 1
     LootboxTriggerTritium: 0.5
-    LootboxTriggerShock: 1
+    LootboxTriggerInteractShock: 1
     LootboxTriggerAttackParticleEngine: 1
 
 - type: weightedRandomXenoArchTrigger
@@ -62,15 +62,14 @@
     #LootboxTriggerAccessHOP: 1
     LootboxTriggerConsumeCarbs: 1
     LootboxTriggerConsumeFruit: 0.5
-    LootboxTriggerConsumeVeg: 0.5
     LootboxTriggerConsumeMushroom: 0.5
     LootboxTriggerConsumeMeat: 1
     LootboxTriggerAttackPie: 1
     #TriggerReactiveDrinkEasy: 1 # reagent triggers have their own description.
     #TriggerReactiveDrinkHard: 1
 
-# A lot of parented triggers that add examinable text
-# examinable text is needed for the trigger as you can't and shouldn't scan the lootbox at an artifact analyzer.
+# A lot of duplicated triggers that add examinable text
+# examinable text is needed for lootbox triggers as you can't and shouldn't scan the lootbox at an artifact analyzer.
 # examinable text on the base arti triggers themselves doesn't add anything useful as it'll just stack them all for each activateble node. Just ends up being confusing.
 
 - type: xenoArchTrigger

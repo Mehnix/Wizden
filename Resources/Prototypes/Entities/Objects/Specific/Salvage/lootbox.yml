@@ -166,6 +166,7 @@
       children:
       - !type:NestedSelector
         tableId: LootboxEffectTableEngineering
+    triggerWeights: LootboxTriggersEngineering
 
 - type: entity
   id: CrateLootboxSecurity # One-time artifacts, that stop being artifacts once you've triggered them
@@ -201,6 +202,7 @@
       children:
       - !type:NestedSelector
         tableId: LootboxEffectTableSecurity
+    triggerWeights: LootboxTriggersSecurity
 
 - type: entity
   id: CrateLootboxMedical # One-time artifacts, that stop being artifacts once you've triggered them
@@ -234,6 +236,7 @@
       children:
       - !type:NestedSelector
         tableId: LootboxEffectTableMedical
+    triggerWeights: LootboxTriggersMedical
 
 - type: entity
   id: CrateLootboxScience # One-time artifacts, that stop being artifacts once you've triggered them
@@ -267,6 +270,7 @@
       children:
       - !type:NestedSelector
         tableId: LootboxEffectTableScience
+    triggerWeights: LootboxTriggersScience
 
 - type: entity
   id: CrateLootboxService # One-time artifacts, that stop being artifacts once you've triggered them
@@ -300,3 +304,4 @@
       children:
       - !type:NestedSelector
         tableId: LootboxEffectTableService
+    triggerWeights: LootboxTriggersService
