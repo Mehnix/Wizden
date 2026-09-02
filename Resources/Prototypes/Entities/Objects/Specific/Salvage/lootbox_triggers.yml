@@ -1,72 +1,92 @@
-- type: weightedRandomXenoArchTrigger
+- type: entityTable
   id: LootboxTriggersBasic #lootbox triggers should require the player to DO something to it. Avoid accidental openings.
-  weights:
-    TriggerScrewing: 1 #these ones already have a description so can just use them as is
-    TriggerPrying: 1
-    TriggerWrenching: 1
-    TriggerPulsing: 1
-    LootboxTriggerWater: 1
-    LootboxTriggerBlood: 1
-    LootboxTriggerBruteDamageMinor: 1
-    LootboxTriggerInteractStamp: 1
-    LootboxTriggerDeath: 0.2 #exception as the lootbox demanding a sacrifice is funny
+  table: !type:GroupSelector
+    conditionsForChildren:
+      - !type:ExcludeEntitiesFromContextCondition
+    children:
+    - id: TriggerScrewing #these ones already have a description so can just use them as is
+    - id: TriggerPrying
+    - id: TriggerWrenching
+    - id: TriggerPulsing
+    - id: LootboxTriggerWater
+    - id: LootboxTriggerBlood
+    - id: LootboxTriggerBruteDamageMinor
+    - id: LootboxTriggerInteractStamp
+    - id: LootboxTriggerDeath #exception as the lootbox demanding a sacrifice is funny
+      weight: 0.2
 
-- type: weightedRandomXenoArchTrigger
+- type: entityTable
   id: LootboxTriggersEngineering
-  weights:
-    #LootboxTriggerAccessCE: 1
-    LootboxTriggerHeat: 1
-    LootboxTriggerPressureHigh: 1
-    LootboxTriggerPlasma: 1
-    LootboxTriggerTritium: 0.5
-    LootboxTriggerInteractShock: 1
-    LootboxTriggerAttackParticleEngine: 1
+  table: !type:GroupSelector
+    conditionsForChildren:
+      - !type:ExcludeEntitiesFromContextCondition
+    children:
+    #- id: LootboxTriggerAccessCE
+    - id: LootboxTriggerHeat
+    - id: LootboxTriggerPressureHigh
+    - id: LootboxTriggerPlasma
+    - id: LootboxTriggerTritium
+      weight: 0.1
+    - id: LootboxTriggerInteractShock
+    - id: LootboxTriggerAttackParticleEngine
 
-- type: weightedRandomXenoArchTrigger
+- type: entityTable
   id: LootboxTriggersSecurity
-  weights:
-    #LootboxTriggerAccessHOS: 1
-    LootboxTriggerInteractCuffs: 1
-    LootboxTriggerAttackStaminaDamage: 1
-    LootboxTriggerAttackLaser: 1
+  table: !type:GroupSelector
+    conditionsForChildren:
+      - !type:ExcludeEntitiesFromContextCondition
+    children:
+    #- id: LootboxTriggerAccessHOS
+    - id: LootboxTriggerInteractCuffs
+    - id: LootboxTriggerAttackStaminaDamage
+    - id: LootboxTriggerAttackLaser
 
-- type: weightedRandomXenoArchTrigger
+- type: entityTable
   id: LootboxTriggersMedical
-  weights:
-    #LootboxTriggerAccessCMO: 1
-    LootboxTriggerBlood: 1
-    LootboxTriggerShock: 1
-    LootboxTriggerInteractTopical: 1
-    #TriggerReactiveReagentEasy: 1 # reagent triggers have their own description. (requires reagent trigger PR)
-    #TriggerReactiveReagentHard: 1
-    #TriggerReagentSpecificObscure: 1
+  table: !type:GroupSelector
+    conditionsForChildren:
+      - !type:ExcludeEntitiesFromContextCondition
+    children:
+    #- id: LootboxTriggerAccessCMO
+    - id: LootboxTriggerBlood
+    - id: LootboxTriggerInteractShock
+    - id: LootboxTriggerInteractTopical
+    #- id: TriggerReactiveReagentEasy # reagent triggers have their own description. (requires reagent trigger PR)
+    #- id: TriggerReactiveReagentHard
+    #- id: TriggerReagentSpecificObscure
 
-- type: weightedRandomXenoArchTrigger
+- type: entityTable
   id: LootboxTriggersScience
-  weights: #science are already good at artifact triggers so they get some of the rest too
-    #LootboxTriggerAccessRD: 1
-    LootboxTriggerBlood: 1
-    LootboxTriggerPlasma: 1
-    LootboxTriggerHeat: 1
-    LootboxTriggerPressureHigh: 1
-    LootboxTriggerInteractScan: 1
-    LootboxTriggerConsumeKnowledge: 1
-    LootboxTriggerConsumeCarbs: 1
-    LootboxTriggerAttackParticleAnomaly: 1
-    LootboxTriggerAttackLaser: 1
-    #TriggerReagentSpecificObscure: 1 # reagent triggers have their own description.
+  table: !type:GroupSelector  #science are already good at artifact triggers so they get some of the rest too
+    conditionsForChildren:
+      - !type:ExcludeEntitiesFromContextCondition
+    children:
+    #- id: LootboxTriggerAccessRD
+    - id: LootboxTriggerBlood
+    - id: LootboxTriggerPlasma
+    - id: LootboxTriggerHeat
+    - id: LootboxTriggerPressureHigh
+    - id: LootboxTriggerInteractScan
+    - id: LootboxTriggerConsumeKnowledge
+    - id: LootboxTriggerConsumeCarbs
+    - id: LootboxTriggerAttackParticleAnomaly
+    - id: LootboxTriggerAttackLaser
+    #- id: TriggerReagentSpecificObscure # reagent triggers have their own description.
 
-- type: weightedRandomXenoArchTrigger
+- type: entityTable
   id: LootboxTriggersService
-  weights:
-    #LootboxTriggerAccessHOP: 1
-    LootboxTriggerConsumeCarbs: 1
-    LootboxTriggerConsumeFruit: 0.5
-    LootboxTriggerConsumeMushroom: 0.5
-    LootboxTriggerConsumeMeat: 1
-    LootboxTriggerAttackPie: 1
-    #TriggerReactiveDrinkEasy: 1 # reagent triggers have their own description.
-    #TriggerReactiveDrinkHard: 1
+  table: !type:GroupSelector
+    conditionsForChildren:
+      - !type:ExcludeEntitiesFromContextCondition
+    children:
+    #LootboxTriggerAccessHOP
+    - id: LootboxTriggerConsumeCarbs
+    - id: LootboxTriggerConsumeFruit
+    - id: LootboxTriggerConsumeMushroom
+    - id: LootboxTriggerConsumeMeat
+    - id: LootboxTriggerAttackPie
+    #- id: TriggerReactiveDrinkEasy # reagent triggers have their own description.
+    #- id: TriggerReactiveDrinkHard
 
 # A lot of duplicated triggers that add examinable text
 # examinable text is needed for lootbox triggers as you can't and shouldn't scan the lootbox at an artifact analyzer.
@@ -74,6 +94,7 @@
 
 - type: entity
   id: LootboxTriggerBruteDamageMinor
+  parent: BaseXenoArtifactTrigger
   tip: xenoarch-trigger-tip-brute-damage #uses metallic structure damage set so stuff like crowbars will do nothing, hit it with something that does structure damage.
   components:
   - type: XATDamageThresholdReached
@@ -143,6 +164,7 @@
 
 - type: entity
   id: LootboxTriggerInteractCuffs
+  parent: BaseXenoArtifactTrigger
   components:
   - type: XATInteractWith
     interactionTime: 2
@@ -158,6 +180,7 @@
 
 - type: entity
   id: LootboxTriggerInteractTopical
+  parent: BaseXenoArtifactTrigger
   components:
   - type: XATInteractWith
     interactionTime: 5
@@ -175,6 +198,7 @@
 
 - type: entity
   id: LootboxTriggerInteractScan
+  parent: BaseXenoArtifactTrigger
   components:
   - type: XATInteractWith
     interactionTime: 5
@@ -266,6 +290,7 @@
 
 - type: entity
   id: LootboxTriggerAttackPie
+  parent: BaseXenoArtifactTrigger
   components:
   - type: XATInteractAttack
     whitelist:

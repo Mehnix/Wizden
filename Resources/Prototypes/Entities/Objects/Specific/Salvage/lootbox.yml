@@ -124,7 +124,10 @@
       children:
       - !type:NestedSelector
         tableId: LootboxEffectTableBasic
-    triggerWeights: LootboxTriggersBasic
+    triggersTable: !type:GroupSelector
+      children:
+      - !type:NestedSelector
+        tableId: LootboxTriggersBasic
   - type: Explosive
     explosionType: Default #does about 50-60 damage with 1 tile radius if you're standing right on top of it
     maxIntensity: 5
@@ -166,7 +169,10 @@
       children:
       - !type:NestedSelector
         tableId: LootboxEffectTableEngineering
-    triggerWeights: LootboxTriggersEngineering
+    triggersTable: !type:GroupSelector
+      children:
+      - !type:NestedSelector
+        tableId: LootboxTriggersEngineering
 
 - type: entity
   id: CrateLootboxSecurity # One-time artifacts, that stop being artifacts once you've triggered them
@@ -202,7 +208,10 @@
       children:
       - !type:NestedSelector
         tableId: LootboxEffectTableSecurity
-    triggerWeights: LootboxTriggersSecurity
+    triggersTable: !type:GroupSelector
+      children:
+      - !type:NestedSelector
+        tableId: LootboxTriggersSecurity
 
 - type: entity
   id: CrateLootboxMedical # One-time artifacts, that stop being artifacts once you've triggered them
@@ -236,7 +245,10 @@
       children:
       - !type:NestedSelector
         tableId: LootboxEffectTableMedical
-    triggerWeights: LootboxTriggersMedical
+    triggersTable: !type:GroupSelector
+      children:
+      - !type:NestedSelector
+        tableId: LootboxTriggersMedical
 
 - type: entity
   id: CrateLootboxScience # One-time artifacts, that stop being artifacts once you've triggered them
@@ -270,7 +282,10 @@
       children:
       - !type:NestedSelector
         tableId: LootboxEffectTableScience
-    triggerWeights: LootboxTriggersScience
+    triggersTable: !type:GroupSelector
+      children:
+      - !type:NestedSelector
+        tableId: LootboxTriggersScience
 
 - type: entity
   id: CrateLootboxService # One-time artifacts, that stop being artifacts once you've triggered them
@@ -304,4 +319,7 @@
       children:
       - !type:NestedSelector
         tableId: LootboxEffectTableService
-    triggerWeights: LootboxTriggersService
+    triggersTable: !type:GroupSelector
+      children:
+      - !type:NestedSelector
+        tableId: LootboxTriggersService

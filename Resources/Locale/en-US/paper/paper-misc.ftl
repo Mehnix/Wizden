@@ -88,5 +88,5 @@ book-text-lootbox-manual = [color=blue]█▄ █ ▀█▀ NANOTRASEN INFORMATI
       Yours faithfully:
       - High Quartermaster-at-Arms, Corporal Iscariot
 
-stamp-lootbox-logistics = Centcomm Logistics Division
+stamp-lootbox-logistics = CentComm Logistics Division
 
