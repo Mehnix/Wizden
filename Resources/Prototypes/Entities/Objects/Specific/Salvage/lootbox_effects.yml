@@ -198,19 +198,6 @@
   - type: XAERemoveArtifact #we're done now so kill it
 
 - type: entityTable
-  id: LootboxSpawnTable
-  table: !type:GroupSelector
-    children:
-    - id: CrateLootboxBasic
-      weight: 5
-    - id: CrateLootboxService
-    - id: CrateLootboxEngineering
-    - id: CrateLootboxMedical
-    - id: CrateLootboxScience
-    - id: CrateLootboxSecurity
-      weight: 0.5
-
-- type: entityTable
   id: LootboxTableBasic #generically useful lootbox items
   table: !type:GroupSelector
     children:
@@ -243,7 +230,7 @@
         tableId: LootboxTableSecurity
         weight: 0.1
     - !type:NestedSelector # winner winner roll again
-      tableId: LootboxSpawnTable
+      tableId: LootboxMaintsSpawnTable
       weight: 0.01
 
 - type: entityTable

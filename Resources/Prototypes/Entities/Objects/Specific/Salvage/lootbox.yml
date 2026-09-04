@@ -29,6 +29,51 @@
 
 #Like regular crates, but parenting off of artifacts, unlike them crates, the items inside are only generated once the trigger is met, if destroyed prior, you get nothing!
 - type: entity
+  parent: MarkerBase
+  id: LootboxRandomSpawner
+  name: maintenance lootbox spawner
+  components:
+  - type: Sprite
+    layers:
+    - state: red
+    - sprite: Structures/Storage/Crates/lockbox.rsi
+      state: base
+    - sprite: Structures/Storage/Crates/lockbox.rsi
+      state: dirt
+    - sprite: Structures/Storage/Crates/lockbox.rsi
+      state: closed
+    - sprite: Structures/Storage/Crates/lockbox.rsi
+      state: dirt-closed
+  - type: EntityTableSpawner
+    offset: 0
+    table: !type:NestedSelector
+      tableId: LootboxMaintsSpawnTable
+
+- type: entityTable
+  id: LootboxMaintsSpawnTable
+  table: !type:GroupSelector
+    children:
+    - id: CrateLootboxBasic
+      weight: 5
+    - id: CrateLootboxService
+    - id: CrateLootboxEngineering
+    - id: CrateLootboxMedical
+    - id: CrateLootboxScience
+    - id: CrateLootboxSecurity
+      weight: 0.5
+
+- type: entityTable
+  id: LootboxSalvageSpawnTable
+  table: !type:GroupSelector
+    children:
+    - id: CrateLootboxService
+    - id: CrateLootboxEngineering
+    - id: CrateLootboxMedical
+    - id: CrateLootboxScience
+    - id: CrateLootboxSecurity
+      weight: 0.5
+
+- type: entity
   id: CrateLootboxBasic # One-time artifacts, that stop being artifacts once you've triggered them
   parent: [BaseAnomalousObject, BaseStructureDynamic, BasePaperLabelableVisualized]
   name: old lock box
