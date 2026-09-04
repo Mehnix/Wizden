@@ -1,3 +1,4 @@
+lootbox-activation-fail = the lock rattles uselessly
 lootbox-unlock-end-success = the lock clicks open!
 
 lootbox-trigger-examine-brute-damage = The lock looks old and damaged, a single heavy hit could break it off.
@@ -9,8 +10,8 @@ lootbox-trigger-examine-pressure-high = A set of actuated plates look to be prot
 lootbox-trigger-examine-plasma = There looks to be a small inflow gas fan covered in purple particulates.
 lootbox-trigger-examine-tritium = There looks to be a small inflow gas fan with a radiation warning.
 lootbox-trigger-examine-shock = There is an inset mechanical heart pulsing arrhythmically.
+lootbox-trigger-examine-toob = A single word is blazoned religiously upon the lock box: "TOOB". Perhaps it'll do something in the presence of a ritual associated with this cult.
 lootbox-trigger-examine-cuffs = Two small outstretched rods protude from the front, fists closed. Linking them might complete a circuit.
-lootbox-trigger-examine-topical = Some biomechanical element is bleeding an unknown liquid that's preventing further function.
 lootbox-trigger-examine-scanning = The lock uses a complex anomaly-based mechanism. More specialised equipment might be needed to take a closer look.
 lootbox-trigger-examine-knowledge = There is a clearly marked data-exchange matrix. A trade of knowledge is required.
 lootbox-trigger-examine-carbs = There looks to be an inlet port with a symbol of a wheat grain on it.

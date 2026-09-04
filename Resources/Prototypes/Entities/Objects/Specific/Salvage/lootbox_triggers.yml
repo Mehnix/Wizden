@@ -50,7 +50,7 @@
     #- id: LootboxTriggerAccessCMO
     - id: LootboxTriggerBlood
     - id: LootboxTriggerInteractShock
-    - id: LootboxTriggerInteractTopical
+    - id: LootboxTriggerToob
     #- id: TriggerReactiveReagentEasy # reagent triggers have their own description. (requires reagent trigger PR)
     #- id: TriggerReactiveReagentHard
     #- id: TriggerReagentSpecificObscure
@@ -163,6 +163,16 @@
     examineText: lootbox-trigger-examine-shock
 
 - type: entity
+  id: LootboxTriggerToob
+  parent: BaseXenoArtifactTrigger
+  components:
+  - type: XATCompNearby
+    requireComponentWithName: InsideCryoPod
+    radius: 2
+  - type: XATExaminableText
+    examineText: lootbox-trigger-examine-toob
+
+- type: entity
   id: LootboxTriggerInteractCuffs
   parent: BaseXenoArtifactTrigger
   components:
@@ -177,24 +187,6 @@
       - Handcuffs
   - type: XATExaminableText
     examineText: lootbox-trigger-examine-cuffs
-
-- type: entity
-  id: LootboxTriggerInteractTopical
-  parent: BaseXenoArtifactTrigger
-  components:
-  - type: XATInteractWith
-    interactionTime: 5
-    startTriggerSound:
-      path: /Audio/Items/Medical/brutepack_begin.ogg
-    successTriggerSound:
-      path: /Audio/Items/Medical/brutepack_end.ogg
-    whitelist:
-      tags:
-      - Gauze
-      - Tourniquet
-      - Bloodpack
-  - type: XATExaminableText
-    examineText: lootbox-trigger-examine-topical
 
 - type: entity
   id: LootboxTriggerInteractScan
