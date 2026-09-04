@@ -130,8 +130,6 @@
     - id: WristwatchGold
     - !type:NestedSelector
       tableId: RingTableCommon
-    - !type:NestedSelector
-      tableId: LootboxMaintsSpawnTable
 
 - type: entityTable
   id: SalvageTreasureRare
