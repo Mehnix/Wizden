@@ -43,6 +43,7 @@
     applyIfAlreadyHave: false
     refreshOnReactivate: false
     components:
+    - type: RequireProjectileTarget # this is here as PA's can't hit otherwise.
     - type: Weldable
     - type: Lock
       locked: false
@@ -67,6 +68,7 @@
     applyIfAlreadyHave: false
     refreshOnReactivate: false
     components:
+    - type: RequireProjectileTarget
     - type: Weldable
     - type: Lock
       locked: false
@@ -95,6 +97,7 @@
     applyIfAlreadyHave: false
     refreshOnReactivate: false
     components:
+    - type: RequireProjectileTarget
     - type: Weldable
     - type: Lock
       locked: false
@@ -122,6 +125,7 @@
     applyIfAlreadyHave: false
     refreshOnReactivate: false
     components:
+    - type: RequireProjectileTarget
     - type: Weldable
     - type: Lock
       locked: false
@@ -150,6 +154,7 @@
     applyIfAlreadyHave: false
     refreshOnReactivate: false
     components:
+    - type: RequireProjectileTarget
     - type: Weldable
     - type: Lock
       locked: false
@@ -178,6 +183,7 @@
     applyIfAlreadyHave: false
     refreshOnReactivate: false
     components:
+    - type: RequireProjectileTarget
     - type: Weldable
     - type: Lock
       locked: false
@@ -203,7 +209,7 @@
     children:
     - !type:NestedSelector # lots of fun things in this, pre-made randomness
       tableId: FillSmugglerBackpack
-      weight: 2
+      weight: 3
     - !type:NestedSelector
       tableId: RandomAllHighValueMaterialsTable
     - !type:NestedSelector
@@ -566,14 +572,9 @@
   table: !type:GroupSelector
     children:
     # common items
-    - id: IngotGold
-      weight: 2
-    - id: IngotSilver
-      weight: 2
-    - id: SheetPlasma
-      weight: 2
-    - id: SheetUranium
-      weight: 2
+    - !type:NestedSelector
+      tableId: RandomAllHighValueMaterialsTable
+      weight: 3
     - id: SpaceCash5000
       weight: 2
     # uncommon items (aka a reason for salvage to care about the lootbox)
@@ -614,7 +615,7 @@
       weight: 0.5
     # !Ultra-Legendary Item!
     - id: ClothingOuterHardsuitMaxim # This being here means salvagers will personally hand deliver loot boxes every single time (plz).
-      weight: 0.01 # ~1/2500 chance
+      weight: 0.02 # ~1/1250 chance
 
 - type: entityTable
   id: LootboxTableNaughty # you can have a little contraband, as a treat. Mostly things that you could have some fun with without causing too much trouble.
