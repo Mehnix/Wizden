@@ -7,8 +7,6 @@
   - type: Sprite
   # Classic: Respritening renamed.
     sprite: Structures/Wallmounts/extinguisher_cabinet.rsi
-  # Classic: readded snapCardinals.
-    snapCardinals: true
 #    offset: 0, -0.25 # Classic: Removed.
     layers:
     - state: frame

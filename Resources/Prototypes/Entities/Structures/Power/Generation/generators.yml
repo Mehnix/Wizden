@@ -82,6 +82,9 @@
   name: wallmount generator
   description: A high efficiency thermoelectric generator stuffed in a wall cabinet.
   components:
+  # Classic: Added noRot: false.
+  - type: Transform
+    noRot: false
   - type: AmbientOnPowered
   - type: AmbientSound
     volume: -15
@@ -95,6 +98,8 @@
     castShadows: false
     netsync: false
   - type: Sprite
+  # Classic: Added snapCardinals: false.
+    snapCardinals: false
     drawdepth: WallMountedItems
     sprite: Structures/Power/Generation/wallmount_generator.rsi
     layers:
