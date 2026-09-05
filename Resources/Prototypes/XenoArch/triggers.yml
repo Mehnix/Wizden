@@ -90,8 +90,6 @@
   - type: XATCompNearby
     requireComponentWithName: ActiveInstrument
     radius: 2
-  - type: XATExaminableText
-    examineText: xenoarch-trigger-examine-music
 
 - type: entity
   parent: BaseXenoArtifactTrigger
@@ -121,8 +119,6 @@
   - type: XATDamageThresholdReached
     typesNeeded:
       Cold: 20
-  - type: XATExaminableText
-    examineText: xenoarch-trigger-examine-temp
 
 - type: entity
   parent: BaseXenoArtifactTrigger
@@ -133,8 +129,6 @@
     targetGas: Oxygen
     moles: 10
     shouldBePresent: false
-  - type: XATExaminableText
-    examineText: xenoarch-trigger-examine-no-oxygen
 
 - type: entity
   parent: BaseXenoArtifactTrigger
@@ -146,8 +140,6 @@
   - type: XATReactive
     reagents:
     - Water
-  - type: XATExaminableText
-    examineText: xenoarch-trigger-examine-liquid
 
 - type: entity
   parent: BaseXenoArtifactTrigger
@@ -159,8 +151,6 @@
   - type: XATReactive
     reagents:
     - CarbonDioxide
-  - type: XATExaminableText
-    examineText: xenoarch-trigger-examine-gas
 
 - type: entity
   parent: BaseXenoArtifactTrigger
@@ -172,8 +162,6 @@
   - type: XATReactive
     reagents:
     - Plasma
-  - type: XATExaminableText
-    examineText: xenoarch-trigger-examine-gas
 
 - type: entity
   parent: BaseXenoArtifactTrigger
@@ -185,8 +173,6 @@
   - type: XATReactive
     reagents:
     - Tritium
-  - type: XATExaminableText
-    examineText: xenoarch-trigger-examine-gas
 
 - type: entity
   parent: BaseXenoArtifactTrigger
@@ -198,8 +184,6 @@
   - type: XATReactive
     reagents:
     - Ammonia
-  - type: XATExaminableText
-    examineText: xenoarch-trigger-examine-gas
 
 - type: entity
   parent: BaseXenoArtifactTrigger
@@ -211,8 +195,6 @@
   - type: XATReactive
     reagents:
     - NitrousOxide
-  - type: XATExaminableText
-    examineText: xenoarch-trigger-examine-gas
 
 - type: entity
   parent: BaseXenoArtifactTrigger
@@ -224,8 +206,6 @@
   - type: XATReactive
     reagents:
     - Frezon
-  - type: XATExaminableText
-    examineText: xenoarch-trigger-examine-gas
 
 - type: entity
   parent: BaseXenoArtifactTrigger
@@ -243,8 +223,6 @@
   components:
   - type: XATPressure
     maxPressureThreshold: 385
-  - type: XATExaminableText
-    examineText: xenoarch-trigger-examine-pressure
 
 - type: entity
   parent: BaseXenoArtifactTrigger
@@ -253,8 +231,6 @@
   components:
   - type: XATPressure
     minPressureThreshold: 50
-  - type: XATExaminableText
-    examineText: xenoarch-trigger-examine-pressure
 
 - type: entity
   parent: BaseXenoArtifactTrigger
@@ -262,8 +238,6 @@
   name: Close inspection
   components:
   - type: XATExamine
-  - type: XATExaminableText
-    examineText: xenoarch-trigger-examine-examine
 
 - type: entity
   parent: BaseXenoArtifactTrigger
@@ -273,8 +247,6 @@
   - type: XATDamageThresholdReached
     groupsNeeded:
       Brute: 20
-  - type: XATExaminableText
-    examineText: xenoarch-trigger-examine-brute-damage
 
 - type: entity
   parent: BaseXenoArtifactTrigger
@@ -282,8 +254,6 @@
   name: Physical interaction
   components:
   - type: XATInteraction
-  - type: XATExaminableText
-    examineText: xenoarch-trigger-examine-examine
 
 - type: entity
   parent: BaseXenoArtifactTrigger
@@ -350,8 +320,6 @@
     - ZombieBlood
     - Sap
     - SulfurBlood
-  - type: XATExaminableText
-    examineText: xenoarch-trigger-examine-blood
 
 - type: entity
   parent: BaseXenoArtifactTrigger
@@ -359,8 +327,6 @@
   name: Death
   components:
   - type: XATDeath
-  - type: XATExaminableText
-    examineText: xenoarch-trigger-examine-death
 
 - type: entity
   parent: BaseXenoArtifactTrigger
