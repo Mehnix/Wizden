@@ -63,7 +63,6 @@
       effects:
       - !type:Emote
         emote: Yawn
-        showInChat: true
         probability: 0.1
       - !type:MovementSpeedModifier
         walkSpeedModifier: 0.65
@@ -553,24 +552,6 @@
             Poison: 0.06
 
 - type: reagent
-  id: Pax
-  name: reagent-name-pax
-  group: Narcotics
-  desc: reagent-desc-pax
-  physicalDesc: reagent-physical-desc-soothing
-  allowedDepartments:
-  - Security
-  - Medical
-  color: "#AAAAAA"
-  metabolisms:
-    Bloodstream:
-      effects:
-      - !type:GenericStatusEffect
-        key: Pacified
-        component: Pacified
-        time: 4
-
-- type: reagent
   id: Honk
   name: reagent-name-honk
   group: Toxins
@@ -584,7 +565,6 @@
       effects:
       - !type:Emote
         emote: Honk
-        showInChat: true
         showInGuidebook: true
         force: true
         probability: 0.2
