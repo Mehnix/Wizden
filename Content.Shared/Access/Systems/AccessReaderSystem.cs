@@ -601,6 +601,7 @@ public sealed partial class AccessReaderSystem : EntitySystem
     /// <inheritdoc cref = "AddAccess"/>
     private void AddAccess(Entity<AccessReaderComponent> ent, ProtoId<AccessLevelPrototype> access, bool dirty = true)
     {
+        Log.Debug("access adding");
         AddAccess(ent, new HashSet<ProtoId<AccessLevelPrototype>>() { access }, dirty);
     }
 

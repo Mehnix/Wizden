@@ -38,6 +38,7 @@
     TriggerAttackParticleAnomaly: 1
     TriggerAttackStaminaDamage: 1
     TriggerAttackLaser: 0.5
+    TriggerAccess: 0.5
 
 - type: xenoArchTrigger
   id: TriggerMusic
@@ -435,11 +436,31 @@
       - EmitterBolt
 
 - type: xenoArchTrigger
-  id: TriggerAccessCommand
-  tip: xenoarch-trigger-access-command
+  id: TriggerAccess
+  tip: xenoarch-trigger-tip-access
   components:
   - type: XATAccess
-    accessSound: "/Audio/Machines/beep.ogg"
+    accessSound:
+      path: /Audio/Machines/beep.ogg
+    deniedSound:
+      path: /Audio/Machines/airlock_deny.ogg
+    potentialAccess:
+    - Command
+    - Bar
+    - Kitchen
+    - Hydroponics
+    - Chapel
+    - Theatre
+    - Janitor
+    - Service
+    - Cargo
+    - Salvage
+    - Engineering
+    - Security
+    - Medical
+    - External
   - type: AccessReader #required for processing accesses
-    access: [["Command"]]
     loggingDisabled: true
+  - type: XATExaminableText
+    examineText: xenoarch-trigger-examine-access
+

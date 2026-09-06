@@ -1,3 +1,5 @@
+using System.Linq;
+using Content.Shared.Access;
 using Content.Shared.Access.Components;
 using Content.Shared.Access.Systems;
 using Content.Shared.Emag.Systems;
@@ -7,6 +9,8 @@ using Content.Shared.Interaction.Events;
 using Content.Shared.Xenoarchaeology.Artifact.Components;
 using Content.Shared.Xenoarchaeology.Artifact.XAT.Components;
 using Robust.Shared.Audio.Systems;
+using Robust.Shared.Prototypes;
+using Robust.Shared.Random;
 
 namespace Content.Shared.Xenoarchaeology.Artifact.XAT;
 
@@ -18,31 +22,37 @@ public sealed partial class XATAccessSystem : BaseXATSystem<XATAccessComponent>
 {
     [Dependency] private AccessReaderSystem _access = default!;
     [Dependency] private SharedAudioSystem _audio = default!;
+    [Dependency] private IPrototypeManager _proto = default!;
+    [Dependency] private IRobustRandom _random = default!;
     [Dependency] private SharedXenoArtifactSystem _xenoarch = default!;
     public override void Initialize()
     {
         base.Initialize();
         XATSubscribeDirectEvent<InteractUsingEvent>(OnInteractUsing);
-        XATSubscribeDirectEvent<ActivateInWorldEvent>(OnActivateWorld);
         XATSubscribeDirectEvent<GotEmaggedEvent>(OnNodeEmagged);
         XATSubscribeDirectEvent<ExaminedEvent>(OnExamine);
-
-        SubscribeLocalEvent<XenoArtifactComponent, GotEmaggedEvent>(OnEmagged);
     }
 
-    private void OnActivateWorld(Entity<XenoArtifactComponent> artifact, Entity<XATAccessComponent, XenoArtifactNodeComponent> node, ref ActivateInWorldEvent args)
-    {     //this will only work if there are no active nodes as activating the artifact overrides this, just here for completeness
-        if (CheckAccess(args.User, node.Owner))
-        {
-            Trigger(artifact, node);
-            _audio.PlayPredicted(node.Comp1.AccessSound, artifact.Owner, args.User);
-        }
-        else
-            _audio.PlayPredicted(node.Comp1.DeniedSound, artifact.Owner, args.User);
+    /// summary>
+    /// Randomly choose access from list and add it to reader
+    /// </summary>
+    [SubscribeLocalEvent]
+    private void OnMapInit(Entity<XATAccessComponent> ent, ref ComponentStartup args)
+    {
+        if (ent.Comp.PotentialAccess == null || !TryComp<AccessReaderComponent>(ent, out var accessComp)) // undefined, stop here.
+            return;
+
+        var access = ent.Comp.PotentialAccess.ElementAt(_random.Next(ent.Comp.PotentialAccess.Count)); //get random access from hashset.
+        if (_proto.Index(access) == null) // invalid access, stop here.
+            return;
+
+        _access.TryAddAccess((ent.Owner, accessComp), access);
+        Log.Debug($"{access}");
+        Dirty(ent);
     }
     private void OnInteractUsing(Entity<XenoArtifactComponent> artifact, Entity<XATAccessComponent, XenoArtifactNodeComponent> node, ref InteractUsingEvent args)
     {
-        if (CheckAccess(args.User, node.Owner))
+        if (CheckAccess(args.Used, node.Owner)) //ONLY check the used item, you tap your ID to it.
         {
             Trigger(artifact, node);
             _audio.PlayPredicted(node.Comp1.AccessSound, artifact.Owner, args.User);
@@ -76,6 +86,7 @@ public sealed partial class XATAccessSystem : BaseXATSystem<XATAccessComponent>
     /// We also raise the GotEmaggedEvent here onto other nodes because otherwise we're subscribing twice
     /// Which is why this isn't in the list of relayed events
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnEmagged(Entity<XenoArtifactComponent> ent, ref GotEmaggedEvent args)
     {
         var nodes = _xenoarch.GetAllNodes(ent);

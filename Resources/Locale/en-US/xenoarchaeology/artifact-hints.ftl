@@ -80,6 +80,7 @@ xenoarch-trigger-tip-particle = Singularity-Effecting Particles
 xenoarch-trigger-tip-anomparticle = Anomaly-Effecting Particles
 xenoarch-trigger-tip-stamina-damage = Organic Exhaustion
 xenoarch-trigger-tip-laser = High-Intensity photon impacts
+xenoarch-trigger-tip-access = Direct access protocols exposure
 
 ### Description hints
 xenoarch-trigger-examine-wrenching = There's a loose bit spinning around.
@@ -87,6 +88,7 @@ xenoarch-trigger-examine-prying = There's a panel coming up from the surface.
 xenoarch-trigger-examine-screwing = There's a raised section with a small inset on it.
 xenoarch-trigger-examine-pulsing = An exposed diode pokes out of the artifact's surface.
 xenoarch-trigger-examine-timer = Carvings and scratches cover the surface... You can just barely make out a number: [italic]{$time}[/italic]
+xenoarch-trigger-examine-access = There appears to be a slot that would fit an ID card.
 
 ### Effects hints
 xenoarch-effect-puddle = Produces puddle of following reagents: {$reagent}
