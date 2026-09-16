@@ -1,0 +1,76 @@
+- type: entity
+  parent: DiseaseSwab
+  id: SynthSwab
+  name: synthetic swab
+  description: A swab that holds samples on a sterile glass surface, making it easy to clean and reuse.
+  components:
+  - type: Sprite
+    sprite: _BPL/Objects/Specific/Hydroponics/synth_swab.rsi
+    state: icon
+  - type: BotanySwab
+  - type: BPLSwab
+    cleanable: true
+
+- type: entity
+  parent: BoxMouthSwab
+  id: BoxSynthSwab
+  name: synthetic swab dispenser
+  description: Dispenses 30 sterile synthetic swabs, enough to last a lifetime considering they're reusable.
+  components:
+  - type: Sprite
+    sprite: _BPL/Objects/Storage/boxes.rsi
+    layers:
+    - state: boxwide
+    - state: synthswab
+  - type: BallisticAmmoProvider
+    proto: SynthSwab
+
+- type: entity
+  parent: BaseItem
+  id: SwabApplicator
+  name: swab applicator
+  description: A device that can hold a single used swab. It can repeatedly apply pollen without risk of cross-contamination.
+  components:
+  - type: Sprite
+    sprite: _BPL/Objects/Specific/Hydroponics/swab_applicator.rsi
+    layers:
+    - state: swab_applicator
+  - type: Item
+    sprite: _BPL/Objects/Specific/Hydroponics/swab_applicator.rsi
+    heldPrefix: swab_applicator
+    size: Small
+    storedRotation: 270
+  - type: ItemSlots
+    slots:
+      swab:
+        name: Swab
+        insertSound: /Audio/Weapons/Guns/MagIn/pistol_magin.ogg
+        ejectSound: /Audio/Weapons/Guns/MagOut/pistol_magout.ogg
+        priority: 1
+        whitelist:
+          components:
+          - BotanySwab
+        blacklist:
+          components:
+          - SwabApplicator
+        whitelistFailPopup: swab-applicator-whitelist-fail
+        ejectOnUse: true
+  - type: ContainerContainer
+    containers:
+      swab: !type:ContainerSlot
+  - type: ItemMapper
+    mapLayers:
+      swab:
+        whitelist:
+          components:
+            - BotanySwab
+    sprite: _BPL/Objects/Specific/Hydroponics/swab_applicator.rsi
+  - type: Appearance
+  - type: SwabApplicator
+  - type: BotanySwab
+    swabDelay: 0.75
+  - type: BPLSwab
+    swabSound:
+      path: /Audio/Items/hypospray.ogg
+      params:
+        volume: -2

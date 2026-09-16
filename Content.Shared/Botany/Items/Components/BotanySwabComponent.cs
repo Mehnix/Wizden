@@ -1,3 +1,4 @@
+using Content.Shared._BPL.Botany.Items.Systems;
 using Content.Shared.Botany.Items.Systems;
 using Robust.Shared.GameStates;
 using Robust.Shared.Prototypes;
@@ -8,7 +9,7 @@ namespace Content.Shared.Botany.Items.Components;
 /// Component for items that can function as a plant cross-pollination tool.
 /// </summary>
 [RegisterComponent, NetworkedComponent, AutoGenerateComponentState]
-[Access(typeof(BotanySwabSystem))]
+[Access(typeof(BotanySwabSystem), typeof(SwabApplicatorSystem))]
 public sealed partial class BotanySwabComponent : Component
 {
     /// <summary>
