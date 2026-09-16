@@ -11,7 +11,9 @@ namespace Content.Shared.Physics;
 /// </summary>
 public sealed partial class PhasingStatusEffectSystem : EntitySystem
 {
+    [Dependency] private OccluderSystem _occluder = default!;
     [Dependency] private SharedPhysicsSystem _physics = default!;
+    [Dependency] private IPrototypeManager _proto = default!;
     public static readonly EntProtoId PhasingStatusEffect = "StatusEffectPhasing";
 
     [SubscribeLocalEvent]
@@ -20,8 +22,20 @@ public sealed partial class PhasingStatusEffectSystem : EntitySystem
         if (!TryComp<FixturesComponent>(args.Target, out var fixtures))
             return;
 
-        foreach (var fixture in fixtures.Fixtures.Values)
+        ent.Comp.Fixtures = fixtures.Fixtures; //store old fixtures to be reapplied later
+
+        foreach (var fixture in fixtures.Fixtures.Values) //set to non collide
+        {
             _physics.SetHard(args.Target, fixture, false, fixtures);
+        }
+
+        if (TryComp<OccluderComponent>(args.Target, out var occluderComp))
+        {
+            ent.Comp.Occluded = occluderComp.Enabled;
+            _occluder.SetEnabled(args.Target, false, occluderComp);
+        }
+
+        Dirty(ent);
     }
 
     [SubscribeLocalEvent]
@@ -30,8 +44,20 @@ public sealed partial class PhasingStatusEffectSystem : EntitySystem
         if (!TryComp<FixturesComponent>(args.Target, out var fixtures))
             return;
 
-        foreach (var fixture in fixtures.Fixtures.Values)
-            _physics.SetHard(args.Target, fixture, true, fixtures);
+        var meta = MetaData(args.Target).EntityPrototype;
+        if (meta == null || !meta.TryComp<FixturesComponent>(out var protoFixturesComp, EntityManager.ComponentFactory))
+            return;
+
+        foreach (var fixture in fixtures.Fixtures) //restore old fixtures
+        {
+            if (!protoFixturesComp.Fixtures.TryGetValue(fixture.Key, out var protoFixturesValue))
+                continue;
+
+            _physics.SetHard(args.Target, fixture.Value, protoFixturesValue.Hard, fixtures);
+        }
+
+        if (TryComp<OccluderComponent>(args.Target, out var occluderComp))
+            _occluder.SetEnabled(args.Target, ent.Comp.Occluded, occluderComp); //restore old occlusion
     }
 
     [SubscribeLocalEvent]
@@ -42,5 +68,10 @@ public sealed partial class PhasingStatusEffectSystem : EntitySystem
 
         foreach (var fixture in fixtures.Fixtures.Values)
             _physics.SetHard(args.AppliedTo, fixture, false, fixtures);
+
+        if (TryComp<OccluderComponent>(args.AppliedTo, out var occluderComp))
+            _occluder.SetEnabled(args.AppliedTo, false, occluderComp);
+
+        Dirty(ent);
     }
 }

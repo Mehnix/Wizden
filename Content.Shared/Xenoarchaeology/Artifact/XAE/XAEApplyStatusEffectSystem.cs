@@ -9,7 +9,7 @@ namespace Content.Shared.Xenoarchaeology.Artifact.XAE;
 /// </summary>
 public sealed partial class XAEApplyStatusEffectSystem : BaseXAESystem<XAEApplyStatusEffectComponent>
 {
-    private const LookupFlags RangeFlags = LookupFlags.Approximate | LookupFlags.Dynamic | LookupFlags.Sundries;
+    private const LookupFlags RangeFlags = LookupFlags.Approximate | LookupFlags.Uncontained;
     [Dependency] private EntityLookupSystem _lookup = default!;
     [Dependency] private StatusEffectsSystem _status = default!;
 
@@ -19,7 +19,7 @@ public sealed partial class XAEApplyStatusEffectSystem : BaseXAESystem<XAEApplyS
 
         if (ent.Comp.Range > 0)
         {
-            var entities = _lookup.GetEntitiesInRange(ent.Owner, ent.Comp.Range, RangeFlags); // will not look for static entities or anything inside a container.
+            var entities = _lookup.GetEntitiesInRange(ent.Owner, ent.Comp.Range, RangeFlags);
             entities.Remove(args.Artifact); //don't effect the artifact again.
             foreach (var entity in entities)
                 AddStatus(ent.Comp.Effects, entity, ent.Comp.TargetDuration); //apply to all found entities. Status effect system will sort out which are valid.

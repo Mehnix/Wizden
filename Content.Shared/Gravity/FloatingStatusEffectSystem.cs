@@ -14,13 +14,15 @@ public sealed partial class FloatingStatusEffectSystem : EntitySystem
     [SubscribeLocalEvent]
     private void OnFloatingStatusApplied(Entity<FloatingStatusEffectComponent> ent, ref StatusEffectAppliedEvent args)
     {
-        _gravity.RefreshWeightless(args.Target, true);
+        if (HasComp<GravityAffectedComponent>(args.Target))
+            _gravity.RefreshWeightless(args.Target, true);
     }
 
     [SubscribeLocalEvent]
     private void OnFloatingStatusRemoved(Entity<FloatingStatusEffectComponent> ent, ref StatusEffectRemovedEvent args)
     {
-        _gravity.RefreshWeightless(args.Target, false);
+        if (HasComp<GravityAffectedComponent>(args.Target))
+            _gravity.RefreshWeightless(args.Target, false);
     }
 
     [SubscribeLocalEvent]
