@@ -29,4 +29,16 @@ public sealed partial class BotanySwabComponent : Component
     /// </summary>
     [DataField, AutoNetworkedField]
     public EntityUid? PlantData;
+
+    /// <summary>
+    /// Loc strings
+    /// </summary>
+    [DataField, AutoNetworkedField]
+    public Dictionary<string, LocId> LocStrings = new()
+    {
+        ["used"] = "swab-used",
+        ["unused"] = "swab-unused",
+        ["swabfrom"] = "botany-swab-from",
+        ["swabto"] = "botany-swab-to",
+    };
 }

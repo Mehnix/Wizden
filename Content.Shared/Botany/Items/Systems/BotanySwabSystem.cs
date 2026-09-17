@@ -30,9 +30,9 @@ public sealed partial class BotanySwabSystem : EntitySystem
             return;
 
         if (ent.Comp.PlantData != null)
-            args.PushMarkup(Loc.GetString("swab-used"));
+            args.PushMarkup(Loc.GetString(ent.Comp.LocStrings["used"]));
         else
-            args.PushMarkup(Loc.GetString("swab-unused"));
+            args.PushMarkup(Loc.GetString(ent.Comp.LocStrings["unused"]));
     }
 
     /// <summary>
@@ -41,7 +41,7 @@ public sealed partial class BotanySwabSystem : EntitySystem
     [SubscribeLocalEvent]
     private void OnAfterInteract(Entity<BotanySwabComponent> ent, ref AfterInteractEvent args)
     {
-        if (args.Target == null || !args.CanReach || !_plantQuery.HasComp(args.Target))
+        if (args.Handled || args.Target == null || !args.CanReach || !_plantQuery.HasComp(args.Target))
             return;
 
         _doAfter.TryStartDoAfter(new DoAfterArgs(EntityManager, args.User, ent.Comp.SwabDelay, new BotanySwabDoAfterEvent(), ent.Owner, target: args.Target, used: ent.Owner)

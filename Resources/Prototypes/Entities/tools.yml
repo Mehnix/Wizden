@@ -8,6 +8,7 @@
     sprite: _BPL/Objects/Specific/Hydroponics/synth_swab.rsi
     state: icon
   - type: BotanySwab
+    swabDelay: 1
   - type: BPLSwab
     cleanable: true
 
@@ -69,6 +70,10 @@
   - type: SwabApplicator
   - type: BotanySwab
     swabDelay: 0.75
+    locStrings:
+      used: swab-applicator-usable
+      unused: swab-applicator-empty
+      swabto: swab-applicator-swab-to
   - type: BPLSwab
     swabSound:
       path: /Audio/Items/hypospray.ogg

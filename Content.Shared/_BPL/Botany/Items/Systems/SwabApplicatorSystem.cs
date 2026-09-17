@@ -29,6 +29,9 @@ public sealed partial class SwabApplicatorSystem : EntitySystem
     [SubscribeLocalEvent(before: [typeof(BotanySwabSystem)])]
     private void OnAfterInteract(Entity<SwabApplicatorComponent> ent, ref AfterInteractEvent args)
     {
+        if (args.Handled || args.Target == null || !args.CanReach || !_plantQuery.HasComp(args.Target))
+            return;
+
         if (TryComp<BotanySwabComponent>(ent, out var swabComp) && swabComp.PlantData != null && swabComp.PlantProtoId != null)
             return;
 
@@ -111,7 +114,7 @@ public sealed partial class SwabApplicatorSystem : EntitySystem
     [SubscribeLocalEvent]
     private void OnClean(Entity<BPLSwabComponent> ent, ref UseInHandEvent args)
     {
-        if (args.Handled)
+        if (args.Handled || !ent.Comp.Cleanable)
             return;
 
         if (!TryComp<BotanySwabComponent>(ent, out var swabComp))
