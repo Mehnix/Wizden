@@ -1,4 +1,34 @@
 - type: entity
+  name: grow light upgrade kit
+  parent: BaseItem
+  id: HydroponicsGrowLightUpgrade
+  description: A set of LEDs that makes plants grow faster. Install on a hydroponics tray.
+  components:
+  - type: Sprite
+    drawdepth: SmallObjects
+    sprite: _BPL/Objects/Specific/Hydroponics/light_upgrade.rsi
+    state: icon
+  - type: Item
+    sprite: _BPL/Objects/Specific/Hydroponics/light_upgrade.rsi
+    state: storage
+    storedSprite:
+      sprite: _BPL/Objects/Specific/Hydroponics/light_upgrade.rsi
+      state: storage
+    shape:
+    - 0,0,1,0
+  - type: GrowLight
+    boostCount: 10 # ~50% faster
+
+- type: entity
+  name: grow light upgrade kit [DEBUG]
+  parent: HydroponicsGrowLightUpgrade
+  id: HydroponicsGrowLightUpgradeDebug
+  description: A set of LEDs that makes plants grow 5x faster. Install on a hydroponics tray.
+  components:
+  - type: GrowLight
+    boostCount: 1
+
+- type: entity
   parent: DiseaseSwab
   id: SynthSwab
   name: synthetic swab
@@ -8,7 +38,6 @@
     sprite: _BPL/Objects/Specific/Hydroponics/synth_swab.rsi
     state: icon
   - type: BotanySwab
-    swabDelay: 1
   - type: BPLSwab
     cleanable: true
 
@@ -49,11 +78,8 @@
         ejectSound: /Audio/Weapons/Guns/MagOut/pistol_magout.ogg
         priority: 1
         whitelist:
-          components:
-          - BotanySwab
-        blacklist:
-          components:
-          - SwabApplicator
+          tags:
+          - Swab
         whitelistFailPopup: swab-applicator-whitelist-fail
         ejectOnUse: true
   - type: ContainerContainer
@@ -63,17 +89,13 @@
     mapLayers:
       swab:
         whitelist:
-          components:
-            - BotanySwab
+          tags:
+            - Swab
     sprite: _BPL/Objects/Specific/Hydroponics/swab_applicator.rsi
   - type: Appearance
   - type: SwabApplicator
   - type: BotanySwab
     swabDelay: 0.75
-    locStrings:
-      used: swab-applicator-usable
-      unused: swab-applicator-empty
-      swabto: swab-applicator-swab-to
   - type: BPLSwab
     swabSound:
       path: /Audio/Items/hypospray.ogg

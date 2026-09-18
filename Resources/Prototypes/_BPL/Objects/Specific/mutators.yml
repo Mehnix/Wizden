@@ -1,0 +1,305 @@
+- type: entity
+  abstract: true
+  parent: BaseItem
+  name: plant mutator
+  description: Forces a plant to mutate into a new species, if possible.
+  id: PlantMutatorBase
+  components:
+    - type: PlantMutator
+      entityEffect: !type:PlantMutateSpeciesChange
+    - type: Sprite
+      sprite: _BPL/Objects/Consumable/plantmutator.rsi
+      state: icon
+
+- type: entity
+  parent: PlantMutatorBase
+  name: plant mutator (Species Change)
+  description: Forces a plant to mutate into a new species, if possible.
+  id: PlantMutatorSpecies
+  components:
+    - type: PlantMutator
+      entityEffect: !type:PlantMutateSpeciesChange
+
+- type: entity
+  parent: PlantMutatorBase
+  name: plant mutator (Potency)
+  description: increases a plant's potency by 10.
+  id: PlantMutatorPotency
+  components:
+    - type: PlantMutator
+      entityEffect: !type:PlantAdjustPotency
+        amount: 10
+
+#- type: entity
+#  parent: PlantMutatorBase
+#  name: plant mutator (Vestine)
+#  description: adds 5u of Vestine to a plant's produce
+#  id: PlantMutatorChemicalVestine
+#  components:
+#    - type: PlantMutator
+#      entityEffect: !type:PlantMutateChemicals
+#        specificChem: Vestine
+#        specificAmount: 5
+
+- type: entity
+  parent: PlantMutatorBase
+  name: plant mutator (Harvest)
+  description: makes a plant repeat-harvestable, or self-harvesting if it already repeatable.
+  id: PlantMutatorHarvest
+  components:
+    - type: PlantMutator
+      entityEffect: !type:PlantMutateHarvest
+
+- type: entity
+  parent: PlantMutatorBase
+  name: plant mutator (Restore Seeds)
+  description: makes a seedless plant have seeds again
+  id: PlantMutatorRestoreSeeds
+  components:
+    - type: PlantMutator
+      entityEffect: !type:PlantRestoreSeeds
+
+#- type: entity
+#  parent: PlantMutatorBase
+#  name: plant mutator (Punk'ns)
+#  description: makes a plant produce punk'ns
+#  id: PlantMutatorProducePunkns
+#  components:
+#    - type: PlantMutator
+#      entityEffect: !type:PlantChangeProduce
+#        proto: MobPunkin
+#
+#- type: entity
+#  parent: PlantMutatorBase
+#  name: plant mutator (Killer Tomatos)
+#  description: makes a plant produce killer tomatos.
+#  id: PlantMutatorProduceTomatoKillers
+#  components:
+#    - type: PlantMutator
+#      entityEffect: !type:PlantChangeProduce
+#        proto: MobTomatoKiller
+
+- type: entity
+  parent: PlantMutatorBase
+  name: plant mutator (kudzu)
+  description: makes a plant turn into kudzu
+  id: PlantMutatorKudzu
+  components:
+    - type: PlantMutator
+      entityEffect: !type:PlantChangeTraits
+        trait: PlantTraitKudzu
+
+
+- type: entity
+  parent: PlantMutatorBase
+  name: plant mutator (lifespan)
+  description: makes a plant live dramatically longer than normal.
+  id: PlantMutatorLifespan
+  components:
+    - type: PlantMutator
+      entityEffect: !type:PlantAdjustLifespan
+        amount: 300
+
+- type: entity
+  parent: PlantMutatorBase
+  name: plant mutator (forced growth)
+  description: makes a plant immediately grow a significant amount, becoming ready to harvest faster.
+  id: PlantMutatorForcedGrowth
+  components:
+    - type: PlantMutator
+      entityEffect: !type:PlantAffectGrowth
+        amount: 5
+
+- type: entity
+  parent: PlantMutatorBase
+  name: plant mutator (plasma emission)
+  description: makes a plant emit significant amounts of gaseous plasma.
+  id: PlantMutatorPlasma
+  components:
+    - type: PlantMutator
+      entityEffect: !type:PlantMutateExudeGases
+        minValue: 5
+        maxValue: 5
+        gas: Plasma
+
+#Acquiring these mutators:
+#Initial idea: Make a new machine that pulls mutations off of produce with them.
+#This is a lot of code and UI, lets ponder other things for now and come back to that later.
+#Pros: still engages in botany RNG game, req
+#Cons: can cascade into lots of super-plants with the right planning, requires even more code to get specific mutation results vs triggering effect only.
+#this one isn't going to be part of this PR, that's a longer-term thing.
+
+#Alternate idea: Crafting recipes to make these
+#Using nutriment and vitamin mean you'll have to grind something down for this. Mutagen requires going to chemistry.
+#extra chemicals are used to determine which thing gets made.
+#Pros: already matches cooking and chem,
+#Cons: Might not show up in the guidebook,
+
+#Alt Idea 2: Make base item, apply other chemicals to create final effect.
+#Pro:
+#Con: extra step in complexity.
+# - type: reaction
+#   id: CreatePlantMutatorSpecies
+#   impact: Low
+#   quantized: true
+#   conserveEnergy: false
+#   reactants:
+#     Nutriment:
+#       amount: 25
+#     Vitamin:
+#       amount: 25
+#     UnstableMutagen:
+#       amount: 25
+#     #TODO 4th thing.
+#   effects:
+#     - !type:SpawnEntity
+#       entity: PlantMutatorSpecies
+
+#Alternate idea 2: Get from Biogenerator for a lot of points, with more powerful mutations costing more.
+#Pros: visible, easy to understand, can still take some time.
+#Cons: biomass might be available outside botany, brig should not have access to mutations.
+
+- type: latheCategory
+  id: PlantMutators
+  name: lathe-category-mutators
+
+
+- type: latheRecipe
+  id: BioGenMutatorSpecies
+  result: PlantMutatorSpecies
+  categories:
+  - PlantMutators
+  icon:
+    sprite: _BPL/Objects/Consumable/plantmutator.rsi
+    state: icon
+  completetime: 1
+  materials:
+    Biomass: 80
+
+- type: latheRecipe
+  id: BioGenMutatorPotency
+  result: PlantMutatorPotency
+  categories:
+  - PlantMutators
+  icon:
+    sprite: _BPL/Objects/Consumable/plantmutator.rsi
+    state: icon
+  completetime: 1
+  materials:
+    Biomass: 80
+
+- type: latheRecipe
+  id: BioGenMutatorHarvest
+  result: PlantMutatorHarvest
+  categories:
+  - PlantMutators
+  icon:
+    sprite: _BPL/Objects/Consumable/plantmutator.rsi
+    state: icon
+  completetime: 1
+  materials:
+    Biomass: 80
+
+- type: latheRecipe
+  id: BioGenMutatorRestoreSeeds
+  result: PlantMutatorRestoreSeeds
+  categories:
+  - PlantMutators
+  icon:
+    sprite: _BPL/Objects/Consumable/plantmutator.rsi
+    state: icon
+  completetime: 1
+  materials:
+    Biomass: 80
+
+- type: latheRecipe
+  id: BioGenMutatorLifespan
+  result: PlantMutatorLifespan
+  categories:
+  - PlantMutators
+  icon:
+    sprite: _BPL/Objects/Consumable/plantmutator.rsi
+    state: icon
+  completetime: 1
+  materials:
+    Biomass: 80
+
+- type: latheRecipe
+  id: BioGenMutatorForcedGrowth
+  result: PlantMutatorForcedGrowth
+  categories:
+  - PlantMutators
+  icon:
+    sprite: _BPL/Objects/Consumable/plantmutator.rsi
+    state: icon
+  completetime: 1
+  materials:
+    Biomass: 80
+
+- type: latheRecipe
+  id: BioGenMutatorPlasma
+  result: PlantMutatorPlasma
+  categories:
+  - PlantMutators
+  icon:
+    sprite: _BPL/Objects/Consumable/plantmutator.rsi
+    state: icon
+  completetime: 1
+  materials:
+    Biomass: 80
+
+- type: latheRecipe
+  id: BioGenMutatorKudza
+  result: PlantMutatorKudzu
+  categories:
+  - PlantMutators
+  icon:
+    sprite: _BPL/Objects/Consumable/plantmutator.rsi
+    state: icon
+  completetime: 1
+  materials:
+    Biomass: 80
+
+- type: latheRecipe
+  id: BioGenMutatorTomatoKiller
+  result: PlantMutatorProduceTomatoKillers
+  categories:
+  - PlantMutators
+  icon:
+    sprite: _BPL/Objects/Consumable/plantmutator.rsi
+    state: icon
+  completetime: 1
+  materials:
+    Biomass: 80
+
+- type: latheRecipe
+  id: BioGenMutatorPunkns
+  result: PlantMutatorProducePunkns
+  categories:
+  - PlantMutators
+  icon:
+    sprite: _BPL/Objects/Consumable/plantmutator.rsi
+    state: icon
+  completetime: 1
+  materials:
+    Biomass: 80
+
+
+- type: latheRecipePack
+  id: BioGenPlantMutators
+  recipes:
+  - BioGenMutatorSpecies
+  - BioGenMutatorPotency
+  - BioGenMutatorHarvest
+  - BioGenMutatorRestoreSeeds
+  - BioGenMutatorLifespan
+  - BioGenMutatorForcedGrowth
+
+
+- type: latheRecipePack
+  id: BioGenPlantMutatorsTraitor
+  recipes:
+  - BioGenMutatorPlasma
+  - BioGenMutatorKudza
+  - BioGenMutatorTomatoKiller
+  - BioGenMutatorPunkns

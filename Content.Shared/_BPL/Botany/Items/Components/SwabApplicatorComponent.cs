@@ -12,9 +12,19 @@ namespace Content.Shared._BPL.Botany.Items.Components
     public sealed partial class SwabApplicatorComponent : Component
     {
         /// <summary>
-        ///     Container of swab.
+        /// Container of swab.
         /// </summary>
         [DataField, AutoNetworkedField]
         public string? SwabContainer = "swab";
+
+        /// <summary>
+        /// Loc strings
+        /// </summary>
+        [DataField, AutoNetworkedField]
+        public Dictionary<string, LocId> LocStrings = new()
+        {
+            ["unusable"] = "swab-applicator-unusable",
+            ["needpollen"] = "swab-applicator-needs-pollen",
+        };
     }
 }

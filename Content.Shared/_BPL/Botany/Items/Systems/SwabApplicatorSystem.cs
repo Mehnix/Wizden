@@ -35,7 +35,7 @@ public sealed partial class SwabApplicatorSystem : EntitySystem
         if (TryComp<BotanySwabComponent>(ent, out var swabComp) && swabComp.PlantData != null && swabComp.PlantProtoId != null)
             return;
 
-        _popup.PopupEntity(Loc.GetString("swab-applicator-unusable"), ent.Owner, args.User);
+        _popup.PopupEntity(Loc.GetString(ent.Comp.LocStrings["unusable"]), ent.Owner, args.User);
         args.Handled = true;
     }
 
@@ -75,7 +75,7 @@ public sealed partial class SwabApplicatorSystem : EntitySystem
             return;
 
         //if these are not true, cancel, clean swabs aren't allowed.
-        _popup.PopupEntity(Loc.GetString("swab-applicator-needs-pollen"), ent.Owner);
+        _popup.PopupEntity(Loc.GetString(ent.Comp.LocStrings["needpollen"]), ent.Owner);
         args.Cancel();
         return;
     }

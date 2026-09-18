@@ -1,7 +1,7 @@
 using Content.Shared.Botany.Components;
-using Content.Shared.Botany.Events;
 using Content.Shared.Botany.Items.Components;
 using Content.Shared.Botany.Systems;
+using Content.Shared.Botany.Events;
 using Content.Shared.DoAfter;
 using Content.Shared.Examine;
 using Content.Shared.Interaction;
@@ -16,7 +16,6 @@ public sealed partial class BotanySwabSystem : EntitySystem
     [Dependency] private PlantMutationSystem _mutation = default!;
     [Dependency] private SharedDoAfterSystem _doAfter = default!;
     [Dependency] private SharedPopupSystem _popup = default!;
-
     [Dependency] private EntityQuery<PlantComponent> _plantQuery;
 
     /// <summary>
@@ -30,9 +29,9 @@ public sealed partial class BotanySwabSystem : EntitySystem
             return;
 
         if (ent.Comp.PlantData != null)
-            args.PushMarkup(Loc.GetString(ent.Comp.LocStrings["used"]));
+            args.PushMarkup(Loc.GetString(ent.Comp.LocStrings["used"])); //BPL, Swab Applicator
         else
-            args.PushMarkup(Loc.GetString(ent.Comp.LocStrings["unused"]));
+            args.PushMarkup(Loc.GetString(ent.Comp.LocStrings["unused"])); //BPL, Swab Applicator
     }
 
     /// <summary>
@@ -41,7 +40,7 @@ public sealed partial class BotanySwabSystem : EntitySystem
     [SubscribeLocalEvent]
     private void OnAfterInteract(Entity<BotanySwabComponent> ent, ref AfterInteractEvent args)
     {
-        if (args.Handled || args.Target == null || !args.CanReach || !_plantQuery.HasComp(args.Target))
+        if (args.Handled || args.Target == null || !args.CanReach || !_plantQuery.HasComp(args.Target)) //BPL, Swab Applicator (add args.Handled)
             return;
 
         _doAfter.TryStartDoAfter(new DoAfterArgs(EntityManager, args.User, ent.Comp.SwabDelay, new BotanySwabDoAfterEvent(), ent.Owner, target: args.Target, used: ent.Owner)
@@ -69,7 +68,7 @@ public sealed partial class BotanySwabSystem : EntitySystem
             ent.Comp.PlantProtoId = MetaData(targetPlant).EntityPrototype?.ID;
             ent.Comp.PlantData = _botany.ClonePlantSnapshotData(targetPlant, parent: ent.Owner);
 
-            _popup.PopupEntity(Loc.GetString("botany-swab-from"), targetPlant, args.Args.User);
+            _popup.PopupEntity(Loc.GetString(ent.Comp.LocStrings["swabfrom"]), targetPlant, args.Args.User); //BPL, Swab Applicator
         }
         else
         {
@@ -86,7 +85,7 @@ public sealed partial class BotanySwabSystem : EntitySystem
             ent.Comp.PlantData = _botany.ClonePlantSnapshotData(targetPlant, parent: ent.Owner);
             _botany.DeletePlantSnapshot(oldPollenData);
 
-            _popup.PopupEntity(Loc.GetString("botany-swab-to"), targetPlant, args.Args.User);
+            _popup.PopupEntity(Loc.GetString(ent.Comp.LocStrings["swabto"]), targetPlant, args.Args.User); //BPL, Swab Applicator
         }
 
         Dirty(ent);

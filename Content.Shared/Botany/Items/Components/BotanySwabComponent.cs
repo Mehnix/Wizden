@@ -31,7 +31,7 @@ public sealed partial class BotanySwabComponent : Component
     public EntityUid? PlantData;
 
     /// <summary>
-    /// Loc strings
+    /// BPL - Loc strings
     /// </summary>
     [DataField, AutoNetworkedField]
     public Dictionary<string, LocId> LocStrings = new()

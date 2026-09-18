@@ -4,7 +4,7 @@ using Robust.Shared.GameStates;
 namespace Content.Shared._BPL.Botany.Items.Components
 {
     /// <summary>
-    /// Misc stuff to add to swabs added in a way that doesn't touch upstream code.
+    /// Additional functionality for swabs
     /// </summary>
     [RegisterComponent, NetworkedComponent, AutoGenerateComponentState]
     public sealed partial class BPLSwabComponent : Component
