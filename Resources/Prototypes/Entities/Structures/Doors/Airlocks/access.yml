@@ -9,6 +9,9 @@
       board: [ DoorElectronicsService ]
   - type: Wires
     layoutId: AirlockService
+  # Classic: Removed.
+#  - type: Sprite
+#    sprite: Structures/Doors/Airlocks/Standard/service-base.rsi
 
 - type: entity
   parent: AirlockServiceLocked
@@ -903,6 +906,7 @@
   id: AirlockMaintSalvageLocked
   components:
   - type: Sprite
+  # Classic: Respritening renamed.
     sprite: Structures/Doors/Airlocks/Standard/maint.rsi
 
 - type: entity
@@ -910,6 +914,7 @@
   id: AirlockMaintCargoLocked
   components:
   - type: Sprite
+  # Classic: Respritening renamed.
     sprite: Structures/Doors/Airlocks/Standard/maint.rsi
 
 - type: entity
@@ -917,6 +922,7 @@
   id: AirlockMaintCommandLocked
   components:
   - type: Sprite
+  # Classic: Respritening renamed.
     sprite: Structures/Doors/Airlocks/Standard/maint.rsi
 
 - type: entity
@@ -924,6 +930,7 @@
   id: AirlockMaintEngiLocked
   components:
   - type: Sprite
+  # Classic: Respritening renamed.
     sprite: Structures/Doors/Airlocks/Standard/maint.rsi
 
 - type: entity
@@ -931,6 +938,7 @@
   id: AirlockMaintAtmoLocked
   components:
   - type: Sprite
+  # Classic: Respritening renamed.
     sprite: Structures/Doors/Airlocks/Standard/maint.rsi
 
 - type: entity
@@ -938,6 +946,7 @@
   id: AirlockMaintBarLocked
   components:
   - type: Sprite
+  # Classic: Respritening renamed.
     sprite: Structures/Doors/Airlocks/Standard/maint.rsi
 
 - type: entity
@@ -945,6 +954,7 @@
   id: AirlockMaintBarKitchenLocked
   components:
   - type: Sprite
+  # Classic: Respritening renamed.
     sprite: Structures/Doors/Airlocks/Standard/maint.rsi
 
 - type: entity
@@ -952,6 +962,7 @@
   id: AirlockMaintChapelLocked
   components:
   - type: Sprite
+  # Classic: Respritening renamed.
     sprite: Structures/Doors/Airlocks/Standard/maint.rsi
 
 - type: entity
@@ -959,6 +970,7 @@
   id: AirlockMaintHydroLocked
   components:
   - type: Sprite
+  # Classic: Respritening renamed.
     sprite: Structures/Doors/Airlocks/Standard/maint.rsi
 
 - type: entity
@@ -966,6 +978,7 @@
   id: AirlockMaintJanitorLocked
   components:
   - type: Sprite
+  # Classic: Respritening renamed.
     sprite: Structures/Doors/Airlocks/Standard/maint.rsi
 
 - type: entity
@@ -973,6 +986,7 @@
   id: AirlockMaintLawyerLocked
   components:
   - type: Sprite
+  # Classic: Respritening renamed.
     sprite: Structures/Doors/Airlocks/Standard/maint.rsi
 
 - type: entity
@@ -980,6 +994,7 @@
   id: AirlockMaintServiceLocked
   components:
   - type: Sprite
+  # Classic: Respritening renamed.
     sprite: Structures/Doors/Airlocks/Standard/maint.rsi
 
 - type: entity
@@ -987,6 +1002,7 @@
   id: AirlockMaintTheatreLocked
   components:
   - type: Sprite
+  # Classic: Respritening renamed.
     sprite: Structures/Doors/Airlocks/Standard/maint.rsi
 
 - type: entity
@@ -994,6 +1010,7 @@
   id: AirlockMaintServiceTheatreLocked
   components:
   - type: Sprite
+  # Classic: Respritening renamed.
     sprite: Structures/Doors/Airlocks/Standard/maint.rsi
 
 - type: entity
@@ -1001,6 +1018,7 @@
   id: AirlockMaintKitchenLocked
   components:
   - type: Sprite
+  # Classic: Respritening renamed.
     sprite: Structures/Doors/Airlocks/Standard/maint.rsi
 
 - type: entity
@@ -1008,6 +1026,7 @@
   id: AirlockMaintKitchenHydroLocked
   components:
   - type: Sprite
+  # Classic: Respritening renamed.
     sprite: Structures/Doors/Airlocks/Standard/maint.rsi
 
 - type: entity
@@ -1015,6 +1034,7 @@
   id: AirlockMaintMedLocked
   components:
   - type: Sprite
+  # Classic: Respritening renamed.
     sprite: Structures/Doors/Airlocks/Standard/maint.rsi
 
 - type: entity
@@ -1022,6 +1042,7 @@
   id: AirlockMedicalMorgueMaintLocked
   components:
   - type: Sprite
+  # Classic: Respritening renamed.
     sprite: Structures/Doors/Airlocks/Standard/maint.rsi
 
 - type: entity
@@ -1029,6 +1050,7 @@
   id: AirlockMaintChemLocked
   components:
   - type: Sprite
+  # Classic: Respritening renamed.
     sprite: Structures/Doors/Airlocks/Standard/maint.rsi
 
 - type: entity
@@ -1036,6 +1058,7 @@
   id: AirlockMaintRnDLocked
   components:
   - type: Sprite
+  # Classic: Respritening renamed.
     sprite: Structures/Doors/Airlocks/Standard/maint.rsi
 
 - type: entity
@@ -1043,6 +1066,7 @@
   id: AirlockMaintRnDMedLocked
   components:
   - type: Sprite
+  # Classic: Respritening renamed.
     sprite: Structures/Doors/Airlocks/Standard/maint.rsi
 
 - type: entity
@@ -1050,6 +1074,7 @@
   id: AirlockMaintSecLocked
   components:
   - type: Sprite
+  # Classic: Respritening renamed.
     sprite: Structures/Doors/Airlocks/Standard/maint.rsi
 
 - type: entity
@@ -1057,6 +1082,7 @@
   id: AirlockMaintDetectiveLocked
   components:
   - type: Sprite
+  # Classic: Respritening renamed.
     sprite: Structures/Doors/Airlocks/Standard/maint.rsi
 
 - type: entity
@@ -1064,6 +1090,7 @@
   id: AirlockMaintHOPLocked
   components:
   - type: Sprite
+  # Classic: Respritening renamed.
     sprite: Structures/Doors/Airlocks/Standard/maint.rsi
 
 - type: entity
@@ -1071,6 +1098,7 @@
   id: AirlockMaintCaptainLocked
   components:
   - type: Sprite
+  # Classic: Respritening renamed.
     sprite: Structures/Doors/Airlocks/Standard/maint.rsi
 
 - type: entity
@@ -1078,6 +1106,7 @@
   id: AirlockMaintChiefEngineerLocked
   components:
   - type: Sprite
+  # Classic: Respritening renamed.
     sprite: Structures/Doors/Airlocks/Standard/maint.rsi
 
 - type: entity
@@ -1085,6 +1114,7 @@
   id: AirlockMaintChiefMedicalOfficerLocked
   components:
   - type: Sprite
+  # Classic: Respritening renamed.
     sprite: Structures/Doors/Airlocks/Standard/maint.rsi
 
 - type: entity
@@ -1092,6 +1122,7 @@
   id: AirlockMaintHeadOfSecurityLocked
   components:
   - type: Sprite
+  # Classic: Respritening renamed.
     sprite: Structures/Doors/Airlocks/Standard/maint.rsi
 
 - type: entity
@@ -1099,6 +1130,7 @@
   id: AirlockMaintResearchDirectorLocked
   components:
   - type: Sprite
+  # Classic: Respritening renamed.
     sprite: Structures/Doors/Airlocks/Standard/maint.rsi
 
 - type: entity
@@ -1106,6 +1138,7 @@
   id: AirlockMaintQuartermasterLocked
   components:
   - type: Sprite
+  # Classic: Respritening renamed.
     sprite: Structures/Doors/Airlocks/Standard/maint.rsi
 
 - type: entity
@@ -1113,6 +1146,7 @@
   id: AirlockMaintArmoryLocked
   components:
   - type: Sprite
+  # Classic: Respritening renamed.
     sprite: Structures/Doors/Airlocks/Standard/maint.rsi
 
 - type: entity
@@ -1222,6 +1256,7 @@
       board: [ DoorElectronicsExternal ]
 
 - type: entity
+  name: arrivals airlock
   parent: AirlockGlassShuttle
   id: AirlockExternalGlassShuttleArrivals
   suffix: External, Arrivals, Glass, Docking
@@ -1231,6 +1266,24 @@
   - type: ContainerFill
     containers:
       board: [ DoorElectronicsExternal ]
+  - type: Docking
+    radarColor: "#B22222"
+    highlightedRadarColor: Red
+    dockLegendCategory: Arrivals
+
+- type: entity
+  name: cargo airlock
+  parent: AirlockGlassShuttle
+  id: AirlockExternalGlassShuttleCargo
+  suffix: External, Cargo, Glass, Docking
+  components:
+  - type: ContainerFill
+    containers:
+      board: [ DoorElectronicsExternal ]
+  - type: Docking
+    radarColor: "#FFFF9F"
+    highlightedRadarColor: LightYellow
+    dockLegendCategory: Cargo
 
 - type: entity
   parent: AirlockGlassShuttle

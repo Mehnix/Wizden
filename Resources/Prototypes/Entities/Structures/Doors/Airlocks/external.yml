@@ -15,6 +15,7 @@
     denySound:
       path: /Audio/Machines/airlock_deny.ogg
   - type: Sprite
+  # Classic: Respritening renamed.
     sprite: Structures/Doors/Airlocks/Standard/external.rsi
   - type: Wires
     layoutId: AirlockExternal
@@ -31,6 +32,7 @@
   - type: Occluder
     enabled: false
   - type: Sprite
+  # Classic: Respritening renamed.
     sprite: Structures/Doors/Airlocks/Glass/external.rsi
   - type: Fixtures
     fixtures:
