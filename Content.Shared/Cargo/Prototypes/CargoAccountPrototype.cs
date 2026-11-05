@@ -42,4 +42,16 @@ public sealed partial class CargoAccountPrototype : IPrototype
     /// </summary>
     [DataField]
     public EntProtoId AcquisitionSlip;
+
+    /// <summary>
+    /// Whether the account is Independently operated, and so should not appear within the funding allocation console
+    /// </summary>
+    [DataField]
+    public bool Independent = false;
+
+    /// <summary>
+    /// The currency symbol associated with the bank account.
+    /// </summary>
+    [DataField]
+    public LocId Currency = "cargo-console-menu-points-amount";
 }

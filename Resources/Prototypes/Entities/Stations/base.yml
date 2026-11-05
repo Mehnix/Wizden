@@ -17,6 +17,7 @@
         Science: [ ]
         Security: [ ]
         Service: [ ]
+        BlackMarket: [ ]
     - type: StationCargoBountyDatabase
 
 - type: entity

@@ -15,3 +15,6 @@ cargo-account-security-code = SEC
 
 cargo-account-service-name = Collective Service Holdings
 cargo-account-service-code = SRV
+
+cargo-account-blackmarket-name = The Black Market
+cargo-account-blackmarket-code = REV

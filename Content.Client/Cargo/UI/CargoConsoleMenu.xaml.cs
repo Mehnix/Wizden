@@ -139,6 +139,9 @@ namespace Content.Client.Cargo.UI
         /// </summary>
         public void PopulateProducts()
         {
+            if (!_orderConsoleQuery.TryComp(_owner, out var orderConsole))
+                return;
+
             Products.RemoveAllChildren();
             var products = ProductPrototypes.ToList();
             products.Sort((x, y) =>
@@ -160,7 +163,7 @@ namespace Content.Client.Cargo.UI
                         Product = prototype,
                         ProductName = { Text = prototype.Name },
                         MainButton = { ToolTip = prototype.Description },
-                        PointCost = { Text = Loc.GetString("cargo-console-menu-points-amount", ("amount", prototype.Cost.ToString())) },
+                        PointCost = { Text = Loc.GetString(_protoManager.Index(orderConsole.Account).Currency, ("amount", prototype.Cost.ToString())) },
                         Icon = { Texture = _spriteSystem.Frame0(prototype.Icon) }
                     };
                     button.MainButton.OnPressed += args =>
@@ -283,7 +286,7 @@ namespace Content.Client.Cargo.UI
             i++;
             foreach (var account in bank.Accounts.Keys)
             {
-                if (account == console.Account)
+                if (account == console.Account || _protoManager.Index(account).Independent)
                     continue;
                 var accountProto = _protoManager.Index(account);
                 ActionOptions.AddItem(Loc.GetString("cargo-console-menu-account-action-option-transfer",
@@ -310,9 +313,9 @@ namespace Content.Client.Cargo.UI
             }
 
             var balance = _cargoSystem.GetBalanceFromAccount((_station.Value, bankAccount), orderConsole.Account);
-            PointsLabel.Text = Loc.GetString("cargo-console-menu-points-amount", ("amount", balance));
+            PointsLabel.Text = Loc.GetString(_protoManager.Index(orderConsole.Account).Currency, ("amount", balance));
             TransferLimitLabel.Text = Loc.GetString("cargo-console-menu-account-action-transfer-limit",
-                ("limit", (int) (balance * orderConsole.TransferLimit)));
+                ("limit", (int)(balance * orderConsole.TransferLimit)));
 
             UnlimitedNotifier.Visible = orderConsole.TransferUnbounded;
             AccountActionButton.Disabled = TransferSpinBox.Value <= 0 ||

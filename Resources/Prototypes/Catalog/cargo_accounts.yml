@@ -45,3 +45,13 @@
   color: "#539c00"
   radioChannel: Service
   acquisitionSlip: PaperAcquisitionSlipService
+
+- type: cargoAccount
+  id: BlackMarket
+  name: cargo-account-blackmarket-name
+  code: cargo-account-blackmarket-code
+  color: "#318df8"
+  radioChannel: Common
+  acquisitionSlip: PaperAcquisitionSlipCargo
+  independent: true
+  currency: cargo-console-menu-points-amount-rev

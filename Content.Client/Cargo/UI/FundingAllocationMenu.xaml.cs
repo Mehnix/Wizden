@@ -83,6 +83,9 @@ public sealed partial class FundingAllocationMenu : FancyWindow
     {
         foreach (var kvp in bank.Accounts)
         {
+            if (_prototypeManager.Index(kvp.Key).Independent) //independent accounts exist outside of funding allocation
+                continue;
+
             if (_allowPrimaryAccountAllocation || kvp.Key != bank.PrimaryAccount)
             {
                 yield return kvp;
@@ -151,7 +154,7 @@ public sealed partial class FundingAllocationMenu : FancyWindow
 
             var balanceLabel = new RichTextLabel
             {
-                Text = Loc.GetString("cargo-console-menu-points-amount", ("amount", balance)),
+                Text = Loc.GetString(accountProto.Currency, ("amount", balance)),
                 HorizontalExpand = true,
                 HorizontalAlignment = HAlignment.Center,
                 Margin = new Thickness(5, 0),
@@ -223,7 +226,7 @@ public sealed partial class FundingAllocationMenu : FancyWindow
 
         foreach (var (account, label) in _balanceLabels)
         {
-            label.Text = Loc.GetString("cargo-console-menu-points-amount", ("amount", bank.Accounts[account]));
+            label.Text = Loc.GetString(_prototypeManager.Index(account).Currency, ("amount", bank.Accounts[account]));
         }
     }
 }

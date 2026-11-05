@@ -554,3 +554,13 @@
   - type: StealTarget
     stealGroup:
     - BoxFolderQmClipboard
+
+- type: entity
+  parent: BoxFolderQmClipboard
+  id: RevDigiboard
+  name: revolutionary digi-board
+  description: A military-grade pad for rapid access to the underground black market. Doesn't help with delivery, make sure it's linked to a telepad.
+  components:
+  - type: CargoOrderConsole
+    account: BlackMarket
+
