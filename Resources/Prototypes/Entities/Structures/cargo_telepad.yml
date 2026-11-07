@@ -55,3 +55,30 @@
   - type: NameIdentifier
     group: CargoTelepads
   - type: AnimationPlayer
+
+- type: entity
+  parent: [ CargoTelepad, BaseMajorContraband ]
+  id: CargoTelepadRev
+  name: black market cargo telepad
+  description: A stripped-down black market telepad that can be rapidly redeployed. Has a built-in ordering console.
+  components:
+  - type: Item
+    size: Large
+    heldPrefix: metal
+  - type: MultiHandedItem
+  - type: CargoOrderConsole
+    account: BlackMarket
+    baseTransferLimit: 0 # independent, no takesies backsies
+  - type: DeviceLinkSource
+    range: 200
+    ports:
+    - OrderSender
+  - type: ActivatableUIRequiresPower
+  - type: ActivatableUI
+    key: enum.CargoConsoleUiKey.Orders
+  - type: UserInterface
+    interfaces:
+      enum.CargoConsoleUiKey.Orders:
+        type: CargoOrderConsoleBoundUserInterface
+      enum.StorageUiKey.Key:
+        type: StorageBoundUserInterface

@@ -1,5 +1,5 @@
 using Content.Server.Objectives.Components;
-using Content.Server.Revolutionary.Components;
+using Content.Shared.Revolutionary.Components;
 using Content.Shared.Objectives.Components;
 
 namespace Content.Server.Objectives.Systems;

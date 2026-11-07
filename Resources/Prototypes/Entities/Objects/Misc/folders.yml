@@ -485,10 +485,9 @@
   id: BoxFolderCentComClipboardThreePapers
 
 - type: entity
-  parent: [BoxFolderClipboardEmpty, BaseGrandTheftContraband]
-  id: BoxFolderQmClipboard
-  name: requisition digi-board
-  description: A bulky electric clipboard, filled with shipping orders and financing details. With so many compromising documents, you ought to keep this safe.
+  parent: BoxFolderClipboardEmpty
+  id: BaseDigiboard
+  abstract: true
   components:
   - type: Sprite
     sprite: Objects/Misc/qm_clipboard.rsi
@@ -529,7 +528,6 @@
           tags:
           - Write
   - type: CargoOrderConsole
-    removeLimitAccess: [ "Quartermaster" ]
   - type: DeviceLinkSource
     range: 200
     ports:
@@ -550,17 +548,30 @@
   - type: Tag
     tags:
     - Folder
+
+- type: entity
+  parent: [BaseDigiboard, BaseGrandTheftContraband]
+  id: BoxFolderQmClipboard
+  name: requisition digi-board
+  description: A bulky electric clipboard, filled with shipping orders and financing details. With so many compromising documents, you ought to keep this safe.
+  components:
+  - type: CargoOrderConsole
+    removeLimitAccess: [ "Quartermaster" ]
+  - type: Tag
+    tags:
+    - Folder
     - HighRiskItem
   - type: StealTarget
     stealGroup:
     - BoxFolderQmClipboard
 
 - type: entity
-  parent: BoxFolderQmClipboard
+  parent: BaseDigiboard
   id: RevDigiboard
-  name: revolutionary digi-board
-  description: A military-grade pad for rapid access to the underground black market. Doesn't help with delivery, make sure it's linked to a telepad.
+  name: black market digi-board
+  description: A covert clipboard for rapid access to the underground black market. Beware handlers will ship to the ATS unless it's linked to a telepad.
   components:
   - type: CargoOrderConsole
     account: BlackMarket
+    baseTransferLimit: 0 # independent, no takesies backsies
 

@@ -36,7 +36,7 @@ public sealed partial class CargoSystem
     [SubscribeLocalEvent]
     private void OnInteractUsing(Entity<CargoOrderConsoleComponent> ent, ref InteractUsingEvent args)
     {
-        if (_cashQuery.HasComp(args.Used))
+        if (_stackQuery.TryComp(args.Used, out var stackComp) && stackComp.StackTypeId == ent.Comp.CashType)
         {
             OnInteractUsingCash(ent, ref args);
         }

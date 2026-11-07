@@ -4,7 +4,6 @@ using Content.Server.EUI;
 using Content.Server.Mind;
 using Content.Server.Popups;
 using Content.Server.Revolutionary;
-using Content.Server.Revolutionary.Components;
 using Content.Server.Roles;
 using Content.Server.RoundEnd;
 using Content.Server.Shuttles.Systems;
@@ -48,6 +47,7 @@ public sealed partial class ServerRevolutionaryRuleSystem : RevolutionaryRuleSys
     [Dependency] private MobStateSystem _mobState = default!;
     [Dependency] private NpcFactionSystem _npcFaction = default!;
     [Dependency] private PopupSystem _popup = default!;
+    [Dependency] private RevolutionarySystem _rev = default!;
     [Dependency] private RoleSystem _role = default!;
     [Dependency] private RoundEndSystem _roundEnd = default!;
     [Dependency] private SharedStunSystem _stun = default!;
@@ -57,6 +57,9 @@ public sealed partial class ServerRevolutionaryRuleSystem : RevolutionaryRuleSys
     //Used in OnPostFlash, no reference to the rule component is available
     public readonly ProtoId<NpcFactionPrototype> RevolutionaryNpcFaction = "Revolutionary";
     public readonly ProtoId<NpcFactionPrototype> RevPrototypeId = "Rev";
+
+    [Dependency] private EntityQuery<AlwaysRevolutionaryConvertibleComponent> _alwaysQuery = default!;
+    [Dependency] private EntityQuery<RevolutionaryConverterComponent> _convQuery = default!;
 
     public override void Initialize()
     {
@@ -121,47 +124,51 @@ public sealed partial class ServerRevolutionaryRuleSystem : RevolutionaryRuleSys
     /// <summary>
     /// Called when a Head Rev uses a flash in melee to convert somebody else.
     /// </summary>
-    private void OnPostFlash(EntityUid uid, HeadRevolutionaryComponent comp, ref AfterFlashedEvent ev)
+    private void OnPostFlash(Entity<HeadRevolutionaryComponent> ent, ref AfterFlashedEvent ev)
     {
-        if (uid != ev.User || !ev.Melee)
+        if (ent != ev.User || !ev.Melee || ev.Used == null)
             return;
 
-        var alwaysConvertible = HasComp<AlwaysRevolutionaryConvertibleComponent>(ev.Target);
+        TryConvertToRev(ent, ev.Target, ev.Used!.Value);
+    }
 
-        if (!_mind.TryGetMind(ev.Target, out var mindId, out var mind) && !alwaysConvertible)
-            return;
+    private bool TryConvertToRev(Entity<HeadRevolutionaryComponent> ent, EntityUid target, EntityUid used)
+    {
+        var alwaysConvertible = _alwaysQuery.HasComp(target);
+        var revConverter = _convQuery.TryComp(used, out var convComp);
 
-        if (!HasComp<HumanoidProfileComponent>(ev.Target) &&
+        if (!_mind.TryGetMind(target, out var mindId, out var mind) && !alwaysConvertible)
+            return false;
+
+        if (!HasComp<HumanoidProfileComponent>(target) &&
             !alwaysConvertible ||
-            !_mobState.IsAlive(ev.Target) ||
-            !HasComp<RevolutionaryConverterComponent>(ev.Used))
+            !_mobState.IsAlive(target) ||
+            !revConverter
+            )
         {
-            return;
+            return false;
         }
 
         var attemptConvertEv = new AttemptConvertRevolutionaryEvent();
-        RaiseLocalEvent(ev.Target, ref attemptConvertEv);
+        RaiseLocalEvent(target, ref attemptConvertEv);
 
-        _mindShield.GetMindshieldStatus(ev.Target, out var isMindshielded, out _);
+        _mindShield.GetMindshieldStatus(target, out var isMindshielded, out _);
         if (attemptConvertEv.Cancelled || isMindshielded)
-            return;
+            return false;
 
-        _npcFaction.AddFaction(ev.Target, RevolutionaryNpcFaction);
-        var revComp = EnsureComp<RevolutionaryComponent>(ev.Target);
+        _npcFaction.AddFaction(target, RevolutionaryNpcFaction);
+        var revComp = EnsureComp<RevolutionaryComponent>(target);
 
-        if (ev.User != null)
+        _adminLogManager.Add(LogType.Mind,
+            LogImpact.Medium,
+            $"{ToPrettyString(ent.Owner)} converted {ToPrettyString(target)} into a Revolutionary");
+
+        if (_mind.TryGetMind(ent.Owner, out var revMindId, out _))
         {
-            _adminLogManager.Add(LogType.Mind,
-                LogImpact.Medium,
-                $"{ToPrettyString(ev.User.Value)} converted {ToPrettyString(ev.Target)} into a Revolutionary");
-
-            if (_mind.TryGetMind(ev.User.Value, out var revMindId, out _))
+            if (_role.MindHasRole<RevolutionaryRoleComponent>(revMindId, out var role))
             {
-                if (_role.MindHasRole<RevolutionaryRoleComponent>(revMindId, out var role))
-                {
-                    role.Value.Comp2.ConvertedCount++;
-                    Dirty(role.Value.Owner, role.Value.Comp2);
-                }
+                role.Value.Comp2.ConvertedCount++;
+                Dirty(role.Value.Owner, role.Value.Comp2);
             }
         }
 
@@ -172,6 +179,11 @@ public sealed partial class ServerRevolutionaryRuleSystem : RevolutionaryRuleSys
 
         if (mind is { UserId: not null } && _player.TryGetSessionById(mind.UserId, out var session))
             _antag.SendBriefing(session, Loc.GetString("rev-role-greeting"), Color.Red, revComp.RevStartSound);
+
+        if (convComp != null)
+            _rev.RewardRevAccount(ent, convComp, target);
+
+        return true;
     }
 
     //TODO: Enemies of the revolution

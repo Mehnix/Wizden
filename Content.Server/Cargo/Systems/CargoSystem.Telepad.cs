@@ -19,6 +19,19 @@ public sealed partial class CargoSystem
         _linker.EnsureSinkPorts(ent.Owner, ent.Comp.ReceiverPort);
     }
 
+    /// <summary>
+    /// If a telepad is also a cargo order console automatically link to itself
+    /// </summary>
+
+    [SubscribeLocalEvent]
+    private void OnMapInit(Entity<CargoTelepadComponent> ent, ref MapInitEvent args)
+    {
+        if (HasComp<CargoOrderConsoleComponent>(ent)
+            && TryComp<DeviceLinkSourceComponent>(ent, out var sourceComp)
+            && TryComp<DeviceLinkSinkComponent>(ent, out var sinkComp))
+            _linker.ToggleLink(ent, (ent.Owner, sourceComp), (ent.Owner, sinkComp), "OrderSender", "OrderReceiver");
+    }
+
     [SubscribeLocalEvent]
     private void OnTelepadPowerChange(Entity<CargoTelepadComponent> ent, ref PowerChangedEvent args)
     {

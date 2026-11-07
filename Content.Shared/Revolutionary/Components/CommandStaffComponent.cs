@@ -1,4 +1,4 @@
-namespace Content.Server.Revolutionary.Components;
+namespace Content.Shared.Revolutionary.Components;
 
 /// <summary>
 /// Given to heads at round start. Used for assigning traitors to kill heads and for revs to check if the heads died or not.

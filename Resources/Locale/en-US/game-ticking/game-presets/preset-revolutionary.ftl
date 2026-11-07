@@ -27,6 +27,8 @@ rev-role-greeting =
     Viva la revolución!
 
 rev-briefing = Help the head revolutionaries kill, restrain, or convert all members of Command to take over the station.
+rev-reward-convert = {$amount} credited for conversion.
+rev-reward-convert-high = {$amount} credited for conversion of high value target
 
 ## General
 

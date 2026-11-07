@@ -13,6 +13,7 @@ using Content.Shared.IdentityManagement;
 using Content.Shared.Labels.Components;
 using Content.Shared.Mobs.Components;
 using Content.Shared.Paper;
+using Content.Shared.Stacks;
 using Content.Shared.Station.Components;
 using Robust.Server.GameObjects;
 using Robust.Shared.Audio.Systems;
@@ -41,8 +42,6 @@ public sealed partial class CargoSystem : SharedCargoSystem
     [Dependency] private MetaDataSystem _metaSystem = default!;
     [Dependency] private RadioSystem _radio = default!;
     [Dependency] private IdentitySystem _identity = default!;
-
-    [Dependency] private EntityQuery<CashComponent> _cashQuery;
     [Dependency] private EntityQuery<CargoOrderConsoleComponent> _consoleQuery;
     [Dependency] private EntityQuery<CargoSellBlacklistComponent> _cargoSellBlacklistQuery;
     [Dependency] private EntityQuery<CargoSlipComponent> _slipQuery;
