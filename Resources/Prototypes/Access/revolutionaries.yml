@@ -1,0 +1,7 @@
+- type: accessLevel
+  id: HeadRevolutionary
+  name: id-card-access-level-head-revolutionary
+
+- type: accessLevel
+  id: Revolutionary
+  name: id-card-access-level-revolutionary

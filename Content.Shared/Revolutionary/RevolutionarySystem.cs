@@ -114,6 +114,15 @@ public sealed partial class RevolutionarySystem : EntitySystem
         if (ProtoMan.Resolve(ent.Comp.StatusIcon, out var iconPrototype))
             args.StatusIcons.Add(iconPrototype);
     }
+
+
+    /// <summary>
+    /// Add funds to the revolution's account for a successful conversion
+    /// </summary>
+    /// <remarks>
+    /// You could, in theory, farm rewards by repeatedly mindshielding and deconverting someone.
+    /// This smells of cheese that would be banned on an admin level. But it's not currently prevented...
+    /// </remarks
     public void RewardRevAccount(Entity<HeadRevolutionaryComponent> ent, RevolutionaryConverterComponent comp, EntityUid target)
     {
         if (ent.Comp.Station == null) //save the station we're on so we can reference it later if we ever happen to leave it
@@ -130,6 +139,7 @@ public sealed partial class RevolutionarySystem : EntitySystem
         {
             var reward = comp.Amount;
             var rewardString = "rev-reward-convert";
+            var bestReward = -1f; // in case a job appears in multiple antagspecifiers, take the best.
             if (TryComp<MindContainerComponent>(target, out var mindComp) && _job.MindTryGetJobId(mindComp.Mind, out var jobId) && jobId != null)
             {   //Does the current mind have any antag restrictions which makes it more valuable to have been converted (sec or command)
                 foreach (var bonus in comp.Bonuses)
@@ -137,10 +147,12 @@ public sealed partial class RevolutionarySystem : EntitySystem
                     if (ProtoMan.Resolve(bonus.Key, out var antag)
                         && antag != null
                         && antag.JobBlacklist != null
-                        && antag.JobBlacklist.Contains(jobId!.Value))
+                        && antag.JobBlacklist.Contains(jobId!.Value)
+                        && bonus.Value > bestReward)
                     {
                         reward = comp.Amount * bonus.Value;
                         rewardString = "rev-reward-convert-high";
+                        bestReward = bonus.Value;
                     }
                 }
             }

@@ -21,6 +21,9 @@
   - GenericTeamAntagonist # For antag ban purposes
   components:
   - type: Revolutionary
+  - type: Access
+    tags:
+    - Revolutionary
 
 - type: antagSpecifier
   parent: BaseRev
@@ -35,6 +38,10 @@
   components:
   - type: Revolutionary
   - type: HeadRevolutionary
+  - type: Access
+    tags:
+    - Revolutionary
+    - HeadRevolutionary
   mindRoles:
   - MindRoleHeadRevolutionary
 
@@ -56,4 +63,4 @@
   storage:
     back:
     - Flash
-    - ClothingEyesGlassesSunglasses
+    - ClothingEyesGlassesHiddenSecurity

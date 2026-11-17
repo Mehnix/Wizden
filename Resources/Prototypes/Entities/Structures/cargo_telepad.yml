@@ -60,15 +60,19 @@
   parent: [ CargoTelepad, BaseMajorContraband ]
   id: CargoTelepadRev
   name: black market cargo telepad
-  description: A stripped-down black market telepad that can be rapidly redeployed. Has a built-in ordering console.
+  description: A stripped-down black market telepad that can be rapidly redeployed, favoured by entrenched insurgencies on a budget. Has a built-in request console.
   components:
   - type: Item
     size: Large
+    shape:
+    - 0,0,1,2
     heldPrefix: metal
   - type: MultiHandedItem
   - type: CargoOrderConsole
     account: BlackMarket
     baseTransferLimit: 0 # independent, no takesies backsies
+    announcementChannel: Common #make undercommon
+    baseAnnouncementChannel: Common
   - type: DeviceLinkSource
     range: 200
     ports:
@@ -82,3 +86,5 @@
         type: CargoOrderConsoleBoundUserInterface
       enum.StorageUiKey.Key:
         type: StorageBoundUserInterface
+  - type: AccessReader
+    access: [["HeadRevolutionary"],["Syndicate"]]
