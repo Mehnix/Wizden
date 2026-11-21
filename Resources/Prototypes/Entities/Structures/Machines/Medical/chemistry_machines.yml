@@ -142,3 +142,36 @@
   - type: PowerState
     idlePowerDraw: 5
     workingPowerDraw: 500
+
+- type: entity
+  parent: BaseItem
+  id: MixerElectrolysis
+  name: makeshift electrolyser
+  description: A set of metal rods wired to a battery. Works just fine until it runs out of juice.
+  components:
+  - type: Sprite
+    sprite: Structures/Machines/Medical/electrolysis.rsi
+    noRot: true
+    layers:
+    - state: base
+  - type: ReactionMixer
+    reactionTypes:
+    - Electrolysis
+    timeToMix: 2
+  - type: PowerCellSlot
+    cellSlotId: cell_slot
+    fitsInCharger: false
+  - type: ItemSlots
+    slots:
+      cell_slot:
+        name: Cell
+        startingItem: PowerCellSmall
+        insertSound: /Audio/Weapons/Guns/MagIn/batrifle_magin.ogg
+        ejectSound: /Audio/Weapons/Guns/MagOut/batrifle_magout.ogg
+        whitelist:
+          tags:
+            - PowerCell
+            - PowerCellSmall
+  - type: ContainerContainer
+    containers:
+      cell_slot: !type:ContainerSlot
