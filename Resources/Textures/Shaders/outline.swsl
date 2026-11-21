@@ -37,44 +37,50 @@ uniform highp float light_whitepoint; // = 1.0;
 void fragment() {
 	highp vec4 col = zTexture(UV);
 	highp vec2 ps = TEXTURE_PIXEL_SIZE;
+
+	// Width in screen-space terms
+	highp float width = outline_width;
 	highp float a;
 	highp float maxa = col.a;
 	highp float mina = col.a;
 
 	// note: these bypass zTexture because only alpha is queried.
-	a = texture2D(TEXTURE, UV + vec2(0.0, -outline_width)*ps).a;
+	a = texture2D(TEXTURE, UV + vec2(0.0, -width)*ps).a;
 	maxa = max(a, maxa);
 	mina = min(a, mina);
 
-    a = texture2D(TEXTURE, UV + vec2(-outline_width, -outline_width)*ps).a;
+    a = texture2D(TEXTURE, UV + vec2(-width, -width)*ps).a;
     maxa = max(a, maxa);
     mina = min(a, mina);
 
-	a = texture2D(TEXTURE, UV + vec2(0.0, outline_width)*ps).a;
+	a = texture2D(TEXTURE, UV + vec2(0.0, width)*ps).a;
 	maxa = max(a, maxa);
 	mina = min(a, mina);
 
-    a = texture2D(TEXTURE, UV + vec2(outline_width, -outline_width)*ps).a;
+    a = texture2D(TEXTURE, UV + vec2(width, -width)*ps).a;
     maxa = max(a, maxa);
     mina = min(a, mina);
 
-	a = texture2D(TEXTURE, UV + vec2(-outline_width,0.0)*ps).a;
+	a = texture2D(TEXTURE, UV + vec2(-width,0.0)*ps).a;
 	maxa = max(a, maxa);
 	mina = min(a, mina);
 
-    a = texture2D(TEXTURE, UV + vec2(-outline_width, outline_width)*ps).a;
+    a = texture2D(TEXTURE, UV + vec2(-width, width)*ps).a;
     maxa = max(a, maxa);
     mina = min(a, mina);
 
-	a = texture2D(TEXTURE, UV + vec2(outline_width, 0.0)*ps).a;
+	a = texture2D(TEXTURE, UV + vec2(width, 0.0)*ps).a;
 	maxa = max(a, maxa);
 	mina = min(a, mina);
 
-    a = texture2D(TEXTURE, UV + vec2(outline_width, outline_width)*ps).a;
-    maxa = max(a, maxa);
-    mina = min(a, mina);
+	a = texture2D(TEXTURE, UV + vec2(width, width)*ps).a;
+	maxa = max(a, maxa);
+	mina = min(a, mina);
 
 	lowp float sampledLight = outline_fullbright ? 1.0 : clamp( (pow( zGrayscale_BT601(lightSample.rgb) * light_whitepoint, light_gamma) / light_whitepoint ) * light_boost, 0.0, 1.0);
-	COLOR = mix(col, outline_color * vec4(vec3(1.0), sampledLight), maxa - col.a);
+	highp float outlineAmount = max(maxa - col.a, 0.0);
+	highp float outlineAlpha = outline_color.a * sampledLight * outlineAmount;
+	highp vec4 outline = vec4(outline_color.rgb * outlineAlpha, outlineAlpha);
+	COLOR = mix(outline, col, step(0.01, col.a));
 	lightSample = vec3(1.0);
 }

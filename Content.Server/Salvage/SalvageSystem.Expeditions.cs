@@ -67,7 +67,7 @@ public sealed partial class SalvageSystem
         component.SelectedSong = _audio.ResolveSound(component.Sound);
     }
 
-    private void OnExpeditionShutdown(EntityUid uid, SalvageExpeditionComponent component, ComponentShutdown args)
+    private void OnExpeditionShutdown(EntityUid uid, SalvageExpeditionComponent component, ref ComponentShutdown args)
     {
         component.Stream = _audio.Stop(component.Stream);
 
@@ -168,8 +168,8 @@ public sealed partial class SalvageSystem
             SalvageJobTime,
             EntityManager,
             _timing,
-            _logManager,
-            _prototypeManager,
+            LogManager,
+            ProtoMan,
             _anchorable,
             _biome,
             _dungeon,

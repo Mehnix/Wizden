@@ -15,7 +15,6 @@ public sealed partial class ClientAlertsSystem : AlertsSystem
     public AlertOrderPrototype? AlertOrder { get; set; }
 
     [Dependency] private IPlayerManager _playerManager = default!;
-    [Dependency] private IPrototypeManager _prototypeManager = default!;
     [Dependency] private IUserInterfaceManager _ui = default!;
 
     public event EventHandler? ClearAlerts;
@@ -39,7 +38,7 @@ public sealed partial class ClientAlertsSystem : AlertsSystem
     {
         base.LoadPrototypes();
 
-        AlertOrder = _prototypeManager.EnumeratePrototypes<AlertOrderPrototype>().FirstOrDefault();
+        AlertOrder = ProtoMan.EnumeratePrototypes<AlertOrderPrototype>().FirstOrDefault();
         if (AlertOrder == null)
             Log.Error("No alertOrder prototype found, alerts will be in random order");
     }
@@ -105,9 +104,9 @@ public sealed partial class ClientAlertsSystem : AlertsSystem
         SyncAlerts?.Invoke(this, component.Alerts);
     }
 
-    protected override void HandleComponentShutdown(EntityUid uid, AlertsComponent component, ComponentShutdown args)
+    protected override void HandleComponentShutdown(EntityUid uid, AlertsComponent component, ref ComponentShutdown args)
     {
-        base.HandleComponentShutdown(uid, component, args);
+        base.HandleComponentShutdown(uid, component, ref args);
 
         if (_playerManager.LocalEntity != uid)
             return;

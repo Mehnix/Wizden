@@ -46,7 +46,7 @@ public sealed partial class NPCCombatSystem
         }
     }
 
-    private void OnRangedShutdown(EntityUid uid, NPCRangedCombatComponent component, ComponentShutdown args)
+    private void OnRangedShutdown(EntityUid uid, NPCRangedCombatComponent component, ref ComponentShutdown args)
     {
         if (TryComp<CombatModeComponent>(uid, out var combat))
         {
@@ -183,7 +183,7 @@ public sealed partial class NPCCombatSystem
 
             EntityCoordinates targetCordinates;
 
-            if (_mapManager.TryFindGridAt(xform.MapID, targetPos, out var gridUid, out var mapGrid))
+            if (_map.TryFindGridAt(xform.MapID, targetPos, out var gridUid, out var mapGrid))
             {
                 targetCordinates = new EntityCoordinates(gridUid, _map.WorldToLocal(gridUid, mapGrid, targetSpot));
             }

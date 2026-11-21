@@ -162,14 +162,16 @@
   - DeviceDesynchronizer
 
 - type: technology
-  id: AdvancedTelescience
-  name: research-technology-advanced-telescience
+  id: TeleSci
+  name: research-technology-telesci
   icon:
-    sprite: Objects/Tools/handheld_teleframe_console.rsi
-    state: icon
+    sprite: Effects/portal.rsi
+    state: portal-artifact
   discipline: Experimental
   tier: 3
   cost: 10000
   recipeUnlocks:
+  - StationTeleportersControlCircuitboard
+  - StationTeleporterMachineCircuitboard
+  - TeleporterChipBlank
   - HandHeldTeleframeConsoleEmpty
-

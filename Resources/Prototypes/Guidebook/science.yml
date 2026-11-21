@@ -3,10 +3,10 @@
   name: guide-entry-science
   text: "/ServerInfo/Guidebook/Science/Science.xml"
   children:
-  - Technologies
   - AnomalousResearch
   - Xenoarchaeology
   - Telescience
+  - Technologies
   - Robotics
 
 - type: guideEntry
