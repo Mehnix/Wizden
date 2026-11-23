@@ -1,4 +1,4 @@
-using Content.Server.Pinpointer;
+using Content.Shared.Pinpointer;
 using Content.Server.Radio.EntitySystems;
 using Content.Server.Popups;
 using Content.Server.Research.Systems;
@@ -12,10 +12,10 @@ namespace Content.Server.Telescience;
 
 public sealed partial class TelechargeSystem : SharedTelechargeSystem
 {
-    [Dependency] private readonly RadioSystem _radio = default!;
-    [Dependency] private readonly NavMapSystem _navMap = default!;
-    [Dependency] private readonly PopupSystem _popupSystem = default!;
-    [Dependency] private readonly ResearchSystem _research = default!;
+    [Dependency] private RadioSystem _radio = default!;
+    [Dependency] private NavMapSystem _navMap = default!;
+    [Dependency] private PopupSystem _popupSystem = default!;
+    [Dependency] private ResearchSystem _research = default!;
     public override void Initialize()
     {
         base.Initialize();

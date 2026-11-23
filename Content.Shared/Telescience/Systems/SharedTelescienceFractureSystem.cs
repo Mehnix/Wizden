@@ -9,8 +9,8 @@ namespace Content.Shared.Telescience.Systems;
 
 public abstract partial class SharedTelescienceFractureSystem : EntitySystem
 {
-    [Dependency] protected readonly IRobustRandom Random = default!;
-    [Dependency] private readonly SharedAnomalySystem _anomaly = default!;
+    [Dependency] protected IRobustRandom Random = default!;
+    [Dependency] private SharedAnomalySystem _anomaly = default!;
     public override void Initialize()
     {
         base.Initialize();

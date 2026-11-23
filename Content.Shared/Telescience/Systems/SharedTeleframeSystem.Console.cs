@@ -14,7 +14,7 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
 
         SubscribeLocalEvent<TeleframeConsoleComponent, MapInitEvent>(OnConsoleMapInit);
         SubscribeLocalEvent<TeleframeConsoleComponent, NewLinkEvent>(OnNewLink);
-        SubscribeLocalEvent<TeleframeConsoleComponent, PortDisconnectedEvent>(OnPortDisconnected);
+        SubscribeLocalEvent<TeleframeConsoleComponent, SourcePortDisconnectedEvent>(OnPortDisconnected);
         SubscribeLocalEvent<TeleframeConsoleComponent, GotEmaggedEvent>(OnConsoleEmagged);
         SubscribeLocalEvent<TeleframeConsoleComponent, TeleframeToConsoleRelayEvent<TeleframeReadyEvent>>(OnReady);
         SubscribeLocalEvent<TeleframeConsoleComponent, TeleframeToConsoleRelayEvent<TeleframeIncidentEvent>>(OnIncident);
@@ -56,7 +56,7 @@ public abstract partial class SharedTeleframeSystem : EntitySystem
     /// <summary>
     /// Disconnects Teleframe Console and Teleframe, setting both sides' Linked variables to null
     /// </summary>
-    private void OnPortDisconnected(Entity<TeleframeConsoleComponent> ent, ref PortDisconnectedEvent args) //stolen from SharedArtifactAnalyzerSystem
+    private void OnPortDisconnected(Entity<TeleframeConsoleComponent> ent, ref SourcePortDisconnectedEvent args) //stolen from SharedArtifactAnalyzerSystem
     {
         var tpUid = ent.Comp.LinkedTeleframe;
         if (args.Port == ent.Comp.LinkingPort && tpUid != null)
