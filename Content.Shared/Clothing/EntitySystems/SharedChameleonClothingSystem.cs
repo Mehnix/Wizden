@@ -192,10 +192,7 @@ public abstract partial class SharedChameleonClothingSystem : EntitySystem
             return false;
 
         // check if it's valid clothing
-        if (!proto.TryComp(out ClothingComponent? clothing, Factory))
-            return false;
-
-        if (!clothing.Slots.HasFlag(chameleonSlot))
+        if (proto.TryComp(out ClothingComponent? clothing, Factory) && !clothing.Slots.HasFlag(chameleonSlot))
             return false;
 
         return true;
@@ -241,21 +238,29 @@ public abstract partial class SharedChameleonClothingSystem : EntitySystem
             // check if this is valid clothing
             if (!IsValidTarget(proto))
                 continue;
-            if (!proto.TryComp(out ClothingComponent? item, Factory))
-                continue;
-
-            // sort item by their slot flags
-            // one item can be placed in several buckets
-            foreach (var slot in Slots)
+            if (proto.TryComp(out ClothingComponent? item, Factory))
             {
-                if (!item.Slots.HasFlag(slot))
-                    continue;
-
-                if (!_data.ContainsKey(slot))
+                // sort item by their slot flags
+                // one item can be placed in several buckets
+                foreach (var slot in Slots)
                 {
-                    _data.Add(slot, new List<EntProtoId>());
+                    if (!item.Slots.HasFlag(slot))
+                        continue;
+
+                    if (!_data.ContainsKey(slot))
+                    {
+                        _data.Add(slot, new List<EntProtoId>());
+                    }
+                    _data[slot].Add(proto.ID);
                 }
-                _data[slot].Add(proto.ID);
+            }
+            else
+            {   // WhitelistChameleon tagged entities that are not clothing go into the NONE slot, additional tags will be needed to seperate them further.
+                if (!_data.ContainsKey(SlotFlags.NONE))
+                {
+                    _data.Add(SlotFlags.NONE, new List<EntProtoId>());
+                }
+                _data[SlotFlags.NONE].Add(proto.ID);
             }
         }
     }
