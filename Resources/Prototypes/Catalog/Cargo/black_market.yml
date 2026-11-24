@@ -1,0 +1,102 @@
+# Basic Materials
+- type: cargoProduct
+  id: BMMaterialBasic
+  icon:
+    sprite: Objects/Materials/Sheets/other.rsi
+    state: generic_materials
+  product: CrateMaterialBasicResource
+  cost: 1500
+  category: cargoproduct-category-name-materials
+  group: blackmarket
+
+- type: cargoProduct
+  id: BMMaterialWood
+  icon:
+    sprite: Objects/Materials/materials.rsi
+    state: wood_3
+  product: MaterialWoodPlank
+  container:
+    entity: WrappedParcel
+    containerId: contents
+  cost: 500
+  category: cargoproduct-category-name-materials
+  group: blackmarket
+
+- type: cargoProduct
+  id: BMMaterialGold
+  name: cargoproduct-name-material-gold
+  description: cargoproduct-description-material-gold
+  icon:
+    sprite: Objects/Materials/ingots.rsi
+    state: gold_3
+  product: IngotGold
+  container:
+    entity: WrappedParcel
+    containerId: contents
+  cost: 2000
+  category: cargoproduct-category-name-materials
+  group: blackmarket
+
+- type: cargoProduct
+  id: BMMaterialSilver
+  name: cargoproduct-name-material-silver
+  description: cargoproduct-description-material-silver
+  icon:
+    sprite: Objects/Materials/ingots.rsi
+    state: silver_3
+  product: IngotSilver
+  container:
+    entity: WrappedParcel
+    containerId: contents
+  cost: 2000
+  category: cargoproduct-category-name-materials
+  group: blackmarket
+
+## Offensive Items, no big guns!
+
+- type: cargoProduct
+  id: BMZipties
+  icon:
+    sprite: Objects/Misc/zipties.rsi
+    state: cuff
+  product: BoxZiptie
+  container:
+    entity: WrappedParcel
+    containerId: contents
+  cost: 500
+  category: cargoproduct-category-name-offensive
+  group: blackmarket
+
+## Defensive Items
+
+## Medical Items
+
+## Misc Items
+- type: cargoProduct
+  id: BMSpesos
+  icon:
+    sprite: Objects/Economy/cash.rsi
+    state: cash_5000
+  product: SpaceCash5000
+  container:
+    entity: WrappedParcel
+    containerId: contents
+  cost: 3000
+  category: cargoproduct-category-name-miscellaneous
+  group: blackmarket
+
+## Contraband
+- type: cargoProduct
+  id: BMAmmoTech
+  icon:
+    sprite: Objects/Misc/module.rsi
+    state: security
+  product: AmmoTechFabCircuitboard
+  container:
+    entity: WrappedParcel
+    containerId: contents
+  cost: 8000
+  category: cargoproduct-category-name-contraband
+  group: blackmarket
+
+## Special Items, revolutionaries exclusive.

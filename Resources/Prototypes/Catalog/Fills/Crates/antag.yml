@@ -33,3 +33,18 @@
           amount: 4
         - id: WeaponShotgunBlunderbuss
           amount: 2
+
+- type: entity
+  parent: CrateSecure
+  id: CrateChameleon
+  name: sneaky crate
+  suffix: chameleon
+  components:
+  - type: ChameleonClothing
+    slot: [none]
+    default: CrateSecure
+    requireTag: WhitelistChameleonCrate
+  - type: UserInterface
+    interfaces:
+      enum.ChameleonUiKey.Key:
+        type: ChameleonBoundUserInterface

@@ -574,10 +574,12 @@
   components:
   - type: CargoOrderConsole
     account: BlackMarket
+    allowedGroups:
+    - blackmarket
     baseTransferLimit: 0 # independent, no takesies backsies
-    announcementChannel: Common #make undercommon
-    baseAnnouncementChannel: Common
+    announcementChannel: null #make undercommon
+    baseAnnouncementChannel: null
   - type: AccessReader
-    access: [["HeadRevolutionary"],["Syndicate"]]
+    access: [["HeadRevolutionary"]]
 
 

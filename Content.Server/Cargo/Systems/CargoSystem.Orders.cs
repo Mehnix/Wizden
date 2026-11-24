@@ -252,12 +252,12 @@ public sealed partial class CargoSystem
                 ("cost", cost)
             );
             _radio.SendRadioMessage(ent.Owner, message, account.RadioChannel, ent.Owner, escapeMarkup: false);
-            if (CargoOrderConsoleComponent.BaseAnnouncementChannel != account.RadioChannel)
+            if (CargoOrderConsoleComponent.BaseAnnouncementChannel != account.RadioChannel && CargoOrderConsoleComponent.BaseAnnouncementChannel != null)
             {
                 _radio.SendRadioMessage(
                     ent.Owner,
                     message,
-                    CargoOrderConsoleComponent.BaseAnnouncementChannel,
+                    CargoOrderConsoleComponent.BaseAnnouncementChannel.Value,
                     ent.Owner,
                     escapeMarkup: false
                 );

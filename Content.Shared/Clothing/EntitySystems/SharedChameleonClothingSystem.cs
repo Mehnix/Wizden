@@ -91,6 +91,11 @@ public abstract partial class SharedChameleonClothingSystem : EntitySystem
             !ProtoMan.Resolve(component.Default, out EntityPrototype? proto))
             return;
 
+        UpdateVisuals(uid, proto);
+    }
+
+    public void UpdateVisuals(EntityUid uid, EntityPrototype proto)
+    {
         // world sprite icon
         UpdateSprite(uid, proto);
 
@@ -192,10 +197,7 @@ public abstract partial class SharedChameleonClothingSystem : EntitySystem
             return false;
 
         // check if it's valid clothing
-        if (!proto.TryComp(out ClothingComponent? clothing, Factory))
-            return false;
-
-        if (!clothing.Slots.HasFlag(chameleonSlot))
+        if (proto.TryComp(out ClothingComponent? clothing, Factory) && !clothing.Slots.HasFlag(chameleonSlot))
             return false;
 
         return true;

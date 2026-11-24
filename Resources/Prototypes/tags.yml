@@ -1568,6 +1568,9 @@
   id: WhitelistChameleonPDA # Chameleon key for ChameleonPDA
 
 - type: Tag
+  id: WhitelistChameleonCrate # Chameleon key for Chameleon Crates
+
+- type: Tag
   id: Windoor # Used in ConstructionGraph "Windoor" to navigate between Windoor, PlasmaWindoor, and UraniumWindoor airlocks.
 
 - type: Tag
