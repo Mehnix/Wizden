@@ -101,6 +101,9 @@
   - type: PaperVisualizer
   - type: PaperVisuals
   - type: StationAiWhitelist
+  - type: WhitelistChameleon
+    tags:
+    - WhitelistChameleonPapercraft
 
 - type: entity
   name: paper scrap
@@ -526,3 +529,4 @@
         acts: [ "Destruction" ]
   - type: Injurable
   - type: StationAiWhitelist
+

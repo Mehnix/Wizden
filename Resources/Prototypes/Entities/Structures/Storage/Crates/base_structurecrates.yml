@@ -126,7 +126,7 @@
     group: CrateSecure
   - type: StaticPrice
     price: 300
-  - type: Tag
+  - type: WhitelistChameleon
     tags:
-    - WhitelistChameleon
     - WhitelistChameleonCrate
+

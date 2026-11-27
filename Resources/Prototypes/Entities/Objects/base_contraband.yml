@@ -32,6 +32,9 @@
     severity: Syndicate
     allowedDepartments: [  ]
     allowedJobs: [  ]
+  - type: WhitelistChameleon
+    tags:
+    - WhitelistChameleonPapercraft
 
 # minor contraband not departmentally restricted -- improvised weapons etc
 - type: entity

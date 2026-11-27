@@ -46,7 +46,10 @@ public sealed partial class ChameleonBoundUserInterface : BoundUserInterface
                 if (string.IsNullOrEmpty(target) || !_proto.Resolve(target, out EntityPrototype? proto))
                     continue;
 
-                if (!proto.TryComp(out TagComponent? tag, EntMan.ComponentFactory) || !_tag.HasTag(tag, st.RequiredTag))
+                proto.TryComp(out TagComponent? tag, EntMan.ComponentFactory);
+                proto.TryComp(out WhitelistChameleonComponent? whitelist, EntMan.ComponentFactory);
+
+                if (st.RequiredTag != null && !(tag != null && _tag.HasTag(tag, st.RequiredTag) || whitelist != null && _chameleon.HasTag(whitelist, st.RequiredTag)))
                     continue;
 
                 newTargets.Add(target);

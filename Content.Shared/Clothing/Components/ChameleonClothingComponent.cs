@@ -81,6 +81,27 @@ public sealed partial class ChameleonClothingComponent : Component
     /// </summary>
     [AutoPausedField, DataField(customTypeSerializer: typeof(TimeOffsetSerializer))]
     public TimeSpan NextEmpChange = TimeSpan.Zero;
+
+    /// <summary>
+    /// Copy any access requirements the mimicked entity has (keeping anything that it started with).
+    /// </summary>
+    [DataField]
+    public bool CopyAccessReader = false;
+
+    /// <summary>
+    /// A list of protoID's chosen from randomly to assign what this entity will initially start off looking like.
+    /// </summary>
+    /// <remarks>
+    /// This method is chosen over just randomly choosing from *any* valid entity to allow for a more fine-tuned list of nonsuspicious entities.
+    /// </remarks>
+    [DataField]
+    public List<EntProtoId>? InitialiseList;
+
+    /// <summary>
+    /// Copy the size of the item being mimicked
+    /// </summary>
+    [DataField]
+    public bool CopySize = false;
 }
 
 [Serializable, NetSerializable]

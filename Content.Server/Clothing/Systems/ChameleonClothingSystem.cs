@@ -3,6 +3,7 @@ using Content.Shared.Clothing.EntitySystems;
 using Content.Shared.Emp;
 using Content.Shared.IdentityManagement;
 using Content.Shared.IdentityManagement.Components;
+using Robust.Shared.Random;
 using Robust.Shared.Prototypes;
 
 namespace Content.Server.Clothing.Systems;
@@ -10,6 +11,7 @@ namespace Content.Server.Clothing.Systems;
 public sealed partial class ChameleonClothingSystem : SharedChameleonClothingSystem
 {
     [Dependency] private IdentitySystem _identity = default!;
+    [Dependency] private IRobustRandom _random = default!;
 
     public override void Initialize()
     {
@@ -20,6 +22,8 @@ public sealed partial class ChameleonClothingSystem : SharedChameleonClothingSys
 
     private void OnMapInit(EntityUid uid, ChameleonClothingComponent component, MapInitEvent args)
     {
+        if (component.InitialiseList != null)
+            component.Default = _random.Pick(component.InitialiseList);
         SetSelectedPrototype(uid, component.Default, true, component: component);
     }
 
@@ -56,7 +60,10 @@ public sealed partial class ChameleonClothingSystem : SharedChameleonClothingSys
             return;
 
         component.Default = protoId;
-
+        if (component.CopyAccessReader == true)
+            UpdateAccess(uid, proto);
+        if (component.CopySize == true)
+            UpdateSize(uid, proto);
         UpdateIdentityBlocker(uid, component, proto);
         UpdateVisuals(uid, component);
         UpdateUi(uid, component);

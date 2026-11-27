@@ -37,14 +37,94 @@
 - type: entity
   parent: CrateSecure
   id: CrateChameleon
-  name: sneaky crate
-  suffix: chameleon
+  name: chameleon crate
   components:
+  - type: GenericVisualizer #ensure all type of crates work, including lockboxes which have additional visuals
+    visuals:
+      enum.PaperLabelVisuals.HasLabel:
+        enum.PaperLabelVisuals.Layer:
+          True: { visible: true }
+          False: { visible: false }
+      enum.PaperLabelVisuals.LabelType:
+        enum.PaperLabelVisuals.Layer:
+          Paper: { state: paper }
+          Bounty: { state: bounty }
+          CaptainsPaper: { state: captains_paper }
+          Invoice: { state: invoice }
+      enum.StorageVisuals.Open:
+        lid_overlay:
+          True: { visible: false }
+          False: { visible: true }
   - type: ChameleonClothing
     slot: [NONE]
     default: CrateSecure
     requireTag: WhitelistChameleonCrate
+    canBeSetByController: false
   - type: UserInterface
     interfaces:
       enum.ChameleonUiKey.Key:
         type: ChameleonBoundUserInterface
+  - type: Tag
+    tags:
+    - WhitelistChameleonCrate #no WhitelistChameleon so won't appear
+
+- type: entity
+  parent: CrateChameleon
+  id: CrateChameleonRandom # this crate is randomly chameleoned on spawn, and also transfers access of that initialised crate to appear as it
+  name: chameleon crate
+  suffix: One-Off, Chameleon's Access
+  components:
+  - type: ChameleonClothing
+    affectedByEmp: false
+    showVerb: false
+    copyAccessReader: true
+    initialiseList:
+    - CrateEngineeringFoamGrenade
+    - CrateParticleDecelerators
+    - CrateEngineeringSingularityContainment
+    - CrateHydroponicsSeedsExotic
+    - CrateHydroponicsSeedsMedicinal
+    - CrateChemistryP
+    - CrateChemistryS
+    - CrateChemistryD
+    - CrateVirologyBiosuit
+    - CrateMaterialPlasma
+    - CrateScienceBiosuit
+    - CrateCrewMonitoring
+    - CrateEvaKit
+    - CrateVendingMachineRestockEngineeringFilled
+    - CrateVendingMachineRestockMedicalFilled
+    - CrateVendingMachineRestockChemVendFilled
+    - CrateVendingMachineRestockNutriMaxFilled
+    - CrateVendingMachineRestockSeedsFilled
+    - CrateVendingMachineRestockRoboticsFilled
+  - type: AccessReader
+    access: [["SyndicateAgent", "NuclearOperative"]]
+
+- type: entity
+  parent: [BasePaper, SelectableLock]
+  id: ChameleonPaper
+  name: paper
+  suffix: Chameleon
+  components:
+  - type: Sprite
+    sprite: Objects/Misc/bureaucracy.rsi
+    layers:
+    - state: paper
+  - type: ChameleonClothing
+    slot: [NONE]
+    default: Paper
+    requireTag: WhitelistChameleonPapercraft
+    copySize: true
+  - type: UserInterface
+    interfaces:
+      enum.ChameleonUiKey.Key:
+        type: ChameleonBoundUserInterface
+      enum.PaperUiKey.Key:
+        type: PaperBoundUserInterface
+  - type: ActivatableUI
+    key: enum.PaperUiKey.Key
+    requiresComplex: false
+  - type: Paper
+  - type: PaperVisuals
+

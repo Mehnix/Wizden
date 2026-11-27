@@ -714,6 +714,37 @@ public sealed partial class AccessReaderSystem : EntitySystem
         return !ev.Cancelled;
     }
 
+    /// <summary>
+    /// Retcon the AccessReader's original access with something else
+    /// </summary>
+    /// <param name="ent"></param>
+    /// <param name="access"></param>
+    public void ReplaceOriginalAccess(Entity<AccessReaderComponent> ent, List<HashSet<ProtoId<AccessLevelPrototype>>> access)
+    {
+        ent.Comp.AccessListsOriginal = access;
+        Dirty(ent);
+    }
+
+    /// <summary>
+    /// Gets accesses that have been added that are not in the original list
+    /// </summary>
+    /// <param name="ent"></param>
+    /// <returns></returns>
+    public List<HashSet<ProtoId<AccessLevelPrototype>>> CompareNewAccess(AccessReaderComponent comp)
+    {
+        List<HashSet<ProtoId<AccessLevelPrototype>>> accessDiff = new();
+        if (comp.AccessListsOriginal == null)
+            return accessDiff;
+
+        foreach (var accs in comp.AccessLists)
+        {
+            if (!comp.AccessListsOriginal.Contains(accs))
+                accessDiff.Add(accs);
+        }
+
+        return accessDiff;
+    }
+
     #endregion
 
     #region: AccessKeys API

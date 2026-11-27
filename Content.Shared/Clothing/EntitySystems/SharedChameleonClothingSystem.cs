@@ -1,5 +1,6 @@
 using System.Linq;
 using Content.Shared.Access.Components;
+using Content.Shared.Access.Systems;
 using Content.Shared.Clothing.Components;
 using Content.Shared.Contraband;
 using Content.Shared.Emp;
@@ -19,6 +20,7 @@ namespace Content.Shared.Clothing.EntitySystems;
 
 public abstract partial class SharedChameleonClothingSystem : EntitySystem
 {
+    [Dependency] private AccessReaderSystem _access = default!;
     [Dependency] private ClothingSystem _clothingSystem = default!;
     [Dependency] private ContrabandSystem _contraband = default!;
     [Dependency] private MetaDataSystem _metaData = default!;
@@ -35,7 +37,6 @@ public abstract partial class SharedChameleonClothingSystem : EntitySystem
     {
         SlotFlags.All,
         SlotFlags.PREVENTEQUIP,
-        SlotFlags.NONE
     };
 
     private static readonly SlotFlags[] Slots = Enum.GetValues<SlotFlags>().Except(IgnoredSlots).ToArray();
@@ -79,6 +80,34 @@ public abstract partial class SharedChameleonClothingSystem : EntitySystem
 
         component.User = null;
         Dirty(uid, component);
+    }
+
+    /// <summary>
+    /// Update the original and current access, retaining access that the entity began with.
+    /// </summary>
+    protected void UpdateAccess(EntityUid uid, EntityPrototype proto)
+    {
+        if (!TryComp(uid, out AccessReaderComponent? accessUid) || !proto.TryComp(out AccessReaderComponent? accessProto, Factory))
+            return;
+
+        var test = accessUid;
+        var accesses = _access.CompareNewAccess(test); //gets the difference between the "original" and "current" which should be whatever the intial access is
+        if (accesses.Count <= 0) //if there is no difference, there has been no chameleoning or there is no other access attached to the current proto so we just take the current initial access list
+        {
+            accesses = accessUid.AccessLists; //this also results in any changes to access from an access config being copied over which is also fine.
+            Dirty(uid, accessUid);
+        }
+        _access.ReplaceOriginalAccess((uid, accessUid), accessProto.AccessLists); //remove the original proto accesses and replace with the new
+        _access.TrySetAccesses((uid, accessUid), accessProto.AccessLists.Concat(accesses).ToList()); //Add new proto access along with original access this entity began with
+    }
+
+    protected void UpdateSize(EntityUid uid, EntityPrototype proto)
+    {
+        if (!TryComp(uid, out ItemComponent? itemComp) || !proto.TryComp(out ItemComponent? itemProto, Factory))
+            return;
+
+        _itemSystem.SetSize(uid, itemProto.Size, itemComp);
+        _itemSystem.SetShape(uid, itemProto.Shape, itemComp);
     }
 
     // Updates chameleon visuals and meta information.
@@ -185,10 +214,13 @@ public abstract partial class SharedChameleonClothingSystem : EntitySystem
             return false;
 
         // check if it is marked as valid chameleon target
-        if (!proto.TryComp(out TagComponent? tag, Factory) || !_tag.HasTag(tag, WhitelistChameleonTag))
+        proto.TryComp(out TagComponent? tag, Factory);
+        proto.TryComp(out WhitelistChameleonComponent? whitelist, Factory);
+
+        if (!(tag != null && _tag.HasTag(tag, WhitelistChameleonTag) || whitelist != null && whitelist.Valid))
             return false;
 
-        if (requiredTag != null && !_tag.HasTag(tag, requiredTag))
+        if (requiredTag != null && !(tag != null && _tag.HasTag(tag, requiredTag) || whitelist != null && HasTag(whitelist, requiredTag)))
             return false;
 
         // check if it's valid clothing
@@ -255,7 +287,7 @@ public abstract partial class SharedChameleonClothingSystem : EntitySystem
                 }
             }
             else
-            {   // WhitelistChameleon tagged entities that are not clothing go into the NONE slot, additional tags will be needed to seperate them further.
+            {   // WhitelistChameleon tagged entities that are not clothing go into the NONE SlotFlag, additional tags will be needed to seperate them further.
                 if (!_data.ContainsKey(SlotFlags.NONE))
                 {
                     _data.Add(SlotFlags.NONE, new List<EntProtoId>());
@@ -263,6 +295,11 @@ public abstract partial class SharedChameleonClothingSystem : EntitySystem
                 _data[SlotFlags.NONE].Add(proto.ID);
             }
         }
+    }
+
+    public bool HasTag(WhitelistChameleonComponent component, [ForbidLiteral] ProtoId<TagPrototype> tag)
+    {
+        return component.Tags.Contains(tag);
     }
 
     // TODO: Predict and use component states for the UI

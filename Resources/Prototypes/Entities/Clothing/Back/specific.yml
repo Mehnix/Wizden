@@ -12,6 +12,7 @@
     - type: ChameleonClothing
       slot: [back]
       default: ClothingBackpack
+      requireTag: Backpack
     - type: UserInterface
       interfaces:
         enum.StorageUiKey.Key:
